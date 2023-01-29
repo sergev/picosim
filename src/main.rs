@@ -14,7 +14,6 @@ extern crate zmu_cortex_m;
 extern crate log;
 extern crate stderrlog;
 
-use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
 use goblin::elf::program_header::pt_to_str;
 use goblin::Object;
 use std::fs::File;
@@ -205,93 +204,83 @@ fn open_itm_file(filename: &str) -> Option<Box<dyn io::Write + 'static>> {
     }
 }
 
-fn run(args: &ArgMatches) -> Result<()> {
-    match args.subcommand() {
-        ("run", Some(run_matches)) => {
-            let filename = run_matches
-                .value_of("EXECUTABLE")
-                .chain_err(|| "filename missing")?;
+fn run(args: &clap::ArgMatches) -> Result<()> {
+    let filename = args
+        .value_of("EXECUTABLE")
+        .chain_err(|| "filename missing")?;
 
-            let trace_start = match run_matches.value_of("trace-start") {
-                Some(instr) => Some(
-                    instr
-                        .parse::<u64>()
-                        .chain_err(|| "invalid trace start point")?,
-                ),
-                None => None,
-            };
+    let trace_start = match args.value_of("trace-start") {
+        Some(instr) => Some(
+            instr
+                .parse::<u64>()
+                .chain_err(|| "invalid trace start point")?,
+        ),
+        None => None,
+    };
 
-            let itm_output = match run_matches.value_of("itm") {
-                Some(filename) => open_itm_file(filename),
-                None => None,
-            };
+    let itm_output = match args.value_of("itm") {
+        Some(filename) => open_itm_file(filename),
+        None => None,
+    };
 
-            let buffer = {
-                let mut v = Vec::new();
-                let mut f = File::open(&filename).chain_err(|| "unable to open file")?;
-                f.read_to_end(&mut v).chain_err(|| "failed to read file")?;
-                v
-            };
+    let buffer = {
+        let mut v = Vec::new();
+        let mut f = File::open(&filename).chain_err(|| "unable to open file")?;
+        f.read_to_end(&mut v).chain_err(|| "failed to read file")?;
+        v
+    };
 
-            run_bin(
-                &buffer,
-                run_matches.is_present("trace"),
-                trace_start,
-                itm_output,
-            )?;
-        }
-        ("", None) => bail!("No sub command found"),
-        _ => unreachable!(), // If all subcommands are defined above, anything else is unreachabe!()
-    }
+    run_bin(
+        &buffer,
+        args.is_present("trace"),
+        trace_start,
+        itm_output,
+    )?;
 
     Ok(())
 }
 
 fn main() {
-    let args = App::new("zmu")
+    let args = clap::App::new("picosim")
         .version(crate_version!())
         .arg(
-            Arg::with_name("verbosity")
+            clap::Arg::with_name("verbosity")
                 .short("v")
                 .multiple(true)
                 .help("Increase message verbosity"),
         )
-        .about("a Low level emulator for microcontrollers")
-        .setting(AppSettings::SubcommandRequiredElseHelp)
-        .subcommand(
-            SubCommand::with_name("run")
-                .about("Load and run <EXECUTABLE>")
-                .arg(
-                    Arg::with_name("trace")
-                        .short("t")
-                        .long("trace")
-                        .help("Print instruction trace to stdout"),
-                )
-                .arg(
-                    Arg::with_name("trace-start")
-                        .long("trace-start")
-                        .help("Instruction on which to start tracing")
-                        .takes_value(true),
-                )
-                .arg(
-                    Arg::with_name("itm")
-                        .long("itm")
-                        .help("Name of file to which itm trace data is written to. ")
-                        .takes_value(true),
-                )
-                .arg(
-                    Arg::with_name("EXECUTABLE")
-                        .index(1)
-                        .help("Set executable to load")
-                        .required(true),
-                )
-                .arg(
-                    Arg::with_name("ARGS")
-                        .required(false)
-                        .help("List of free arguments to pass to runtime as parameters")
-                        .index(2)
-                        .multiple(true),
-                ),
+        .about("Simulator of RP2040 microcontroller")
+        .setting(clap::AppSettings::ArgRequiredElseHelp)
+        .arg(
+            clap::Arg::with_name("trace")
+                .short("t")
+                .long("trace")
+                .help("Print instruction trace to stdout"),
+        )
+        .arg(
+            clap::Arg::with_name("trace-start")
+                .long("trace-start")
+                .help("Instruction on which to start tracing")
+                .takes_value(true),
+        )
+        .arg(
+            clap::Arg::with_name("itm")
+                .long("itm")
+                .help("Name of file to which itm trace data is written to. ")
+                .takes_value(true),
+        )
+        .arg(
+            clap::Arg::with_name("EXECUTABLE")
+                .index(1)
+                .help("Set executable to load")
+                .required(true),
+        )
+        .arg(
+            clap::Arg::with_name("ARGS")
+                .required(false)
+                .help("List of free arguments to pass to runtime as parameters")
+                .index(2)
+                .multiple(true),
         )
         .get_matches();
 
