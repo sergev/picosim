@@ -14,12 +14,7 @@ extern crate zmu_cortex_m;
 extern crate log;
 extern crate stderrlog;
 
-use goblin::elf::program_header::pt_to_str;
-use goblin::Object;
-use std::fs::File;
-use std::io;
-use std::io::prelude::*;
-use std::time::Instant;
+use std::io::{Read, Write};
 
 mod semihost;
 mod trace;
@@ -27,12 +22,8 @@ mod trace;
 use crate::semihost::get_semihost_func;
 use crate::trace::format_trace_entry;
 
-use std::cmp;
-use std::collections::HashMap;
-use tabwriter::TabWriter;
 use zmu_cortex_m::memory::map::MemoryMapConfig;
 use zmu_cortex_m::Processor;
-
 use zmu_cortex_m::system::simulation::simulate_trace;
 use zmu_cortex_m::system::simulation::{simulate, SimulationError};
 
@@ -54,12 +45,12 @@ fn run_bin(
     buffer: &[u8],
     trace: bool,
     option_trace_start: Option<u64>,
-    itm_file: Option<Box<dyn io::Write + 'static>>,
+    itm_file: Option<Box<dyn std::io::Write + 'static>>,
 ) -> Result<()> {
-    let res = Object::parse(buffer).unwrap();
+    let res = goblin::Object::parse(buffer).unwrap();
 
     let elf = match res {
-        Object::Elf(elf) => elf,
+        goblin::Object::Elf(elf) => elf,
         _ => {
             bail!("Unsupported file format.");
         }
@@ -82,12 +73,12 @@ fn run_bin(
                 "PT_LOAD section at 0x{:08x} - 0x{:08x} (size = {} bytes)",
                 dst_addr, dst_end_addr, ph.p_filesz
             );
-            min_address = cmp::min(dst_addr, min_address);
-            max_address = cmp::max(dst_end_addr, max_address);
+            min_address = std::cmp::min(dst_addr, min_address);
+            max_address = std::cmp::max(dst_end_addr, max_address);
         } else {
             debug!(
                 "ignoring section : {} (size = {} bytes)",
-                pt_to_str(ph.p_type),
+                goblin::elf::program_header::pt_to_str(ph.p_type),
                 ph.p_filesz
             );
         }
@@ -116,13 +107,13 @@ fn run_bin(
     }
 
     let trace_start = option_trace_start.unwrap_or(0);
-    let semihost_func = Box::new(get_semihost_func(Instant::now()));
+    let semihost_func = Box::new(get_semihost_func(std::time::Instant::now()));
 
     let statistics = if trace {
         debug!("Configuring tracing.");
 
-        let mut symboltable = HashMap::new();
-        let mut trace_stdout = TabWriter::new(io::stdout()).minwidth(16).padding(1);
+        let mut symboltable = std::collections::HashMap::new();
+        let mut trace_stdout = tabwriter::TabWriter::new(std::io::stdout()).minwidth(16).padding(1);
 
         for sym in &elf.syms {
             if sym.st_type() != goblin::elf::sym::STT_FILE {
@@ -195,11 +186,11 @@ fn run_bin(
     Ok(())
 }
 
-fn open_itm_file(filename: &str) -> Option<Box<dyn io::Write + 'static>> {
-    let result = File::create(filename);
+fn open_itm_file(filename: &str) -> Option<Box<dyn std::io::Write + 'static>> {
+    let result = std::fs::File::create(filename);
 
     match result {
-        Ok(f) => Some(Box::new(f) as Box<dyn io::Write + 'static>),
+        Ok(f) => Some(Box::new(f) as Box<dyn std::io::Write + 'static>),
         Err(_) => None,
     }
 }
@@ -225,7 +216,7 @@ fn run(args: &clap::ArgMatches) -> Result<()> {
 
     let buffer = {
         let mut v = Vec::new();
-        let mut f = File::open(&filename).chain_err(|| "unable to open file")?;
+        let mut f = std::fs::File::open(&filename).chain_err(|| "unable to open file")?;
         f.read_to_end(&mut v).chain_err(|| "failed to read file")?;
         v
     };
