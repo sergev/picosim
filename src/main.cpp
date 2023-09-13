@@ -25,7 +25,7 @@ void intHandler(int dummy)
 //
 void usage(int exit_status)
 {
-    std::cout << "RISC-V Simulator, Version " << version << std::endl;
+    std::cout << "RP2040 Simulator, Version " << version << std::endl;
     std::cerr << "Usage:" << std::endl;
     std::cerr << "    " << prog_name << " [-L FILE] [-D] filename.elf" << std::endl;
     std::cerr << "Options:" << std::endl;
@@ -54,7 +54,7 @@ void process_arguments(int argc, char *argv[])
             break;
         case 'V':
             // Show version and exit.
-            std::cout << "RISC-V Simulator Version " << version << std::endl;
+            std::cout << "RP2040 Simulator Version " << version << std::endl;
             exit(EXIT_SUCCESS);
             break;
         case 'D':
@@ -62,7 +62,7 @@ void process_arguments(int argc, char *argv[])
             continue;
         case 'L':
             Log::set_verbose(optarg);
-            Log::out() << "RISC-V Simulator, Version " << version << std::endl;
+            Log::out() << "RP2040 Simulator, Version " << version << std::endl;
             continue;
         default:
             usage(EXIT_FAILURE);

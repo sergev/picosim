@@ -323,7 +323,7 @@ bool Processor::cpu_step()
             out << std::setw(4) << (uint16_t)instruction << "     ";
         else
             out << std::setw(8) << instruction << " ";
-        out << arm_disassemble(instruction) << std::endl;
+        out << arm_disassemble(instruction, register_bank.getPC()) << std::endl;
     }
 
     // Execute instruction.

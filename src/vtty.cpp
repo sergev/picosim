@@ -419,7 +419,7 @@ void Vtty::read_and_store()
         // parse ttype string: first char is sufficient
         // if client is xterm or vt, set the title bar
         if (c=='x' || c=='X' || c=='v' || c=='V') {
-            fprintf(output_stream, "\033]0;pic32sim %s\07", name);
+            fprintf(output_stream, "\033]0;picosim %s\07", name);
         }
 #endif
         input_state = Input_State::TELNET_NEXT;

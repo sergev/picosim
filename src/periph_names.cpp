@@ -1,15 +1,5 @@
 #include "peripherals.h"
 //#include "esp32c3/soc.h"
-//#include "esp32c3/gpio_reg.h"
-//#include "esp32c3/uart_reg.h"
-//#include "esp32c3/rtc_cntl_reg.h"
-//#include "esp32c3/io_mux_reg.h"
-//#include "esp32c3/usb_serial_jtag_reg.h"
-//#include "esp32c3/system_reg.h"
-//#include "esp32c3/efuse_reg.h"
-//#include "esp32c3/interrupt_core0_reg.h"
-//#include "esp32c3/extmem_reg.h"
-//#include "esp32c3/assist_debug_reg.h"
 
 static const std::map<unsigned, const std::string> periph_reg_name = {
     //

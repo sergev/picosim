@@ -1,11 +1,3 @@
-/*!
- \file BASE_ISA.h
- \brief RISC-V ISA implementation
- \author Màrius Montón
- \date August 2018
- */
-// SPDX-License-Identifier: GPL-3.0-or-later
-
 #ifndef Execute_H
 #define Execute_H
 
@@ -81,9 +73,6 @@ typedef enum {
     OP_ERROR
 } opCodes;
 
-/**
- * @brief Risc_V execute module
- */
 class Base_Instructions : public Instruction_Generic {
 public:
     /**

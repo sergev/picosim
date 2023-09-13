@@ -5,7 +5,7 @@
 find_package(SystemCLanguage CONFIG REQUIRED)
 
 #--------------------------------------------------------------
-# RISC-V simulator
+# Simulator
 #
 add_library(sim STATIC
     base_instructions.cpp

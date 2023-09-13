@@ -87,9 +87,10 @@ uint32_t encode_rr_simm12(uint32_t rd, uint32_t rs1, uint32_t imm)
 //
 // Run ELF file and compare to the reference.
 //
-void test_disasm(uint32_t opcode, const std::string &expect)
+void test_disasm(unsigned opcode, const std::string &expect)
 {
-    EXPECT_EQ(arm_disassemble(opcode), expect);
+    unsigned const address = 0x12345678;
+    EXPECT_EQ(arm_disassemble(opcode, address), expect);
 }
 
 TEST(disasm, disasm_test)
