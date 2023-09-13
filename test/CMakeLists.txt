@@ -1,0 +1,36 @@
+set(GTEST_REPEAT "1" CACHE STRING "Number of times to re-run tests")
+
+include(CTest)
+include(GoogleTest)
+enable_testing()
+
+find_package(SystemCLanguage CONFIG REQUIRED)
+
+add_definitions(-DTEST_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
+
+# Define a function to compile and link a test.
+function(TLM_TEST TNAME)
+    add_executable(${TNAME}
+        ${TNAME}.cpp
+        check_signature.cpp
+    )
+    target_include_directories(${TNAME} BEFORE PUBLIC
+        ../src
+    )
+    target_link_libraries(${TNAME} sim SystemC::systemc gtest dl)
+    gtest_discover_tests(${TNAME} EXTRA_ARGS --gtest_repeat=1 PROPERTIES TIMEOUT 60)
+endfunction()
+
+function(cpp_TEST TNAME)
+    add_executable(${TNAME}
+        ${TNAME}.cpp
+    )
+    target_include_directories(${TNAME} BEFORE PUBLIC
+        ../src
+    )
+    target_link_libraries(${TNAME} sim gtest dl)
+    gtest_discover_tests(${TNAME} EXTRA_ARGS --gtest_repeat=1 PROPERTIES TIMEOUT 60)
+endfunction()
+
+tlm_test(smoke_test)
+cpp_test(disasm_test)
