@@ -29,11 +29,11 @@
 //
 // Disassemble instruction.
 //
-std::string riscv_disassemble(uint32_t opcode);
+std::string arm_disassemble(uint32_t opcode);
 
 //
-// Compute length of the opcode: 2, 4, 6 or 8 bytes.
+// Compute length of the opcode: 2 or 4 bytes.
 //
-unsigned riscv_opcode_length(uint32_t opcode);
+unsigned arm_opcode_length(uint32_t opcode);
 
 #endif

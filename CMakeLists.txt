@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.13.2)
-project(esp32-riscv-sim VERSION 0.0.1 DESCRIPTION "Simulator of Espressif RISC-V platform")
+project(picosim VERSION 0.0.1 DESCRIPTION "Simulator of RP2040 microcontroller")
 
 #--------------------------------------------------------------
 # Options
@@ -106,5 +106,5 @@ set_target_properties(gtest_main PROPERTIES DEBUG_POSTFIX "")
 #--------------------------------------------------------------
 # Subdirectories
 #
-add_subdirectory(riscv)
+add_subdirectory(src)
 add_subdirectory(test)

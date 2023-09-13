@@ -1,8 +1,8 @@
 #include <algorithm>
 
 #include "peripherals.h"
-#include "esp32c3/soc.h"
-#include "esp32c3/uart_reg.h"
+//#include "esp32c3/soc.h"
+//#include "esp32c3/uart_reg.h"
 
 Peripherals::Peripherals(sc_core::sc_module_name const &name, unsigned kbytes)
     : sc_module(name), size_bytes(1024 * kbytes)
@@ -107,11 +107,12 @@ unsigned Peripherals::periph_read(unsigned addr)
 void Peripherals::periph_write(unsigned addr, unsigned val)
 {
     auto shadow = (uint32_t*) &mem[addr];
-
+#if 0
+    //TODO: peripheral registers
     switch (addr + SOC_PERIPHERAL_LOW) {
     case UART_FIFO_REG(0):
         putchar(val);
     }
-
+#endif
     *shadow = val;
 }

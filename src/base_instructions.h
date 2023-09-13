@@ -11,13 +11,11 @@
 
 #include "log.h"
 #include "registers.h"
-#include "a_extension.h"
-#include "c_extension.h"
-#include "m_extension.h"
 #include "memory.h"
 #include "systemc"
 #include "tlm.h"
 #include "tlm_utils/simple_initiator_socket.h"
+#include "instruction_generic.h"
 
 typedef enum {
     OP_LUI,

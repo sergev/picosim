@@ -323,27 +323,11 @@ bool Processor::cpu_step()
             out << std::setw(4) << (uint16_t)instruction << "     ";
         else
             out << std::setw(8) << instruction << " ";
-        out << riscv_disassemble(instruction) << std::endl;
+        out << arm_disassemble(instruction) << std::endl;
     }
 
-    /* check what type of instruction is and execute it */
-    switch (check_extension()) {
-    case BASE_EXTENSION:
-        PC_not_affected = base_inst.process_instruction(instruction, &breakpoint);
-        break;
-    case C_EXTENSION:
-        PC_not_affected = c_inst.process_instruction(instruction, &breakpoint);
-        break;
-    case M_EXTENSION:
-        PC_not_affected = m_inst.process_instruction(instruction);
-        break;
-    // case A_EXTENSION:
-    //    PC_not_affected = a_inst.process_instruction(instruction);
-    //    break;
-    default:
-        std::cout << "Extension not implemented yet" << std::endl;
-        std::cout << std::hex << "0x" << instruction << std::dec << std::endl;
-    }
+    // Execute instruction.
+    PC_not_affected = base_inst.process_instruction(instruction, &breakpoint);
 
     // Increment the HW counter.
     if (csr_ucustom[0] != 0 && csr_ucustom[1] != 0) {

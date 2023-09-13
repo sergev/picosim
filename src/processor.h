@@ -10,11 +10,8 @@
 #define CPU_BASE_H
 
 #include <unordered_map>
-//#include "a_extension.h"
 #include "base_instructions.h"
-#include "c_extension.h"
 #include "log.h"
-#include "m_extension.h"
 #include "memory.h"
 #include "registers.h"
 #include "systemc"
@@ -202,9 +199,6 @@ private:
     uint64_t instructions_executed{};
 
     Base_Instructions base_inst{ *this };
-    C_Extension c_inst{ *this };
-    M_Extension m_inst{ *this };
-    //A_Extension a_inst{ *this };
 
     uint32_t instruction{ 0 };
     bool interrupt{ false };

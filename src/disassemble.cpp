@@ -2834,9 +2834,9 @@ static void decompress_inst_rv128(rv_decode *dec)
 #endif
 
 //
-// Compute length of the opcode: 2, 4, 6 or 8 bytes.
+// Compute length of the opcode: 2 or 4 bytes.
 //
-unsigned riscv_opcode_length(uint32_t opcode)
+unsigned arm_opcode_length(uint32_t opcode)
 {
     return inst_length(opcode);
 }
@@ -2844,7 +2844,7 @@ unsigned riscv_opcode_length(uint32_t opcode)
 //
 // Disassemble instruction.
 //
-std::string riscv_disassemble(uint32_t opcode)
+std::string arm_disassemble(uint32_t opcode)
 {
     rv_decode dec = { 0 };
     dec.inst = opcode;

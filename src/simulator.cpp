@@ -30,10 +30,12 @@ Simulator::Simulator(sc_core::sc_module_name name, bool debug_enable)
     timer.irq_line.bind(cpu.irq_line_socket);
 
     // Load ROM.
+#if 0
     extern const unsigned char esp32_c3_rev3_irom0_bin[], esp32_c3_rev3_drom1_bin[];
     extern const unsigned int esp32_c3_rev3_irom0_bin_len, esp32_c3_rev3_drom1_bin_len;
     debug_write(esp32_c3_rev3_irom0_bin, ADDR_FETCH_ROM0_START, esp32_c3_rev3_irom0_bin_len);
     debug_write(esp32_c3_rev3_drom1_bin, ADDR_DATA_ROM1_START, esp32_c3_rev3_drom1_bin_len);
+#endif
 
     // Make ROMs read only.
     // Keep Flash memory still writable, until a binary image is loaded.
