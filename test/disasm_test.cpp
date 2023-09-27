@@ -563,15 +563,15 @@ TEST(disasm, opcode16)
     test_disasm(0x4339, "orrs r1, r7");
     test_disasm(0x433f, "orrs r7, r7");
 
-    test_disasm(0x4340, "muls r0, r0");
-    test_disasm(0x4341, "muls r1, r0");
-    test_disasm(0x4347, "muls r7, r0");
-    test_disasm(0x4348, "muls r0, r1");
-    test_disasm(0x4349, "muls r1, r1");
-    test_disasm(0x434f, "muls r7, r1");
-    test_disasm(0x4378, "muls r0, r7");
-    test_disasm(0x4379, "muls r1, r7");
-    test_disasm(0x437f, "muls r7, r7");
+    test_disasm(0x4340, "mul r0, r0");
+    test_disasm(0x4341, "mul r1, r0");
+    test_disasm(0x4347, "mul r7, r0");
+    test_disasm(0x4348, "mul r0, r1");
+    test_disasm(0x4349, "mul r1, r1");
+    test_disasm(0x434f, "mul r7, r1");
+    test_disasm(0x4378, "mul r0, r7");
+    test_disasm(0x4379, "mul r1, r7");
+    test_disasm(0x437f, "mul r7, r7");
 
     test_disasm(0x4380, "bics r0, r0");
     test_disasm(0x4381, "bics r1, r0");

@@ -369,9 +369,14 @@ void Processor::thumb_arith_reg()
     case 0xC:
         terminate_simulation("orr"); // TODO
         break;
-    case 0xD:
-        terminate_simulation("mul"); // TODO
+    case 0xD: {
+        // MUL instruction.
+        int32_t result = get_reg(rd) * get_reg(rm);
+        set_reg(rd, result);
+        xpsr.field.n = (result >> 31); // bit 31 of result
+        xpsr.field.z = (result == 0);  // all bits are zero?
         break;
+    }
     case 0xE:
         terminate_simulation("bic"); // TODO
         break;

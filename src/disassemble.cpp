@@ -208,7 +208,7 @@ static std::string thumb_arith_reg(unsigned opcode)
         mnemonic = "orrs";
         break;
     case 0xD:
-        mnemonic = "muls";
+        mnemonic = "mul";
         break;
     case 0xE:
         mnemonic = "bics";

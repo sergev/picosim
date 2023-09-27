@@ -44,6 +44,7 @@ PROG            = movs_imm.elf \
                   adc.elf \
                   sbc.elf \
                   neg.elf \
+                  mul.elf \
                   write.elf \
                   hello.elf
 
