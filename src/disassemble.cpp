@@ -133,18 +133,25 @@ static int thumb_shift_imm(unsigned short opcode, unsigned address,
 
     switch (opc) {
     case 0:
-        mnemonic = "LSLS";
+        if (imm == 0) {
+            snprintf(instruction->text, sizeof(instruction->text), "movs %s, %s",
+                     reg_name[Rd], reg_name[Rm]);
+            return 0;
+        } else {
+            mnemonic = "LSLS";
+        }
         break;
     case 1:
+        if (imm == 0)
+            imm = 32;
         mnemonic = "LSRS";
         break;
     case 2:
+        if (imm == 0)
+            imm = 32;
         mnemonic = "ASRS";
         break;
     }
-
-    if ((imm == 0) && (opc != 0))
-        imm = 32;
 
     snprintf(instruction->text, sizeof(instruction->text), "%s %s, %s, #%#2.2x", mnemonic,
              reg_name[Rd], reg_name[Rm], imm);
@@ -846,6 +853,10 @@ static std::string long_b_misc(unsigned opcode, unsigned address)
 //
 unsigned arm_opcode_length(unsigned opcode)
 {
+    // Put 16-bit opcodes into upper bits.
+    if ((opcode >> 16) == 0)
+        opcode <<= 16;
+
     if ((opcode & 0xe0000000) == 0xe0000000 && (opcode & 0x18000000) != 0)
         return 4;
 
@@ -857,6 +868,10 @@ unsigned arm_opcode_length(unsigned opcode)
 //
 std::string arm_disassemble(unsigned opcode, unsigned address)
 {
+    // Put 16-bit opcodes into upper bits.
+    if ((opcode >> 16) == 0)
+        opcode <<= 16;
+
     // Clear low bit ... it's set on function pointers.
     address &= ~1;
 

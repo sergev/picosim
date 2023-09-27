@@ -14,7 +14,6 @@ all:    build
 
 test:   build
 	$(MAKE) -C build test
-	ctest --test-dir build
 
 install: build
 	$(MAKE) -C build $@
@@ -25,3 +24,5 @@ clean:
 build:
 	mkdir $@
 	cmake -B $@ .
+
+.PHONY: clean test install
