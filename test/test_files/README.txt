@@ -24,7 +24,7 @@ ldrsh_reg_reg.S     ldrsh r1, [r2, r3]
                     ldmia r7, {r0, r1, r2, r3, r4, r5, r6, r7}
 
         (Memory Store)
-                    str r1, [r2, #124]
+str_reg_imm.S       str r1, [r2, #124]
                     str r1, [sp, #1020]
                     str r1, [r2, r3]
                     strh r1, [r2, #62]

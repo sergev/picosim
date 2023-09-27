@@ -15,6 +15,7 @@ PROG            = movs_imm.elf \
                   ldrh_reg_imm.elf \
                   ldrh_reg_reg.elf \
                   ldrsh_reg_reg.elf \
+                  str_reg_imm.elf \
                   add_sp_imm.elf \
                   add_pc_imm.elf \
                   psr.elf \
