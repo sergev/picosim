@@ -448,7 +448,7 @@ static int thumb_breakpoint(unsigned short opcode, unsigned address,
 {
     unsigned imm = opcode & 0xff;
 
-    snprintf(instruction->text, sizeof(instruction->text), "BKPT %#2.2x", imm);
+    snprintf(instruction->text, sizeof(instruction->text), "bkpt 0x%04x", imm);
 
     return 0;
 }
@@ -466,29 +466,25 @@ static int thumb_load_store_multiple(unsigned short opcode, unsigned address,
     char ptr_name[7] = "";
     int i;
 
-    /* REVISIT:  in ThumbEE mode, there are no LDM or STM instructions.
-     * The STMIA and LDMIA opcodes are used for other instructions.
-     */
-
     if ((opcode & 0xf000) == 0xc000) { /* generic load/store multiple */
         const char *wback = "!";
 
         if (L) {
-            mnemonic = "LDM";
+            mnemonic = "ldmia";
             if (opcode & (1 << Rn))
                 wback = "";
         } else {
-            mnemonic = "STM";
+            mnemonic = "stmia";
         }
         snprintf(ptr_name, sizeof ptr_name, "%s%s, ", reg_name[Rn], wback);
     } else {     /* push/pop */
         Rn = 13; /* SP */
         if (L) {
-            mnemonic = "POP";
+            mnemonic = "pop";
             if (R)
                 reg_list |= (1 << 15) /*PC*/;
         } else {
-            mnemonic = "PUSH";
+            mnemonic = "push";
             if (R)
                 reg_list |= (1 << 14) /*LR*/;
         }
@@ -589,10 +585,10 @@ static int thumb_byterev(unsigned short opcode, unsigned address,
         suffix = "16";
         break;
     default:
-        suffix = "SH";
+        suffix = "sh";
         break;
     }
-    snprintf(instruction->text, sizeof(instruction->text), "REV%s %s, %s", suffix,
+    snprintf(instruction->text, sizeof(instruction->text), "rev%s %s, %s", suffix,
              reg_name[opcode & 0x7], reg_name[(opcode >> 3) & 0x7]);
 
     return 0;

@@ -1429,374 +1429,197 @@ TEST(disasm, opcode16)
     test_disasm(0xb2f9, "uxtb r1, r7");
     test_disasm(0xb2ff, "uxtb r7, r7");
 
+    test_disasm(0xb401, "push {r0}");
+    test_disasm(0xb402, "push {r1}");
+    test_disasm(0xb480, "push {r7}");
+    test_disasm(0xb500, "push {lr}");
+
+    test_disasm(0xba00, "rev r0, r0");
+    test_disasm(0xba01, "rev r1, r0");
+    test_disasm(0xba07, "rev r7, r0");
+    test_disasm(0xba08, "rev r0, r1");
+    test_disasm(0xba09, "rev r1, r1");
+    test_disasm(0xba0f, "rev r7, r1");
+    test_disasm(0xba38, "rev r0, r7");
+    test_disasm(0xba39, "rev r1, r7");
+    test_disasm(0xba3f, "rev r7, r7");
+
+    test_disasm(0xba40, "rev16 r0, r0");
+    test_disasm(0xba41, "rev16 r1, r0");
+    test_disasm(0xba47, "rev16 r7, r0");
+    test_disasm(0xba48, "rev16 r0, r1");
+    test_disasm(0xba49, "rev16 r1, r1");
+    test_disasm(0xba4f, "rev16 r7, r1");
+    test_disasm(0xba78, "rev16 r0, r7");
+    test_disasm(0xba79, "rev16 r1, r7");
+    test_disasm(0xba7f, "rev16 r7, r7");
+
+    test_disasm(0xbac0, "revsh r0, r0");
+    test_disasm(0xbac1, "revsh r1, r0");
+    test_disasm(0xbac7, "revsh r7, r0");
+    test_disasm(0xbac8, "revsh r0, r1");
+    test_disasm(0xbac9, "revsh r1, r1");
+    test_disasm(0xbacf, "revsh r7, r1");
+    test_disasm(0xbaf8, "revsh r0, r7");
+    test_disasm(0xbaf9, "revsh r1, r7");
+    test_disasm(0xbaff, "revsh r7, r7");
+
+    test_disasm(0xbc01, "pop {r0}");
+    test_disasm(0xbc02, "pop {r1}");
+    test_disasm(0xbc80, "pop {r7}");
+    test_disasm(0xbd00, "pop {pc}");
+
+    test_disasm(0xbe00, "bkpt 0x0000");
+    test_disasm(0xbe01, "bkpt 0x0001");
+    test_disasm(0xbeff, "bkpt 0x00ff");
+
+    test_disasm(0xc004, "stmia r0!, {r2}");
+    test_disasm(0xc008, "stmia r0!, {r3}");
+    test_disasm(0xc010, "stmia r0!, {r4}");
+    test_disasm(0xc020, "stmia r0!, {r5}");
+    test_disasm(0xc040, "stmia r0!, {r6}");
+    test_disasm(0xc080, "stmia r0!, {r7}");
+    test_disasm(0xc0ff, "stmia r0!, {r0, r1, r2, r3, r4, r5, r6, r7}");
+    test_disasm(0xc101, "stmia r1!, {r0}");
+    test_disasm(0xc102, "stmia r1!, {r1}");
+    test_disasm(0xc104, "stmia r1!, {r2}");
+    test_disasm(0xc108, "stmia r1!, {r3}");
+    test_disasm(0xc110, "stmia r1!, {r4}");
+    test_disasm(0xc120, "stmia r1!, {r5}");
+    test_disasm(0xc140, "stmia r1!, {r6}");
+    test_disasm(0xc180, "stmia r1!, {r7}");
+    test_disasm(0xc1fe, "stmia r1!, {r1, r2, r3, r4, r5, r6, r7}");
+    test_disasm(0xc201, "stmia r2!, {r0}");
+    test_disasm(0xc202, "stmia r2!, {r1}");
+    test_disasm(0xc204, "stmia r2!, {r2}");
+    test_disasm(0xc208, "stmia r2!, {r3}");
+    test_disasm(0xc210, "stmia r2!, {r4}");
+    test_disasm(0xc220, "stmia r2!, {r5}");
+    test_disasm(0xc240, "stmia r2!, {r6}");
+    test_disasm(0xc280, "stmia r2!, {r7}");
+    test_disasm(0xc2fb, "stmia r2!, {r0, r1, r3, r4, r5, r6, r7}");
+    test_disasm(0xc301, "stmia r3!, {r0}");
+    test_disasm(0xc302, "stmia r3!, {r1}");
+    test_disasm(0xc304, "stmia r3!, {r2}");
+    test_disasm(0xc308, "stmia r3!, {r3}");
+    test_disasm(0xc310, "stmia r3!, {r4}");
+    test_disasm(0xc320, "stmia r3!, {r5}");
+    test_disasm(0xc340, "stmia r3!, {r6}");
+    test_disasm(0xc380, "stmia r3!, {r7}");
+    test_disasm(0xc3f7, "stmia r3!, {r0, r1, r2, r4, r5, r6, r7}");
+    test_disasm(0xc401, "stmia r4!, {r0}");
+    test_disasm(0xc402, "stmia r4!, {r1}");
+    test_disasm(0xc404, "stmia r4!, {r2}");
+    test_disasm(0xc408, "stmia r4!, {r3}");
+    test_disasm(0xc410, "stmia r4!, {r4}");
+    test_disasm(0xc420, "stmia r4!, {r5}");
+    test_disasm(0xc440, "stmia r4!, {r6}");
+    test_disasm(0xc4ef, "stmia r4!, {r0, r1, r2, r3, r5, r6, r7}");
+    test_disasm(0xc501, "stmia r5!, {r0}");
+    test_disasm(0xc502, "stmia r5!, {r1}");
+    test_disasm(0xc504, "stmia r5!, {r2}");
+    test_disasm(0xc508, "stmia r5!, {r3}");
+    test_disasm(0xc510, "stmia r5!, {r4}");
+    test_disasm(0xc520, "stmia r5!, {r5}");
+    test_disasm(0xc540, "stmia r5!, {r6}");
+    test_disasm(0xc580, "stmia r5!, {r7}");
+    test_disasm(0xc5df, "stmia r5!, {r0, r1, r2, r3, r4, r6, r7}");
+    test_disasm(0xc601, "stmia r6!, {r0}");
+    test_disasm(0xc602, "stmia r6!, {r1}");
+    test_disasm(0xc604, "stmia r6!, {r2}");
+    test_disasm(0xc608, "stmia r6!, {r3}");
+    test_disasm(0xc610, "stmia r6!, {r4}");
+    test_disasm(0xc620, "stmia r6!, {r5}");
+    test_disasm(0xc640, "stmia r6!, {r6}");
+    test_disasm(0xc680, "stmia r6!, {r7}");
+    test_disasm(0xc6bf, "stmia r6!, {r0, r1, r2, r3, r4, r5, r7}");
+    test_disasm(0xc701, "stmia r7!, {r0}");
+    test_disasm(0xc702, "stmia r7!, {r1}");
+    test_disasm(0xc704, "stmia r7!, {r2}");
+    test_disasm(0xc708, "stmia r7!, {r3}");
+    test_disasm(0xc710, "stmia r7!, {r4}");
+    test_disasm(0xc720, "stmia r7!, {r5}");
+    test_disasm(0xc740, "stmia r7!, {r6}");
+    test_disasm(0xc77f, "stmia r7!, {r0, r1, r2, r3, r4, r5, r6}");
+
+    test_disasm(0xc801, "ldmia r0, {r0}");
+    test_disasm(0xc802, "ldmia r0!, {r1}");
+    test_disasm(0xc804, "ldmia r0!, {r2}");
+    test_disasm(0xc808, "ldmia r0!, {r3}");
+    test_disasm(0xc810, "ldmia r0!, {r4}");
+    test_disasm(0xc81f, "ldmia r0, {r0, r1, r2, r3, r4}");
+    test_disasm(0xc820, "ldmia r0!, {r5}");
+    test_disasm(0xc821, "ldmia r0, {r0, r5}");
+    test_disasm(0xc840, "ldmia r0!, {r6}");
+    test_disasm(0xc880, "ldmia r0!, {r7}");
+    test_disasm(0xc881, "ldmia r0, {r0, r7}");
+    test_disasm(0xc8fe, "ldmia r0!, {r1, r2, r3, r4, r5, r6, r7}");
+    test_disasm(0xc8ff, "ldmia r0, {r0, r1, r2, r3, r4, r5, r6, r7}");
+    test_disasm(0xc901, "ldmia r1!, {r0}");
+    test_disasm(0xc902, "ldmia r1, {r1}");
+    test_disasm(0xc904, "ldmia r1!, {r2}");
+    test_disasm(0xc908, "ldmia r1!, {r3}");
+    test_disasm(0xc910, "ldmia r1!, {r4}");
+    test_disasm(0xc920, "ldmia r1!, {r5}");
+    test_disasm(0xc940, "ldmia r1!, {r6}");
+    test_disasm(0xc980, "ldmia r1!, {r7}");
+    test_disasm(0xc9ff, "ldmia r1, {r0, r1, r2, r3, r4, r5, r6, r7}");
+    test_disasm(0xca01, "ldmia r2!, {r0}");
+    test_disasm(0xca02, "ldmia r2!, {r1}");
+    test_disasm(0xca04, "ldmia r2, {r2}");
+    test_disasm(0xca08, "ldmia r2!, {r3}");
+    test_disasm(0xca10, "ldmia r2!, {r4}");
+    test_disasm(0xca20, "ldmia r2!, {r5}");
+    test_disasm(0xca40, "ldmia r2!, {r6}");
+    test_disasm(0xca80, "ldmia r2!, {r7}");
+    test_disasm(0xcaff, "ldmia r2, {r0, r1, r2, r3, r4, r5, r6, r7}");
+    test_disasm(0xcb01, "ldmia r3!, {r0}");
+    test_disasm(0xcb02, "ldmia r3!, {r1}");
+    test_disasm(0xcb04, "ldmia r3!, {r2}");
+    test_disasm(0xcb08, "ldmia r3, {r3}");
+    test_disasm(0xcb10, "ldmia r3!, {r4}");
+    test_disasm(0xcb20, "ldmia r3!, {r5}");
+    test_disasm(0xcb40, "ldmia r3!, {r6}");
+    test_disasm(0xcb80, "ldmia r3!, {r7}");
+    test_disasm(0xcbff, "ldmia r3, {r0, r1, r2, r3, r4, r5, r6, r7}");
+    test_disasm(0xcc01, "ldmia r4!, {r0}");
+    test_disasm(0xcc02, "ldmia r4!, {r1}");
+    test_disasm(0xcc04, "ldmia r4!, {r2}");
+    test_disasm(0xcc08, "ldmia r4!, {r3}");
+    test_disasm(0xcc10, "ldmia r4, {r4}");
+    test_disasm(0xcc20, "ldmia r4!, {r5}");
+    test_disasm(0xcc40, "ldmia r4!, {r6}");
+    test_disasm(0xcc80, "ldmia r4!, {r7}");
+    test_disasm(0xccff, "ldmia r4, {r0, r1, r2, r3, r4, r5, r6, r7}");
+    test_disasm(0xcd01, "ldmia r5!, {r0}");
+    test_disasm(0xcd02, "ldmia r5!, {r1}");
+    test_disasm(0xcd04, "ldmia r5!, {r2}");
+    test_disasm(0xcd08, "ldmia r5!, {r3}");
+    test_disasm(0xcd10, "ldmia r5!, {r4}");
+    test_disasm(0xcd20, "ldmia r5, {r5}");
+    test_disasm(0xcd40, "ldmia r5!, {r6}");
+    test_disasm(0xcd80, "ldmia r5!, {r7}");
+    test_disasm(0xcdff, "ldmia r5, {r0, r1, r2, r3, r4, r5, r6, r7}");
+    test_disasm(0xce01, "ldmia r6!, {r0}");
+    test_disasm(0xce02, "ldmia r6!, {r1}");
+    test_disasm(0xce04, "ldmia r6!, {r2}");
+    test_disasm(0xce08, "ldmia r6!, {r3}");
+    test_disasm(0xce10, "ldmia r6!, {r4}");
+    test_disasm(0xce20, "ldmia r6!, {r5}");
+    test_disasm(0xce40, "ldmia r6, {r6}");
+    test_disasm(0xce80, "ldmia r6!, {r7}");
+    test_disasm(0xceff, "ldmia r6, {r0, r1, r2, r3, r4, r5, r6, r7}");
+    test_disasm(0xcf01, "ldmia r7!, {r0}");
+    test_disasm(0xcf02, "ldmia r7!, {r1}");
+    test_disasm(0xcf04, "ldmia r7!, {r2}");
+    test_disasm(0xcf08, "ldmia r7!, {r3}");
+    test_disasm(0xcf10, "ldmia r7!, {r4}");
+    test_disasm(0xcf20, "ldmia r7!, {r5}");
+    test_disasm(0xcf40, "ldmia r7!, {r6}");
+    test_disasm(0xcf80, "ldmia r7, {r7}");
+    test_disasm(0xcfff, "ldmia r7, {r0, r1, r2, r3, r4, r5, r6, r7}");
+
 #if 0
-push {r0}                                    // b401 push {r0}
-push {r1}                                    // b402 push {r1}
-push {r2}                                    // b404 push {r2}
-push {r3}                                    // b408 push {r3}
-push {r4}                                    // b410 push {r4}
-push {r5}                                    // b420 push {r5}
-push {r6}                                    // b440 push {r6}
-push {r7}                                    // b480 push {r7}
-push {lr}                                    // b500 push {lr}
-push {r0, r1, r2, r3, r4, r5, r6, r7, lr}    // b5ff push {r0, r1, r2, r3, r4, r5, r6, r7, lr}
-
-rev r0, r0                   // ba00 rev r0, r0
-rev r1, r0                   // ba01 rev r1, r0
-rev r2, r0                   // ba02 rev r2, r0
-rev r3, r0                   // ba03 rev r3, r0
-rev r4, r0                   // ba04 rev r4, r0
-rev r5, r0                   // ba05 rev r5, r0
-rev r6, r0                   // ba06 rev r6, r0
-rev r7, r0                   // ba07 rev r7, r0
-rev r0, r1                   // ba08 rev r0, r1
-rev r1, r1                   // ba09 rev r1, r1
-rev r2, r1                   // ba0a rev r2, r1
-rev r3, r1                   // ba0b rev r3, r1
-rev r4, r1                   // ba0c rev r4, r1
-rev r5, r1                   // ba0d rev r5, r1
-rev r6, r1                   // ba0e rev r6, r1
-rev r7, r1                   // ba0f rev r7, r1
-rev r0, r2                   // ba10 rev r0, r2
-rev r1, r2                   // ba11 rev r1, r2
-rev r2, r2                   // ba12 rev r2, r2
-rev r3, r2                   // ba13 rev r3, r2
-rev r4, r2                   // ba14 rev r4, r2
-rev r5, r2                   // ba15 rev r5, r2
-rev r6, r2                   // ba16 rev r6, r2
-rev r7, r2                   // ba17 rev r7, r2
-rev r0, r3                   // ba18 rev r0, r3
-rev r1, r3                   // ba19 rev r1, r3
-rev r2, r3                   // ba1a rev r2, r3
-rev r3, r3                   // ba1b rev r3, r3
-rev r4, r3                   // ba1c rev r4, r3
-rev r5, r3                   // ba1d rev r5, r3
-rev r6, r3                   // ba1e rev r6, r3
-rev r7, r3                   // ba1f rev r7, r3
-rev r0, r4                   // ba20 rev r0, r4
-rev r1, r4                   // ba21 rev r1, r4
-rev r2, r4                   // ba22 rev r2, r4
-rev r3, r4                   // ba23 rev r3, r4
-rev r4, r4                   // ba24 rev r4, r4
-rev r5, r4                   // ba25 rev r5, r4
-rev r6, r4                   // ba26 rev r6, r4
-rev r7, r4                   // ba27 rev r7, r4
-rev r0, r5                   // ba28 rev r0, r5
-rev r1, r5                   // ba29 rev r1, r5
-rev r2, r5                   // ba2a rev r2, r5
-rev r3, r5                   // ba2b rev r3, r5
-rev r4, r5                   // ba2c rev r4, r5
-rev r5, r5                   // ba2d rev r5, r5
-rev r6, r5                   // ba2e rev r6, r5
-rev r7, r5                   // ba2f rev r7, r5
-rev r0, r6                   // ba30 rev r0, r6
-rev r1, r6                   // ba31 rev r1, r6
-rev r2, r6                   // ba32 rev r2, r6
-rev r3, r6                   // ba33 rev r3, r6
-rev r4, r6                   // ba34 rev r4, r6
-rev r5, r6                   // ba35 rev r5, r6
-rev r6, r6                   // ba36 rev r6, r6
-rev r7, r6                   // ba37 rev r7, r6
-rev r0, r7                   // ba38 rev r0, r7
-rev r1, r7                   // ba39 rev r1, r7
-rev r2, r7                   // ba3a rev r2, r7
-rev r3, r7                   // ba3b rev r3, r7
-rev r4, r7                   // ba3c rev r4, r7
-rev r5, r7                   // ba3d rev r5, r7
-rev r6, r7                   // ba3e rev r6, r7
-rev r7, r7                   // ba3f rev r7, r7
-
-rev16 r0, r0                 // ba40 rev16 r0, r0
-rev16 r1, r0                 // ba41 rev16 r1, r0
-rev16 r2, r0                 // ba42 rev16 r2, r0
-rev16 r3, r0                 // ba43 rev16 r3, r0
-rev16 r4, r0                 // ba44 rev16 r4, r0
-rev16 r5, r0                 // ba45 rev16 r5, r0
-rev16 r6, r0                 // ba46 rev16 r6, r0
-rev16 r7, r0                 // ba47 rev16 r7, r0
-rev16 r0, r1                 // ba48 rev16 r0, r1
-rev16 r1, r1                 // ba49 rev16 r1, r1
-rev16 r2, r1                 // ba4a rev16 r2, r1
-rev16 r3, r1                 // ba4b rev16 r3, r1
-rev16 r4, r1                 // ba4c rev16 r4, r1
-rev16 r5, r1                 // ba4d rev16 r5, r1
-rev16 r6, r1                 // ba4e rev16 r6, r1
-rev16 r7, r1                 // ba4f rev16 r7, r1
-rev16 r0, r2                 // ba50 rev16 r0, r2
-rev16 r1, r2                 // ba51 rev16 r1, r2
-rev16 r2, r2                 // ba52 rev16 r2, r2
-rev16 r3, r2                 // ba53 rev16 r3, r2
-rev16 r4, r2                 // ba54 rev16 r4, r2
-rev16 r5, r2                 // ba55 rev16 r5, r2
-rev16 r6, r2                 // ba56 rev16 r6, r2
-rev16 r7, r2                 // ba57 rev16 r7, r2
-rev16 r0, r3                 // ba58 rev16 r0, r3
-rev16 r1, r3                 // ba59 rev16 r1, r3
-rev16 r2, r3                 // ba5a rev16 r2, r3
-rev16 r3, r3                 // ba5b rev16 r3, r3
-rev16 r4, r3                 // ba5c rev16 r4, r3
-rev16 r5, r3                 // ba5d rev16 r5, r3
-rev16 r6, r3                 // ba5e rev16 r6, r3
-rev16 r7, r3                 // ba5f rev16 r7, r3
-rev16 r0, r4                 // ba60 rev16 r0, r4
-rev16 r1, r4                 // ba61 rev16 r1, r4
-rev16 r2, r4                 // ba62 rev16 r2, r4
-rev16 r3, r4                 // ba63 rev16 r3, r4
-rev16 r4, r4                 // ba64 rev16 r4, r4
-rev16 r5, r4                 // ba65 rev16 r5, r4
-rev16 r6, r4                 // ba66 rev16 r6, r4
-rev16 r7, r4                 // ba67 rev16 r7, r4
-rev16 r0, r5                 // ba68 rev16 r0, r5
-rev16 r1, r5                 // ba69 rev16 r1, r5
-rev16 r2, r5                 // ba6a rev16 r2, r5
-rev16 r3, r5                 // ba6b rev16 r3, r5
-rev16 r4, r5                 // ba6c rev16 r4, r5
-rev16 r5, r5                 // ba6d rev16 r5, r5
-rev16 r6, r5                 // ba6e rev16 r6, r5
-rev16 r7, r5                 // ba6f rev16 r7, r5
-rev16 r0, r6                 // ba70 rev16 r0, r6
-rev16 r1, r6                 // ba71 rev16 r1, r6
-rev16 r2, r6                 // ba72 rev16 r2, r6
-rev16 r3, r6                 // ba73 rev16 r3, r6
-rev16 r4, r6                 // ba74 rev16 r4, r6
-rev16 r5, r6                 // ba75 rev16 r5, r6
-rev16 r6, r6                 // ba76 rev16 r6, r6
-rev16 r7, r6                 // ba77 rev16 r7, r6
-rev16 r0, r7                 // ba78 rev16 r0, r7
-rev16 r1, r7                 // ba79 rev16 r1, r7
-rev16 r2, r7                 // ba7a rev16 r2, r7
-rev16 r3, r7                 // ba7b rev16 r3, r7
-rev16 r4, r7                 // ba7c rev16 r4, r7
-rev16 r5, r7                 // ba7d rev16 r5, r7
-rev16 r6, r7                 // ba7e rev16 r6, r7
-rev16 r7, r7                 // ba7f rev16 r7, r7
-
-revsh r0, r0                 // bac0 revsh r0, r0
-revsh r1, r0                 // bac1 revsh r1, r0
-revsh r2, r0                 // bac2 revsh r2, r0
-revsh r3, r0                 // bac3 revsh r3, r0
-revsh r4, r0                 // bac4 revsh r4, r0
-revsh r5, r0                 // bac5 revsh r5, r0
-revsh r6, r0                 // bac6 revsh r6, r0
-revsh r7, r0                 // bac7 revsh r7, r0
-revsh r0, r1                 // bac8 revsh r0, r1
-revsh r1, r1                 // bac9 revsh r1, r1
-revsh r2, r1                 // baca revsh r2, r1
-revsh r3, r1                 // bacb revsh r3, r1
-revsh r4, r1                 // bacc revsh r4, r1
-revsh r5, r1                 // bacd revsh r5, r1
-revsh r6, r1                 // bace revsh r6, r1
-revsh r7, r1                 // bacf revsh r7, r1
-revsh r0, r2                 // bad0 revsh r0, r2
-revsh r1, r2                 // bad1 revsh r1, r2
-revsh r2, r2                 // bad2 revsh r2, r2
-revsh r3, r2                 // bad3 revsh r3, r2
-revsh r4, r2                 // bad4 revsh r4, r2
-revsh r5, r2                 // bad5 revsh r5, r2
-revsh r6, r2                 // bad6 revsh r6, r2
-revsh r7, r2                 // bad7 revsh r7, r2
-revsh r0, r3                 // bad8 revsh r0, r3
-revsh r1, r3                 // bad9 revsh r1, r3
-revsh r2, r3                 // bada revsh r2, r3
-revsh r3, r3                 // badb revsh r3, r3
-revsh r4, r3                 // badc revsh r4, r3
-revsh r5, r3                 // badd revsh r5, r3
-revsh r6, r3                 // bade revsh r6, r3
-revsh r7, r3                 // badf revsh r7, r3
-revsh r0, r4                 // bae0 revsh r0, r4
-revsh r1, r4                 // bae1 revsh r1, r4
-revsh r2, r4                 // bae2 revsh r2, r4
-revsh r3, r4                 // bae3 revsh r3, r4
-revsh r4, r4                 // bae4 revsh r4, r4
-revsh r5, r4                 // bae5 revsh r5, r4
-revsh r6, r4                 // bae6 revsh r6, r4
-revsh r7, r4                 // bae7 revsh r7, r4
-revsh r0, r5                 // bae8 revsh r0, r5
-revsh r1, r5                 // bae9 revsh r1, r5
-revsh r2, r5                 // baea revsh r2, r5
-revsh r3, r5                 // baeb revsh r3, r5
-revsh r4, r5                 // baec revsh r4, r5
-revsh r5, r5                 // baed revsh r5, r5
-revsh r6, r5                 // baee revsh r6, r5
-revsh r7, r5                 // baef revsh r7, r5
-revsh r0, r6                 // baf0 revsh r0, r6
-revsh r1, r6                 // baf1 revsh r1, r6
-revsh r2, r6                 // baf2 revsh r2, r6
-revsh r3, r6                 // baf3 revsh r3, r6
-revsh r4, r6                 // baf4 revsh r4, r6
-revsh r5, r6                 // baf5 revsh r5, r6
-revsh r6, r6                 // baf6 revsh r6, r6
-revsh r7, r6                 // baf7 revsh r7, r6
-revsh r0, r7                 // baf8 revsh r0, r7
-revsh r1, r7                 // baf9 revsh r1, r7
-revsh r2, r7                 // bafa revsh r2, r7
-revsh r3, r7                 // bafb revsh r3, r7
-revsh r4, r7                 // bafc revsh r4, r7
-revsh r5, r7                 // bafd revsh r5, r7
-revsh r6, r7                 // bafe revsh r6, r7
-revsh r7, r7                 // baff revsh r7, r7
-
-pop {r0}                                    // bc01 pop {r0}
-pop {r1}                                    // bc02 pop {r1}
-pop {r2}                                    // bc04 pop {r2}
-pop {r3}                                    // bc08 pop {r3}
-pop {r4}                                    // bc10 pop {r4}
-pop {r5}                                    // bc20 pop {r5}
-pop {r6}                                    // bc40 pop {r6}
-pop {r7}                                    // bc80 pop {r7}
-pop {pc}                                    // bd00 pop {pc}
-pop {r0, r1, r2, r3, r4, r5, r6, r7, pc}    // bdff pop {r0, r1, r2, r3, r4, r5, r6, r7, pc}
-
-bkpt 0x0000                  // be00 bkpt 0x0000
-bkpt 0x0001                  // be01 bkpt 0x0001
-bkpt 0x00ff                  // beff bkpt 0x00ff
-
-stmia r0!, {r2}                              // c004 stmia r0!, {r2}
-stmia r0!, {r3}                              // c008 stmia r0!, {r3}
-stmia r0!, {r4}                              // c010 stmia r0!, {r4}
-stmia r0!, {r5}                              // c020 stmia r0!, {r5}
-stmia r0!, {r6}                              // c040 stmia r0!, {r6}
-stmia r0!, {r7}                              // c080 stmia r0!, {r7}
-stmia r0!, {r0, r1, r2, r3, r4, r5, r6, r7}  // c0ff stmia r0!, {r0, r1, r2, r3, r4, r5, r6, r7}
-stmia r1!, {r0}                              // c101 stmia r1!, {r0}
-stmia r1!, {r1}                              // c102 stmia r1!, {r1}
-stmia r1!, {r2}                              // c104 stmia r1!, {r2}
-stmia r1!, {r3}                              // c108 stmia r1!, {r3}
-stmia r1!, {r4}                              // c110 stmia r1!, {r4}
-stmia r1!, {r5}                              // c120 stmia r1!, {r5}
-stmia r1!, {r6}                              // c140 stmia r1!, {r6}
-stmia r1!, {r7}                              // c180 stmia r1!, {r7}
-stmia r1!, {r1, r2, r3, r4, r5, r6, r7}      // c1fe stmia r1!, {r1, r2, r3, r4, r5, r6, r7}
-stmia r2!, {r0}                              // c201 stmia r2!, {r0}
-stmia r2!, {r1}                              // c202 stmia r2!, {r1}
-stmia r2!, {r2}                              // c204 stmia r2!, {r2}
-stmia r2!, {r3}                              // c208 stmia r2!, {r3}
-stmia r2!, {r4}                              // c210 stmia r2!, {r4}
-stmia r2!, {r5}                              // c220 stmia r2!, {r5}
-stmia r2!, {r6}                              // c240 stmia r2!, {r6}
-stmia r2!, {r7}                              // c280 stmia r2!, {r7}
-stmia r2!, {r0, r1, r3, r4, r5, r6, r7}      // c2fb stmia r2!, {r0, r1, r3, r4, r5, r6, r7}
-stmia r3!, {r0}                              // c301 stmia r3!, {r0}
-stmia r3!, {r1}                              // c302 stmia r3!, {r1}
-stmia r3!, {r2}                              // c304 stmia r3!, {r2}
-stmia r3!, {r3}                              // c308 stmia r3!, {r3}
-stmia r3!, {r4}                              // c310 stmia r3!, {r4}
-stmia r3!, {r5}                              // c320 stmia r3!, {r5}
-stmia r3!, {r6}                              // c340 stmia r3!, {r6}
-stmia r3!, {r7}                              // c380 stmia r3!, {r7}
-stmia r3!, {r0, r1, r2, r4, r5, r6, r7}      // c3f7 stmia r3!, {r0, r1, r2, r4, r5, r6, r7}
-stmia r4!, {r0}                              // c401 stmia r4!, {r0}
-stmia r4!, {r1}                              // c402 stmia r4!, {r1}
-stmia r4!, {r2}                              // c404 stmia r4!, {r2}
-stmia r4!, {r3}                              // c408 stmia r4!, {r3}
-stmia r4!, {r4}                              // c410 stmia r4!, {r4}
-stmia r4!, {r5}                              // c420 stmia r4!, {r5}
-stmia r4!, {r6}                              // c440 stmia r4!, {r6}
-stmia r4!, {r0, r1, r2, r3, r5, r6, r7}      // c4ef stmia r4!, {r0, r1, r2, r3, r5, r6, r7}
-stmia r5!, {r0}                              // c501 stmia r5!, {r0}
-stmia r5!, {r1}                              // c502 stmia r5!, {r1}
-stmia r5!, {r2}                              // c504 stmia r5!, {r2}
-stmia r5!, {r3}                              // c508 stmia r5!, {r3}
-stmia r5!, {r4}                              // c510 stmia r5!, {r4}
-stmia r5!, {r5}                              // c520 stmia r5!, {r5}
-stmia r5!, {r6}                              // c540 stmia r5!, {r6}
-stmia r5!, {r7}                              // c580 stmia r5!, {r7}
-stmia r5!, {r0, r1, r2, r3, r4, r6, r7}      // c5df stmia r5!, {r0, r1, r2, r3, r4, r6, r7}
-stmia r6!, {r0}                              // c601 stmia r6!, {r0}
-stmia r6!, {r1}                              // c602 stmia r6!, {r1}
-stmia r6!, {r2}                              // c604 stmia r6!, {r2}
-stmia r6!, {r3}                              // c608 stmia r6!, {r3}
-stmia r6!, {r4}                              // c610 stmia r6!, {r4}
-stmia r6!, {r5}                              // c620 stmia r6!, {r5}
-stmia r6!, {r6}                              // c640 stmia r6!, {r6}
-stmia r6!, {r7}                              // c680 stmia r6!, {r7}
-stmia r6!, {r0, r1, r2, r3, r4, r5, r7}      // c6bf stmia r6!, {r0, r1, r2, r3, r4, r5, r7}
-stmia r7!, {r0}                              // c701 stmia r7!, {r0}
-stmia r7!, {r1}                              // c702 stmia r7!, {r1}
-stmia r7!, {r2}                              // c704 stmia r7!, {r2}
-stmia r7!, {r3}                              // c708 stmia r7!, {r3}
-stmia r7!, {r4}                              // c710 stmia r7!, {r4}
-stmia r7!, {r5}                              // c720 stmia r7!, {r5}
-stmia r7!, {r6}                              // c740 stmia r7!, {r6}
-stmia r7!, {r0, r1, r2, r3, r4, r5, r6}      // c77f stmia r7!, {r0, r1, r2, r3, r4, r5, r6}
-
-ldmia r0, {r0}                               // c801 ldmia r0, {r0}
-ldmia r0!, {r1}                              // c802 ldmia r0!, {r1}
-ldmia r0!, {r2}                              // c804 ldmia r0!, {r2}
-ldmia r0!, {r3}                              // c808 ldmia r0!, {r3}
-ldmia r0!, {r4}                              // c810 ldmia r0!, {r4}
-ldmia r0, {r0, r1, r2, r3, r4}               // c81f ldmia r0, {r0, r1, r2, r3, r4}
-ldmia r0!, {r5}                              // c820 ldmia r0!, {r5}
-ldmia r0, {r0, r5}                           // c821 ldmia r0, {r0, r5}
-ldmia r0!, {r6}                              // c840 ldmia r0!, {r6}
-ldmia r0!, {r7}                              // c880 ldmia r0!, {r7}
-ldmia r0, {r0, r7}                           // c881 ldmia r0, {r0, r7}
-ldmia r0!, {r1, r2, r3, r4, r5, r6, r7}      // c8fe ldmia r0!, {r1, r2, r3, r4, r5, r6, r7}
-ldmia r0, {r0, r1, r2, r3, r4, r5, r6, r7}   // c8ff ldmia r0, {r0, r1, r2, r3, r4, r5, r6, r7}
-ldmia r1!, {r0}                              // c901 ldmia r1!, {r0}
-ldmia r1, {r1}                               // c902 ldmia r1, {r1}
-ldmia r1!, {r2}                              // c904 ldmia r1!, {r2}
-ldmia r1!, {r3}                              // c908 ldmia r1!, {r3}
-ldmia r1!, {r4}                              // c910 ldmia r1!, {r4}
-ldmia r1!, {r5}                              // c920 ldmia r1!, {r5}
-ldmia r1!, {r6}                              // c940 ldmia r1!, {r6}
-ldmia r1!, {r7}                              // c980 ldmia r1!, {r7}
-ldmia r1, {r0, r1, r2, r3, r4, r5, r6, r7}   // c9ff ldmia r1, {r0, r1, r2, r3, r4, r5, r6, r7}
-ldmia r2!, {r0}                              // ca01 ldmia r2!, {r0}
-ldmia r2!, {r1}                              // ca02 ldmia r2!, {r1}
-ldmia r2, {r2}                               // ca04 ldmia r2, {r2}
-ldmia r2!, {r3}                              // ca08 ldmia r2!, {r3}
-ldmia r2!, {r4}                              // ca10 ldmia r2!, {r4}
-ldmia r2!, {r5}                              // ca20 ldmia r2!, {r5}
-ldmia r2!, {r6}                              // ca40 ldmia r2!, {r6}
-ldmia r2!, {r7}                              // ca80 ldmia r2!, {r7}
-ldmia r2, {r0, r1, r2, r3, r4, r5, r6, r7}   // caff ldmia r2, {r0, r1, r2, r3, r4, r5, r6, r7}
-ldmia r3!, {r0}                              // cb01 ldmia r3!, {r0}
-ldmia r3!, {r1}                              // cb02 ldmia r3!, {r1}
-ldmia r3!, {r2}                              // cb04 ldmia r3!, {r2}
-ldmia r3, {r3}                               // cb08 ldmia r3, {r3}
-ldmia r3!, {r4}                              // cb10 ldmia r3!, {r4}
-ldmia r3!, {r5}                              // cb20 ldmia r3!, {r5}
-ldmia r3!, {r6}                              // cb40 ldmia r3!, {r6}
-ldmia r3!, {r7}                              // cb80 ldmia r3!, {r7}
-ldmia r3, {r0, r1, r2, r3, r4, r5, r6, r7}   // cbff ldmia r3, {r0, r1, r2, r3, r4, r5, r6, r7}
-ldmia r4!, {r0}                              // cc01 ldmia r4!, {r0}
-ldmia r4!, {r1}                              // cc02 ldmia r4!, {r1}
-ldmia r4!, {r2}                              // cc04 ldmia r4!, {r2}
-ldmia r4!, {r3}                              // cc08 ldmia r4!, {r3}
-ldmia r4, {r4}                               // cc10 ldmia r4, {r4}
-ldmia r4!, {r5}                              // cc20 ldmia r4!, {r5}
-ldmia r4!, {r6}                              // cc40 ldmia r4!, {r6}
-ldmia r4!, {r7}                              // cc80 ldmia r4!, {r7}
-ldmia r4, {r0, r1, r2, r3, r4, r5, r6, r7}   // ccff ldmia r4, {r0, r1, r2, r3, r4, r5, r6, r7}
-ldmia r5!, {r0}                              // cd01 ldmia r5!, {r0}
-ldmia r5!, {r1}                              // cd02 ldmia r5!, {r1}
-ldmia r5!, {r2}                              // cd04 ldmia r5!, {r2}
-ldmia r5!, {r3}                              // cd08 ldmia r5!, {r3}
-ldmia r5!, {r4}                              // cd10 ldmia r5!, {r4}
-ldmia r5, {r5}                               // cd20 ldmia r5, {r5}
-ldmia r5!, {r6}                              // cd40 ldmia r5!, {r6}
-ldmia r5!, {r7}                              // cd80 ldmia r5!, {r7}
-ldmia r5, {r0, r1, r2, r3, r4, r5, r6, r7}   // cdff ldmia r5, {r0, r1, r2, r3, r4, r5, r6, r7}
-ldmia r6!, {r0}                              // ce01 ldmia r6!, {r0}
-ldmia r6!, {r1}                              // ce02 ldmia r6!, {r1}
-ldmia r6!, {r2}                              // ce04 ldmia r6!, {r2}
-ldmia r6!, {r3}                              // ce08 ldmia r6!, {r3}
-ldmia r6!, {r4}                              // ce10 ldmia r6!, {r4}
-ldmia r6!, {r5}                              // ce20 ldmia r6!, {r5}
-ldmia r6, {r6}                               // ce40 ldmia r6, {r6}
-ldmia r6!, {r7}                              // ce80 ldmia r6!, {r7}
-ldmia r6, {r0, r1, r2, r3, r4, r5, r6, r7}   // ceff ldmia r6, {r0, r1, r2, r3, r4, r5, r6, r7}
-ldmia r7!, {r0}                              // cf01 ldmia r7!, {r0}
-ldmia r7!, {r1}                              // cf02 ldmia r7!, {r1}
-ldmia r7!, {r2}                              // cf04 ldmia r7!, {r2}
-ldmia r7!, {r3}                              // cf08 ldmia r7!, {r3}
-ldmia r7!, {r4}                              // cf10 ldmia r7!, {r4}
-ldmia r7!, {r5}                              // cf20 ldmia r7!, {r5}
-ldmia r7!, {r6}                              // cf40 ldmia r7!, {r6}
-ldmia r7, {r7}                               // cf80 ldmia r7, {r7}
-ldmia r7, {r0, r1, r2, r3, r4, r5, r6, r7}   // cfff ldmia r7, {r0, r1, r2, r3, r4, r5, r6, r7}
-
 beq.n 0x0001a004             // d000 beq.n 0x0001a004
 beq.n 0x0001a008             // d001 beq.n 0x0001a008
 beq.n 0x0001a200             // d0ff beq.n 0x0001a200
