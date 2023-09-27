@@ -620,7 +620,25 @@ void Processor::thumb_stmia()
 
 void Processor::thumb_pop()
 {
-    terminate_simulation(__func__); // TODO
+    unsigned reg_list = opcode & 0xff;
+    unsigned sp_flag  = (opcode >> 8) & 1;
+    uint32_t address  = get_reg(Registers::SP);
+
+    for (unsigned rd = 0; rd < 8; rd++) {
+        if ((reg_list >> rd) & 1) {
+            set_reg(rd, data_read32(address));
+            address += 4;
+        }
+    }
+
+    if (sp_flag) {
+        // Jump.
+        next_pc = data_read32(address) & ~1;
+        address += 4;
+    }
+
+    // Update SP.
+    set_reg(Registers::SP, address);
 }
 
 void Processor::thumb_push()

@@ -36,7 +36,7 @@ stmia.S             stmia r7!, {r0, r1, r2, r3, r4, r5, r6}
 
         (Stack)
                     push {r1}
-                    pop {r2}
+pop.S               pop {r2}
 
         (Arithmetic operations)
                     adds r1, r2, r3
