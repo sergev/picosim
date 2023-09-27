@@ -483,25 +483,25 @@ TEST(disasm, opcode16)
     test_disasm(0x4139, "asrs r1, r7");
     test_disasm(0x413f, "asrs r7, r7");
 
-    test_disasm(0x4140, "adcs r0, r0");
-    test_disasm(0x4141, "adcs r1, r0");
-    test_disasm(0x4147, "adcs r7, r0");
-    test_disasm(0x4148, "adcs r0, r1");
-    test_disasm(0x4149, "adcs r1, r1");
-    test_disasm(0x414f, "adcs r7, r1");
-    test_disasm(0x4178, "adcs r0, r7");
-    test_disasm(0x4179, "adcs r1, r7");
-    test_disasm(0x417f, "adcs r7, r7");
+    test_disasm(0x4140, "adc r0, r0");
+    test_disasm(0x4141, "adc r1, r0");
+    test_disasm(0x4147, "adc r7, r0");
+    test_disasm(0x4148, "adc r0, r1");
+    test_disasm(0x4149, "adc r1, r1");
+    test_disasm(0x414f, "adc r7, r1");
+    test_disasm(0x4178, "adc r0, r7");
+    test_disasm(0x4179, "adc r1, r7");
+    test_disasm(0x417f, "adc r7, r7");
 
-    test_disasm(0x4180, "sbcs r0, r0");
-    test_disasm(0x4181, "sbcs r1, r0");
-    test_disasm(0x4187, "sbcs r7, r0");
-    test_disasm(0x4188, "sbcs r0, r1");
-    test_disasm(0x4189, "sbcs r1, r1");
-    test_disasm(0x418f, "sbcs r7, r1");
-    test_disasm(0x41b8, "sbcs r0, r7");
-    test_disasm(0x41b9, "sbcs r1, r7");
-    test_disasm(0x41bf, "sbcs r7, r7");
+    test_disasm(0x4180, "sbc r0, r0");
+    test_disasm(0x4181, "sbc r1, r0");
+    test_disasm(0x4187, "sbc r7, r0");
+    test_disasm(0x4188, "sbc r0, r1");
+    test_disasm(0x4189, "sbc r1, r1");
+    test_disasm(0x418f, "sbc r7, r1");
+    test_disasm(0x41b8, "sbc r0, r7");
+    test_disasm(0x41b9, "sbc r1, r7");
+    test_disasm(0x41bf, "sbc r7, r7");
 
     test_disasm(0x41c0, "rors r0, r0");
     test_disasm(0x41c1, "rors r1, r0");

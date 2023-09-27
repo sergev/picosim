@@ -41,6 +41,7 @@ PROG            = movs_imm.elf \
                   stmia.elf \
                   pop.elf \
                   push.elf \
+                  adc.elf \
                   write.elf \
                   hello.elf
 

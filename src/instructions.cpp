@@ -322,64 +322,61 @@ void Processor::thumb_add_sub()
 
 void Processor::thumb_arith_reg()
 {
-    terminate_simulation(__func__); // TODO
-#if 0
-    unsigned op = (opcode & 0x03C0) >> 6;
-    unsigned rd = (opcode & 0x0007);
-    unsigned rm = (opcode & 0x0038) >> 3;
+    unsigned op = (opcode >> 6) & 0x0f;
+    unsigned rd = opcode & 7;
+    unsigned rm = (opcode >> 3) & 7;
 
     switch (op) {
     case 0x0:
-        mnemonic = "ands";
+        terminate_simulation("and"); // TODO
         break;
     case 0x1:
-        mnemonic = "eors";
+        terminate_simulation("eor"); // TODO
         break;
     case 0x2:
-        mnemonic = "lsls";
+        terminate_simulation("lsl"); // TODO
         break;
     case 0x3:
-        mnemonic = "lsrs";
+        terminate_simulation("lsr"); // TODO
         break;
     case 0x4:
-        mnemonic = "asrs";
+        terminate_simulation("asr"); // TODO
         break;
     case 0x5:
-        mnemonic = "adcs";
+        // ADC instruction.
+        set_reg(rd, add_with_carry(get_reg(rd), get_reg(rm), xpsr.field.c));
         break;
     case 0x6:
-        mnemonic = "sbcs";
+        terminate_simulation("sbc"); // TODO
         break;
     case 0x7:
-        mnemonic = "rors";
+        terminate_simulation("ror"); // TODO
         break;
     case 0x8:
-        mnemonic = "tst";
+        terminate_simulation("tst"); // TODO
         break;
     case 0x9:
-        mnemonic = "negs";
+        terminate_simulation("neg"); // TODO
         break;
     case 0xA:
-        mnemonic = "cmp";
+        terminate_simulation("cmp"); // TODO
         break;
     case 0xB:
-        mnemonic = "cmn";
+        terminate_simulation("cmn"); // TODO
         break;
     case 0xC:
-        mnemonic = "orrs";
+        terminate_simulation("orr"); // TODO
         break;
     case 0xD:
-        mnemonic = "muls";
+        terminate_simulation("mul"); // TODO
         break;
     case 0xE:
-        mnemonic = "bics";
+        terminate_simulation("bic"); // TODO
         break;
     case 0xF:
-        mnemonic = "mvns";
+        terminate_simulation("mvn"); // TODO
         break;
     }
-    text << mnemonic << ' ' << reg_name[rd] << ", " << reg_name[rm];
-#endif
 }
 
 void Processor::thumb_add_cmp_mov()

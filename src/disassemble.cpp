@@ -184,10 +184,10 @@ static std::string thumb_arith_reg(unsigned opcode)
         mnemonic = "asrs";
         break;
     case 0x5:
-        mnemonic = "adcs";
+        mnemonic = "adc";
         break;
     case 0x6:
-        mnemonic = "sbcs";
+        mnemonic = "sbc";
         break;
     case 0x7:
         mnemonic = "rors";
