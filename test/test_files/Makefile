@@ -8,6 +8,7 @@ PROG            = movs_imm.elf \
                   ldr_pc.elf \
                   ldr_reg_imm.elf \
                   add_sp_imm.elf \
+                  add_pc_imm.elf \
                   psr.elf \
                   sysreg.elf \
                   nop.elf \
