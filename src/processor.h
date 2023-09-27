@@ -99,10 +99,15 @@ public:
      */
     void set_reg(int reg_num, int32_t value)
     {
-        if (reg_num == Registers::SP && control.field.spsel)
-            return register_bank.setPSP(value);
-        else
+        if (reg_num == Registers::PC) {
+            // Branch to a given address.
+            next_pc = value;
+        } else if (reg_num == Registers::SP && control.field.spsel) {
+            // Use Program stack.
+            register_bank.setPSP(value);
+        } else {
             register_bank.setValue(reg_num, value);
+        }
     }
 
     /**
