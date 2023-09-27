@@ -1436,6 +1436,9 @@ TEST(disasm, opcode16)
     test_disasm(0xb480, "push {r7}");
     test_disasm(0xb500, "push {lr}");
 
+    test_disasm(0xb662, "cpsie i");
+    test_disasm(0xb672, "cpsid i");
+
     test_disasm(0xba00, "rev r0, r0");
     test_disasm(0xba01, "rev r1, r0");
     test_disasm(0xba07, "rev r7, r0");

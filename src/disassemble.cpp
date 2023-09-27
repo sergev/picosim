@@ -539,6 +539,18 @@ static std::string thumb_extend(unsigned opcode)
     return text.str();
 }
 
+static std::string thumb_cps(unsigned opcode)
+{
+    switch (opcode & 0xff) {
+    case 0x62:
+        return "cpsie i";
+    case 0x72:
+        return "cpsid i";
+    default:
+        return UNKNOWN;
+    }
+}
+
 static std::string thumb_byterev(unsigned opcode)
 {
     unsigned rd = opcode & 0x7;
@@ -786,6 +798,9 @@ static std::string disassemble_16bit(unsigned opcode, unsigned address)
     case 0xbc:
     case 0xbd:
         return thumb_load_store_multiple(opcode);
+
+    case 0xb6:
+        return thumb_cps(opcode);
 
     case 0xba:
         return thumb_byterev(opcode);
