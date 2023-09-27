@@ -76,9 +76,12 @@ void Processor::process_opcode16()
 
     case 0xb4:
     case 0xb5:
+        thumb_push();
+        break;
+
     case 0xbc:
     case 0xbd:
-        thumb_load_store_multiple();
+        thumb_pop();
         break;
 
     case 0xb6:
@@ -98,8 +101,11 @@ void Processor::process_opcode16()
         break;
 
     case 0xc0: case 0xc1: case 0xc2: case 0xc3: case 0xc4: case 0xc5: case 0xc6: case 0xc7:
+        thumb_stmia();
+        break;
+
     case 0xc8: case 0xc9: case 0xca: case 0xcb: case 0xcc: case 0xcd: case 0xce: case 0xcf:
-        thumb_load_store_multiple();
+        thumb_ldmia();
         break;
 
     case 0xd0: case 0xd1: case 0xd2: case 0xd3: case 0xd4: case 0xd5: case 0xd6: case 0xd7:
@@ -576,7 +582,37 @@ void Processor::thumb_hint()
     terminate_simulation(__func__); // TODO
 }
 
-void Processor::thumb_load_store_multiple()
+void Processor::thumb_ldmia()
+{
+    unsigned reg_list = opcode & 0xff;
+    unsigned rn       = (opcode >> 8) & 7;
+    uint32_t address  = get_reg(rn);
+
+    for (unsigned rd = 0; rd < 8; rd++) {
+        if ((reg_list >> rd) & 1) {
+            unsigned value = data_read32(address);
+            address += 4;
+            set_reg(rd, value);
+        }
+    }
+
+    if (!((reg_list >> rn) & 1)) {
+        // Rn is not in list - write back incremented value.
+        set_reg(rn, address);
+    }
+}
+
+void Processor::thumb_stmia()
+{
+    terminate_simulation(__func__); // TODO
+}
+
+void Processor::thumb_pop()
+{
+    terminate_simulation(__func__); // TODO
+}
+
+void Processor::thumb_push()
 {
     terminate_simulation(__func__); // TODO
 }

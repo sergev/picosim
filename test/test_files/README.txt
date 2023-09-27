@@ -22,7 +22,7 @@ ldrsb_reg_reg.S     ldrsb r1, [r2, r3]
 ldrh_reg_imm.S      ldrh r1, [r2, #62]
 ldrh_reg_reg.S      ldrh r1, [r2, r3]
 ldrsh_reg_reg.S     ldrsh r1, [r2, r3]
-                    ldmia r7, {r0, r1, r2, r3, r4, r5, r6, r7}
+ldmia.S             ldmia r7, {r0, r1, r2, r3, r4, r5, r6, r7}
 
         (Memory Store)
 str_reg_imm.S       str r1, [r2, #124]

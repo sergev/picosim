@@ -11,6 +11,7 @@
 **.cpp-
 **.h-
 **.ts-
+**.dat
 
 build
 test/build

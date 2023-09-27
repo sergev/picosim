@@ -426,39 +426,41 @@ static std::string thumb_breakpoint(unsigned opcode)
 //
 static std::string thumb_load_store_multiple(unsigned opcode)
 {
-    unsigned reg_list = opcode & 0xff;
-    unsigned L        = opcode & (1 << 11);
-    unsigned R        = opcode & (1 << 8);
-    unsigned Rn       = (opcode >> 8) & 7;
+    unsigned reg_list  = opcode & 0xff;
+    unsigned load_flag = (opcode >> 11) & 1;
+    unsigned r_flag    = (opcode >> 8) & 1; // push, pop
+    unsigned Rn        = (opcode >> 8) & 7; // ldmia, stmia
     std::ostringstream text;
 
     if ((opcode & 0xf000) == 0xc000) {
         //
         // Generic load/store multiple.
         //
-        const char *wback = "!";
-
-        if (L) {
-            text << "ldmia ";
-            if (opcode & (1 << Rn))
-                wback = "";
+        if (load_flag) {
+            text << "ldmia " << reg_name[Rn];
+            if (!(opcode & (1 << Rn))) {
+                // Write back.
+                text << '!';
+            }
+            text << ", ";
         } else {
-            text << "stmia ";
+            text << "stmia " << reg_name[Rn] << "!, ";
         }
-        text << reg_name[Rn] << wback << ", ";
     } else {
         //
         // Push/pop.
         //
         Rn = 13; // SP
-        if (L) {
+        if (load_flag) {
             text << "pop ";
-            if (R)
+            if (r_flag) {
                 reg_list |= (1 << 15); // PC
+            }
         } else {
             text << "push ";
-            if (R)
+            if (r_flag) {
                 reg_list |= (1 << 14); // LR
+            }
         }
     }
 

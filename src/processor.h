@@ -313,7 +313,10 @@ private:
     void thumb_byterev();
     void thumb_breakpoint();
     void thumb_hint();
-    void thumb_load_store_multiple();
+    void thumb_ldmia();
+    void thumb_stmia();
+    void thumb_pop();
+    void thumb_push();
     void thumb_cond_branch();
     void thumb_branch();
     void thumb_branch_link();
