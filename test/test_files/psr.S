@@ -1,0 +1,34 @@
+        .section .text
+        .global _start
+_start:
+
+// XPSR - combined Program Status Register
+//
+// 31_30_29_28_________________________5_4_3_2_1_0
+//  n  z  c  v                          exception
+// ---APSR----                         ---IPSR----
+
+        ldr r7, =0xffffffff
+        msr APSR, r7
+        mrs r0, APSR        // expect 2000_0000
+
+        msr IAPSR, r7
+        mrs r1, IAPSR       // expect 2000_0000
+
+        msr EAPSR, r7
+        mrs r2, EAPSR       // expect 2000_0000
+
+        msr XPSR, r7
+        mrs r3, XPSR        // expect 2000_0000
+
+        msr IPSR, r7
+        mrs r4, IPSR        // expect 0000_0000
+
+        msr EPSR, r7
+        mrs r5, EPSR        // expect 0000_0000
+
+        msr IEPSR, r7
+        mrs r6, IEPSR       // expect 0000_0000
+
+        movs r7, #1         // syscall exit(status)
+        svc #0

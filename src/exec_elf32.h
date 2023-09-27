@@ -9,6 +9,8 @@
 #ifndef EXEC_ELF_H_
 #define EXEC_ELF_H_
 
+#include <stdint.h>
+
 /*
  * ELF Header
  */
