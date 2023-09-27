@@ -472,7 +472,13 @@ void Processor::thumb_load_store_imm()
         break;
     case 0x7:
         address += offset;
-        terminate_simulation(load_flag ? "ldrb" : "strb"); // TODO
+        if (load_flag) {
+            // LDRB instruction.
+            set_reg(rd, data_read8(address));
+        } else {
+            // STRB instruction.
+            terminate_simulation("strb"); // TODO
+        }
         break;
     default:
         address += offset << 2;
