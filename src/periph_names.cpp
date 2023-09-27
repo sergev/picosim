@@ -21,6 +21,6 @@ std::string Peripherals::reg_name(unsigned addr)
         return periph_reg_name.at(addr);
 
     std::stringstream buf;
-    buf << "[0x" << std::hex << addr << "]";
+    buf << "[0x" << std::hex << (addr + base_address) << "]";
     return buf.str();
 }

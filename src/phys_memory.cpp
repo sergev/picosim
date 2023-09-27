@@ -53,7 +53,7 @@ void Memory::b_transport(tlm::tlm_generic_payload &trans, sc_core::sc_time &dela
         if (!is_fetch && Log::is_verbose()) {
             auto &out = Log::out();
             out << std::hex << std::setw(8) << std::setfill('0') << "          Load " << basename()
-                << " [" << addr << "] = ";
+                << " [" << (addr + base_address) << "] = ";
             switch (len) {
             case 1:
                 out << std::setw(2) << *(uint8_t *)ptr;
@@ -77,7 +77,7 @@ void Memory::b_transport(tlm::tlm_generic_payload &trans, sc_core::sc_time &dela
         if (Log::is_verbose()) {
             auto &out = Log::out();
             out << std::hex << std::setw(8) << std::setfill('0') << "          Store " << basename()
-                << " [" << addr << "] = ";
+                << " [" << (addr + base_address) << "] = ";
             switch (len) {
             case 1:
                 out << std::setw(2) << *(uint8_t *)ptr;
@@ -96,8 +96,8 @@ void Memory::b_transport(tlm::tlm_generic_payload &trans, sc_core::sc_time &dela
         }
 
         if (is_read_only) {
-            Log::err() << basename() << ": Write to read-only memory at 0x" << std::hex << addr
-                       << std::endl;
+            Log::err() << basename() << ": Write to read-only memory at 0x" << std::hex
+                       << (addr + base_address) << std::endl;
             SC_REPORT_ERROR(basename(), "Write to read-only memory");
             // TODO: take EXCEPTION_CAUSE_STORE_ACCESS_FAULT
         }

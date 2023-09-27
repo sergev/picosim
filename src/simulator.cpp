@@ -23,6 +23,12 @@ Simulator::Simulator(const sc_core::sc_module_name &name, bool debug_enable)
     bus.timer_socket.bind(timer.socket);
     timer.irq_line.bind(cpu.irq_line_socket);
 
+    // Set base addresses.
+    rom.set_base(ADDR_ROM_START);
+    flash.set_base(ADDR_FLASH_START);
+    sram.set_base(ADDR_SRAM_START);
+    periph.set_base(ADDR_PERIPH_START);
+
     // Load ROM.
 #if 0
     extern const unsigned char rom_bin[];

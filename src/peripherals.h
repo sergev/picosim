@@ -24,6 +24,9 @@ public:
     // Deallocate.
     ~Peripherals() override;
 
+    // Set base address.
+    void set_base(unsigned address) { base_address = address; }
+
 private:
     // Shadow storage, allocated via calloc().
     uint8_t *mem;
@@ -31,8 +34,11 @@ private:
     // Size of the memory in bytes.
     unsigned size_bytes;
 
+    // Base address in memory map.
+    unsigned base_address;
+
     // Get register name by address.
-    static std::string reg_name(unsigned addr);
+    std::string reg_name(unsigned addr);
 
     // Read peripheral register.
     unsigned periph_read(unsigned addr);

@@ -34,12 +34,18 @@ public:
     // Make it read only.
     void set_read_only() { is_read_only = true; }
 
+    // Set base address.
+    void set_base(unsigned address) { base_address = address; }
+
 private:
     // Memory contents, allocated via calloc().
     uint8_t *mem;
 
     // Size of the memory in bytes.
     unsigned size_bytes;
+
+    // Base address in memory map.
+    unsigned base_address;
 
     // Latency of the memory access.
     const sc_core::sc_time LATENCY{ 1, sc_core::SC_NS };
