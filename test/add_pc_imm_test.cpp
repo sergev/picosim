@@ -21,15 +21,15 @@ TEST(opcode, add_pc_imm)
     sim.run(0x8000);
     show_trace();
 
-    EXPECT_EQ(sim.get_instructions_executed(), 11);
-    EXPECT_EQ(sim.get_pc(), 0x801a);
-    EXPECT_EQ(sim.get_reg(0), 0x8178);
-    EXPECT_EQ(sim.get_reg(1), 0x8322);
-    EXPECT_EQ(sim.get_reg(2), 0x81e0);
-    EXPECT_EQ(sim.get_reg(3), 0x811e);
-    EXPECT_EQ(sim.get_reg(4), 0x827c);
-    EXPECT_EQ(sim.get_reg(5), 0x822a);
-    EXPECT_EQ(sim.get_reg(6), 0x8164);
+    EXPECT_EQ(sim.get_instructions_executed(), 9);
+    EXPECT_EQ(sim.get_pc(), 0x8012);
+    EXPECT_EQ(sim.get_reg(0), 0x8000 + 4 + 0x178);
+    EXPECT_EQ(sim.get_reg(1), 0x8002 + 2 + 0x320);
+    EXPECT_EQ(sim.get_reg(2), 0x8004 + 4 + 0x1dc);
+    EXPECT_EQ(sim.get_reg(3), 0x8006 + 2 + 0x118);
+    EXPECT_EQ(sim.get_reg(4), 0x8008 + 4 + 0x274);
+    EXPECT_EQ(sim.get_reg(5), 0x800a + 2 + 0x220);
+    EXPECT_EQ(sim.get_reg(6), 0x800c + 4 + 0x158);
     EXPECT_EQ(sim.get_reg(7), 1);
 }
 

@@ -41,7 +41,7 @@ ldr_pc.S            ldr r1, [pc, #1020]
                     adds r1, r2, #7
                     adds r1, #255
                     add r11, r12
-                    add r1, pc, #1020
+add_pc_imm.S        add r1, pc, #1020
 add_sp_imm.S        add r1, sp, #1020
                     add sp, #508
                     adcs r1, r2

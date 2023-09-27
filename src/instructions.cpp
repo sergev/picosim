@@ -437,7 +437,14 @@ void Processor::thumb_load_store_stack()
 
 void Processor::thumb_add_sp_pc()
 {
-    terminate_simulation(__func__); // TODO
+    unsigned imm         = opcode & 0xff;
+    unsigned rd          = (opcode >> 8) & 0x7;
+    unsigned sp_flag     = opcode & (1 << 11);
+    unsigned sp          = get_reg(Registers::SP);
+    unsigned pc_aligned  = (register_bank.getPC() + 4) & ~3;
+    unsigned value       = (sp_flag ? sp : pc_aligned) + (imm << 2);
+
+    set_reg(rd, value);
 }
 
 void Processor::thumb_adjust_stack()

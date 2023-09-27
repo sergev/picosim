@@ -25,7 +25,7 @@ TEST(opcode, add_sp_imm)
     show_trace();
 
     EXPECT_EQ(sim.get_instructions_executed(), 11);
-    EXPECT_EQ(sim.get_pc(), 0x801a);
+    EXPECT_EQ(sim.get_pc(), 0x8016);
     EXPECT_EQ(sim.get_reg(0), 1234567890);
     EXPECT_EQ(sim.get_reg(1), 1234568318);
     EXPECT_EQ(sim.get_reg(2), 1234568170);
