@@ -257,9 +257,52 @@ void Processor::thumb_shift_imm()
     terminate_simulation(__func__); // TODO
 }
 
+//
+// See AddWithCarry() pseudocode ARM ARMv6-M Architecture Reference Manual.
+//
+// AddWithCarry(bits(N) x, bits(N) y, bit carry_in) -> (bits(N), bit, bit)
+//      unsigned_sum = UInt(x) + UInt(y) + UInt(carry_in);
+//      signed_sum   = SInt(x) + SInt(y) + UInt(carry_in);
+//      result       = unsigned_sum<N-1:0>; // same value as signed_sum<N-1:0>
+//      carry_out    = if UInt(result) == unsigned_sum then '0' else '1';
+//      overflow     = if SInt(result) == signed_sum then '0' else '1';
+//      return (result, carry_out, overflow);
+//
+int32_t Processor::add_with_carry(int32_t x, int32_t y, bool carry_in)
+{
+    uint64_t unsigned_sum = (uint32_t)x + (uint32_t)y + (uint64_t)carry_in;
+    int64_t  signed_sum   = (int64_t)x +  (int64_t)y +  (int64_t)carry_in;
+    int32_t  result       = (int32_t)unsigned_sum;
+
+    xpsr.field.n = (result >> 31);                     // bit 31 of result
+    xpsr.field.z = (result == 0);                      // all bits are zero?
+    xpsr.field.c = ((uint32_t)result != unsigned_sum); // carry out
+    xpsr.field.v = ((int32_t)result != signed_sum);    // overflow
+
+    return result;
+}
+
+//
+// adds r1, r2, r3
+// adds r1, r2, #7
+// subs r1, r2, r3
+// subs r1, r2, #7
+// movs r1, r2
+//
 void Processor::thumb_add_sub()
 {
-    terminate_simulation(__func__); // TODO
+    unsigned rd           = (opcode >> 0) & 0x7;
+    unsigned rn           = (opcode >> 3) & 0x7;
+    unsigned rm_imm       = (opcode >> 6) & 0x7;
+    unsigned sub_flag     = (opcode >> 9) & 1;
+    unsigned reg_imm_flag = (opcode >> 10) & 1;
+
+    int32_t n = get_reg(rn);
+    int32_t m = reg_imm_flag ? rm_imm
+                             : get_reg(rm_imm);
+    int32_t result = sub_flag ? add_with_carry(n, ~m, 1)
+                              : add_with_carry(n, m, 0);
+    set_reg(rd, result);
 }
 
 void Processor::thumb_arith_reg()
@@ -267,8 +310,8 @@ void Processor::thumb_arith_reg()
     terminate_simulation(__func__); // TODO
 #if 0
     unsigned op          = (opcode & 0x03C0) >> 6;
-    unsigned Rd          = (opcode & 0x0007);
-    unsigned Rm          = (opcode & 0x0038) >> 3;
+    unsigned rd          = (opcode & 0x0007);
+    unsigned rm          = (opcode & 0x0038) >> 3;
     const char *mnemonic = NULL;
     std::ostringstream text;
 
@@ -323,7 +366,7 @@ void Processor::thumb_arith_reg()
         break;
     }
 
-    text << mnemonic << ' ' << reg_name[Rd] << ", " << reg_name[rm];
+    text << mnemonic << ' ' << reg_name[rd] << ", " << reg_name[rm];
     return text.str();
 #endif
 }

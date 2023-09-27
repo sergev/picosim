@@ -305,6 +305,11 @@ private:
     void thumb_udf();
     void thumb_svc();
     void linux_syscall(int op);
+
+    //
+    // Add two numbers, update PSR flags.
+    //
+    int32_t add_with_carry(int32_t x, int32_t y, bool carry_in);
 };
 
 #endif

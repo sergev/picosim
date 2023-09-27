@@ -74,11 +74,15 @@ static std::string thumb_add_sub(unsigned opcode)
     const char *mnemonic = opc ? "subs" : "adds";
     std::ostringstream text;
 
-    text << mnemonic << ' ' << reg_name[Rd] << ", " << reg_name[Rn];
-    if (reg_imm) {
-        text << ", #" << Rm_imm;
+    if (reg_imm == 0) {
+        // Add/substract two registers
+        text << mnemonic << ' ' << reg_name[Rd] << ", " << reg_name[Rn] << ", " << reg_name[Rm_imm];
+    } else if (Rm_imm == 0) {
+        // MOVS instruction.
+        text << "movs " << reg_name[Rd] << ", " << reg_name[Rn];
     } else {
-        text << ", " << reg_name[Rm_imm];
+        // Add/substract a register and immediate.
+        text << mnemonic << ' ' << reg_name[Rd] << ", " << reg_name[Rn] << ", #" << Rm_imm;
     }
     return text.str();
 }

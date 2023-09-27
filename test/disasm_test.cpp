@@ -335,15 +335,16 @@ TEST(disasm, opcode16)
     test_disasm(0x1bf9, "subs r1, r7, r7");
     test_disasm(0x1bff, "subs r7, r7, r7");
 
-    test_disasm(0x1c00, "adds r0, r0, #0");
-    test_disasm(0x1c01, "adds r1, r0, #0");
-    test_disasm(0x1c07, "adds r7, r0, #0");
-    test_disasm(0x1c08, "adds r0, r1, #0");
-    test_disasm(0x1c09, "adds r1, r1, #0");
-    test_disasm(0x1c0f, "adds r7, r1, #0");
-    test_disasm(0x1c38, "adds r0, r7, #0");
-    test_disasm(0x1c39, "adds r1, r7, #0");
-    test_disasm(0x1c3f, "adds r7, r7, #0");
+    test_disasm(0x1c00, "movs r0, r0");
+    test_disasm(0x1c01, "movs r1, r0");
+    test_disasm(0x1c07, "movs r7, r0");
+    test_disasm(0x1c08, "movs r0, r1");
+    test_disasm(0x1c09, "movs r1, r1");
+    test_disasm(0x1c0f, "movs r7, r1");
+    test_disasm(0x1c38, "movs r0, r7");
+    test_disasm(0x1c39, "movs r1, r7");
+    test_disasm(0x1c3f, "movs r7, r7");
+
     test_disasm(0x1c40, "adds r0, r0, #1");
     test_disasm(0x1c41, "adds r1, r0, #1");
     test_disasm(0x1c47, "adds r7, r0, #1");
@@ -363,15 +364,16 @@ TEST(disasm, opcode16)
     test_disasm(0x1df9, "adds r1, r7, #7");
     test_disasm(0x1dff, "adds r7, r7, #7");
 
-    test_disasm(0x1e00, "subs r0, r0, #0");
-    test_disasm(0x1e01, "subs r1, r0, #0");
-    test_disasm(0x1e07, "subs r7, r0, #0");
-    test_disasm(0x1e08, "subs r0, r1, #0");
-    test_disasm(0x1e09, "subs r1, r1, #0");
-    test_disasm(0x1e0f, "subs r7, r1, #0");
-    test_disasm(0x1e38, "subs r0, r7, #0");
-    test_disasm(0x1e39, "subs r1, r7, #0");
-    test_disasm(0x1e3f, "subs r7, r7, #0");
+    test_disasm(0x1e00, "movs r0, r0");
+    test_disasm(0x1e01, "movs r1, r0");
+    test_disasm(0x1e07, "movs r7, r0");
+    test_disasm(0x1e08, "movs r0, r1");
+    test_disasm(0x1e09, "movs r1, r1");
+    test_disasm(0x1e0f, "movs r7, r1");
+    test_disasm(0x1e38, "movs r0, r7");
+    test_disasm(0x1e39, "movs r1, r7");
+    test_disasm(0x1e3f, "movs r7, r7");
+
     test_disasm(0x1e40, "subs r0, r0, #1");
     test_disasm(0x1e41, "subs r1, r0, #1");
     test_disasm(0x1e47, "subs r7, r0, #1");
