@@ -7,7 +7,7 @@ PROG            = movs_imm.elf \
                   mov_reg.elf \
                   ldr_pc.elf \
                   ldr_reg_imm.elf \
-                  ldr_sp_imm.elf \
+                  ldr_sp.elf \
                   ldr_reg_reg.elf \
                   ldrb_reg_imm.elf \
                   ldrb_reg_reg.elf \
@@ -16,6 +16,7 @@ PROG            = movs_imm.elf \
                   ldrh_reg_reg.elf \
                   ldrsh_reg_reg.elf \
                   str_reg_imm.elf \
+                  str_sp.elf \
                   add_sp_imm.elf \
                   add_pc_imm.elf \
                   psr.elf \

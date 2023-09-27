@@ -518,7 +518,7 @@ void Processor::thumb_load_store_stack()
         set_reg(rd, data_read32(address));
     } else {
         // STR instruction.
-        terminate_simulation("str"); // TODO
+        data_write32(address, get_reg(rd));
     }
 }
 
