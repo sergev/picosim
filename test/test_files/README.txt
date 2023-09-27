@@ -41,16 +41,16 @@ pop.S               pop {r1, r2, pc}
         (Arithmetic operations)
 add_reg_reg.S       add r1, r2, r3
 add_reg_imm.S       add r1, r2, #7
-add_imm.S           adds r1, #255
+add_imm.S           add r1, #255
 add_hireg.S         add r11, r12
 add_pc_imm.S        add r1, pc, #1020
-add_sp_imm.S        add r1, sp, #1020
-                    add sp, #508
+add_reg_sp_imm.S    add r1, sp, #1020
+add_sp_imm.S        add sp, #508
                     adcs r1, r2
 sub_reg_reg.S       sub r1, r2, r3
 sub_reg_imm.S       sub r1, r2, #7
-                    subs r1, #255
-                    sub sp, #508
+sub_imm.S           sub r1, #255
+sub_sp_imm.S        sub sp, #508
                     sbcs r1, r2
                     negs r1, r2
                     muls r1, r2

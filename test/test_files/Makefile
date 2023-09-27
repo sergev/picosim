@@ -22,14 +22,17 @@ PROG            = movs_imm.elf \
                   strb_reg_reg.elf \
                   strh_reg_imm.elf \
                   strh_reg_reg.elf \
-                  add_sp_imm.elf \
+                  add_reg_sp_imm.elf \
                   add_pc_imm.elf \
                   add_reg_reg.elf \
                   add_reg_imm.elf \
                   add_hireg.elf \
                   add_imm.elf \
+                  add_sp_imm.elf \
                   sub_reg_reg.elf \
                   sub_reg_imm.elf \
+                  sub_imm.elf \
+                  sub_sp_imm.elf \
                   psr.elf \
                   sysreg.elf \
                   nop.elf \

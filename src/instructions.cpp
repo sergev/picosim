@@ -177,7 +177,8 @@ void Processor::thumb_arith_imm()
         set_reg(rd, add_with_carry(get_reg(rd), imm, 0));
         break;
     case 3:
-        terminate_simulation("sub"); // TODO
+        // SUB instruction.
+        set_reg(rd, add_with_carry(get_reg(rd), ~imm, 1));
         break;
     }
 }
@@ -553,7 +554,18 @@ void Processor::thumb_add_sp_pc()
 
 void Processor::thumb_adjust_stack()
 {
-    terminate_simulation(__func__); // TODO
+    unsigned imm      = opcode & 0x7f;
+    unsigned sub_flag = (opcode >> 7) & 1;
+    unsigned value    = get_reg(Registers::SP);
+
+    if (sub_flag) {
+        // SUB instruction.
+        value -= imm << 2;
+    } else {
+        // ADD instruction.
+        value += imm << 2;
+    }
+    set_reg(Registers::SP, value);
 }
 
 void Processor::thumb_extend()
