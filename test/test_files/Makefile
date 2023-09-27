@@ -4,6 +4,7 @@ CFLAGS          = -O -Wall -Werror
 LDFLAGS         = -nostdlib -static
 PROG            = movs_imm.elf \
                   movs_reg.elf \
+                  mov_reg.elf \
                   ldr_pc.elf \
                   psr.elf \
                   sysreg.elf \
