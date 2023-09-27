@@ -369,9 +369,21 @@ void Processor::thumb_arith_reg()
         // EOR instruction.
         set_reg_nz(rd, get_reg(rd) ^ get_reg(rm));
         break;
-    case 0x2:
-        terminate_simulation("lsl"); // TODO
+    case 0x2: {
+        // LSL instruction.
+        uint32_t value = get_reg(rd);
+        unsigned shift = get_reg(rm) & 0xff;
+        if (shift > 0) {
+            if (shift > 32) {
+                shift = 32;
+                xpsr.field.c = 0;
+            } else {
+                xpsr.field.c = value >> (32 - shift);
+            }
+        }
+        set_reg_nz(rd, value << shift);
         break;
+    }
     case 0x3:
         terminate_simulation("lsr"); // TODO
         break;

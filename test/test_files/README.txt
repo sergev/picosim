@@ -77,7 +77,7 @@ tst.S               tst r1, r2
 asr_imm.S           asr r1, r2, #32
 asr_reg.S           asr r1, r2
 lsl_imm.S           lsl r1, r2, #31
-                    lsl r1, r2
+lsl_reg.S           lsl r1, r2
                     lsr r1, r2, #32
                     lsr r1, r2
                     ror r1, r2
