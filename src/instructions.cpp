@@ -382,7 +382,8 @@ void Processor::thumb_arith_reg()
         set_reg_nz(rd, get_reg(rd) & ~get_reg(rm));
         break;
     case 0xF:
-        terminate_simulation("mvn"); // TODO
+        // MVN instruction.
+        set_reg_nz(rd, ~get_reg(rm));
         break;
     }
 }
