@@ -135,22 +135,6 @@ void Processor::process_opcode16()
 }
 
 //
-// Return true when int32 value is negative.
-//
-static bool is_negative(int32_t value)
-{
-    return (value < 0);
-}
-
-//
-// Return true when int32 value is zero.
-//
-static bool is_zero(int32_t value)
-{
-    return (value == 0);
-}
-
-//
 // Execute 32-bit instruction.
 //
 void Processor::process_opcode32()
@@ -180,10 +164,8 @@ void Processor::thumb_arith_imm()
 
     switch (opc) {
     case 0:
-        // movs r1, #255
-        set_reg(rd, imm);
-        xpsr.field.n = 0; // bit 31 of result
-        xpsr.field.z = is_zero(imm);
+        // MOV instruction.
+        set_reg_nz(rd, imm);
         break;
     case 1:
         // CMP instruction.
@@ -306,8 +288,8 @@ int32_t Processor::add_with_carry(int32_t x, int32_t y, bool carry_in)
     int64_t  signed_sum   = (int64_t)x + (int64_t)y + carry_in;
     int32_t  result       = (int32_t)unsigned_sum;
 
-    xpsr.field.n = is_negative(result);
-    xpsr.field.z = is_zero(result);
+    xpsr.field.n = (result < 0);
+    xpsr.field.z = (result == 0);
     xpsr.field.c = ((uint32_t)result != unsigned_sum); // carry out
     xpsr.field.v = ((int32_t)result != signed_sum);    // overflow
 
@@ -344,22 +326,14 @@ void Processor::thumb_arith_reg()
     unsigned rm = (opcode >> 3) & 7;
 
     switch (op) {
-    case 0x0: {
+    case 0x0:
         // AND instruction.
-        int32_t result = get_reg(rd) & get_reg(rm);
-        set_reg(rd, result);
-        xpsr.field.n = is_negative(result);
-        xpsr.field.z = is_zero(result);
+        set_reg_nz(rd, get_reg(rd) & get_reg(rm));
         break;
-    }
-    case 0x1: {
+    case 0x1:
         // EOR instruction.
-        int32_t result = get_reg(rd) ^ get_reg(rm);
-        set_reg(rd, result);
-        xpsr.field.n = is_negative(result);
-        xpsr.field.z = is_zero(result);
+        set_reg_nz(rd, get_reg(rd) ^ get_reg(rm));
         break;
-    }
     case 0x2:
         terminate_simulation("lsl"); // TODO
         break;
@@ -395,24 +369,17 @@ void Processor::thumb_arith_reg()
         // CMN instruction.
         add_with_carry(get_reg(rd), get_reg(rm), 0);
         break;
-    case 0xC: {
+    case 0xC:
         // ORR instruction.
-        int32_t result = get_reg(rd) | get_reg(rm);
-        set_reg(rd, result);
-        xpsr.field.n = is_negative(result);
-        xpsr.field.z = is_zero(result);
+        set_reg_nz(rd, get_reg(rd) | get_reg(rm));
         break;
-    }
-    case 0xD: {
+    case 0xD:
         // MUL instruction.
-        int32_t result = get_reg(rd) * get_reg(rm);
-        set_reg(rd, result);
-        xpsr.field.n = is_negative(result);
-        xpsr.field.z = is_zero(result);
+        set_reg_nz(rd, get_reg(rd) * get_reg(rm));
         break;
-    }
     case 0xE:
-        terminate_simulation("bic"); // TODO
+        // BIC instruction.
+        set_reg_nz(rd, get_reg(rd) & ~get_reg(rm));
         break;
     case 0xF:
         terminate_simulation("mvn"); // TODO

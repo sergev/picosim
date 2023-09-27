@@ -110,6 +110,16 @@ public:
         }
     }
 
+    //
+    // Set value for a register, and N Z flags
+    //
+    void set_reg_nz(int reg_num, int32_t value)
+    {
+        set_reg(reg_num, value);
+        xpsr.field.n = (value < 0);
+        xpsr.field.z = (value == 0);
+    }
+
     /**
      * Returns PC value
      * @return register value
