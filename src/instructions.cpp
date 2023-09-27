@@ -590,9 +590,8 @@ void Processor::thumb_ldmia()
 
     for (unsigned rd = 0; rd < 8; rd++) {
         if ((reg_list >> rd) & 1) {
-            unsigned value = data_read32(address);
+            set_reg(rd, data_read32(address));
             address += 4;
-            set_reg(rd, value);
         }
     }
 
@@ -604,7 +603,19 @@ void Processor::thumb_ldmia()
 
 void Processor::thumb_stmia()
 {
-    terminate_simulation(__func__); // TODO
+    unsigned reg_list = opcode & 0xff;
+    unsigned rn       = (opcode >> 8) & 7;
+    uint32_t address  = get_reg(rn);
+
+    for (unsigned rd = 0; rd < 8; rd++) {
+        if ((reg_list >> rd) & 1) {
+            data_write32(address, get_reg(rd));
+            address += 4;
+        }
+    }
+
+    // Write back incremented address.
+    set_reg(rn, address);
 }
 
 void Processor::thumb_pop()

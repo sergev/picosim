@@ -32,7 +32,7 @@ strb_reg_imm.S      strb r1, [r2, #31]
 strb_reg_reg.S      strb r1, [r2, r3]
 strh_reg_imm.S      strh r1, [r2, #62]
 strh_reg_reg.S      strh r1, [r2, r3]
-                    stmia r7!, {r0, r1, r2, r3, r4, r5, r6}
+stmia.S             stmia r7!, {r0, r1, r2, r3, r4, r5, r6}
 
         (Stack)
                     push {r1}

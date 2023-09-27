@@ -15,7 +15,6 @@ PROG            = movs_imm.elf \
                   ldrh_reg_imm.elf \
                   ldrh_reg_reg.elf \
                   ldrsh_reg_reg.elf \
-                  ldmia.elf \
                   str_reg_imm.elf \
                   str_reg_reg.elf \
                   str_sp.elf \
@@ -29,6 +28,8 @@ PROG            = movs_imm.elf \
                   sysreg.elf \
                   nop.elf \
                   cpsie_cpsid.elf \
+                  ldmia.elf \
+                  stmia.elf \
                   write.elf \
                   hello.elf
 

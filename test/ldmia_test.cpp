@@ -8,9 +8,9 @@ TEST(opcode, ldmia)
     Simulator sim;
     enable_trace();
 
-    sim.debug_store16(0x8000, 0xa002);      // add r0, pc, #8 @ (adr r0, 800c <data0>)
+    sim.debug_store16(0x8000, 0xa002);      // add r0, pc, #8
     sim.debug_store16(0x8002, 0xc80a);      // ldmia r0!, {r1, r3}
-    sim.debug_store16(0x8004, 0xa403);      // add r4, pc, #12 @ (adr r4, 8014 <data4>)
+    sim.debug_store16(0x8004, 0xa403);      // add r4, pc, #12
     sim.debug_store16(0x8006, 0xcc74);      // ldmia r4, {r2, r4, r5, r6}
     sim.debug_store16(0x8008, 0x2701);      // movs r7, #1
     sim.debug_store16(0x800a, 0xdf00);      // svc 0
