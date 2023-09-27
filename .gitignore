@@ -7,6 +7,7 @@
 **.hex
 **.dis
 **.elf
+**.trace
 
 build
 test/build

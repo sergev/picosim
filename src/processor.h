@@ -66,6 +66,7 @@ public:
      */
     bool cpu_step();
 
+    void fetch_instruction();
     void raise_exception(uint32_t cause, uint32_t inst);
     void terminate_simulation(const std::string &reason) const;
 

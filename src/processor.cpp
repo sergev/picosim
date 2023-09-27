@@ -174,17 +174,22 @@ bool Processor::cpu_process_interrupt()
     return ret_value;
 }
 
-bool Processor::cpu_step()
+//
+// Get new value of instruction at PC.
+//
+void Processor::fetch_instruction()
 {
-    bool PC_not_affected = false;
     sc_core::sc_time delay = sc_core::SC_ZERO_TIME;
+    union {
+        uint8_t u8[4];
+        uint16_t u16[2];
+    } buf;
 
-    /* Get new PC value */
     if (dmi_ptr_valid) {
         /* if memory_offset at Memory module is set, this won't work */
-        memcpy(&instruction, dmi_ptr + register_bank.getPC(), 4);
+        memcpy(&buf.u8, dmi_ptr + register_bank.getPC(), 4);
         delay += dmi_read_latency;
-#if 1
+#if 0
         if (Log::is_verbose() && register_bank.getPC() >= 0x40000000 && register_bank.getPC() <= 0x4005ffff) {
             Log::out() << "-------- Fetch from ROM" << std::endl;
         }
@@ -192,7 +197,7 @@ bool Processor::cpu_step()
     } else {
         tlm::tlm_generic_payload trans;
         trans.set_command(tlm::TLM_READ_COMMAND);
-        trans.set_data_ptr(reinterpret_cast<unsigned char *>(&instruction));
+        trans.set_data_ptr(reinterpret_cast<unsigned char *>(&buf));
         trans.set_data_length(4);
         trans.set_streaming_width(4);       // = data_length to indicate no streaming
         trans.set_byte_enable_ptr(nullptr); // 0 indicates unused
@@ -218,13 +223,22 @@ bool Processor::cpu_step()
     }
     wait(delay);
 
+    // Convert from little endian.
+    instruction = (buf.u16[0] << 16) | buf.u16[1];
+}
+
+bool Processor::cpu_step()
+{
+    bool PC_not_affected = false;
     bool breakpoint = false;
-    bool incPCby2 = true; // TODO
+    unsigned pc_increment = arm_opcode_length(instruction);
+
+    fetch_instruction();
 
     if (Log::is_verbose()) {
         auto &out = Log::out();
         out << std::hex << std::setw(8) << std::setfill('0') << register_bank.getPC() << ": ";
-        if (incPCby2)
+        if (pc_increment == 2)
             out << std::setw(4) << (uint16_t)instruction << "     ";
         else
             out << std::setw(8) << instruction << " ";
@@ -234,11 +248,6 @@ bool Processor::cpu_step()
     // Execute instruction.
     PC_not_affected = base_inst.process_instruction(instruction, &breakpoint);
 
-    // Increment the HW counter.
-    //if (csr_ucustom[0] != 0 && csr_ucustom[1] != 0) {
-    //    csr_ucustom[2] += 1;
-    //}
-
     if (breakpoint) {
         std::cout << "Breakpoint set to true" << std::endl;
         PC_not_affected = false;
@@ -247,7 +256,7 @@ bool Processor::cpu_step()
     instructions_executed++;
 
     if (PC_not_affected) {
-        inc_pc(incPCby2 ? 2 : 4);
+        inc_pc(pc_increment);
     }
 
     return breakpoint;
