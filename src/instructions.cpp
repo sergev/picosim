@@ -437,7 +437,8 @@ void Processor::thumb_load_store_reg()
         data_write32(address, get_reg(rd));
         break;
     case 1:
-        terminate_simulation("strh"); // TODO
+        // STRH instruction.
+        data_write16(address, get_reg(rd));
         break;
     case 2:
         terminate_simulation("strb"); // TODO
@@ -481,7 +482,7 @@ void Processor::thumb_load_store_imm()
             set_reg(rd, data_read16(address));
         } else {
             // STRH instruction.
-            terminate_simulation("strh"); // TODO
+            data_write16(address, get_reg(rd));
         }
         break;
     case 0x7:

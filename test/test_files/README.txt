@@ -28,9 +28,9 @@ ldrsh_reg_reg.S     ldrsh r1, [r2, r3]
 str_reg_imm.S       str r1, [r2, #124]
 str_sp.S            str r1, [sp, #1020]
 str_reg_reg.S       str r1, [r2, r3]
-                    strh r1, [r2, #62]
-                    strh r1, [r2, r3]
                     strb r1, [r2, #31]
+strh_reg_imm.S      strh r1, [r2, #62]
+strh_reg_reg.S      strh r1, [r2, r3]
                     stmia r7!, {r0, r1, r2, r3, r4, r5, r6}
 
         (Stack)

@@ -18,6 +18,8 @@ PROG            = movs_imm.elf \
                   str_reg_imm.elf \
                   str_reg_reg.elf \
                   str_sp.elf \
+                  strh_reg_imm.elf \
+                  strh_reg_reg.elf \
                   add_sp_imm.elf \
                   add_pc_imm.elf \
                   psr.elf \
