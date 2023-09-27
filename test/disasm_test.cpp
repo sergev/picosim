@@ -413,25 +413,25 @@ TEST(disasm, opcode16)
     test_disasm(0x2f01, "cmp r7, #1");
     test_disasm(0x2fff, "cmp r7, #255");
 
-    test_disasm(0x3000, "adds r0, #0");
-    test_disasm(0x3001, "adds r0, #1");
-    test_disasm(0x30ff, "adds r0, #255");
-    test_disasm(0x3100, "adds r1, #0");
-    test_disasm(0x3101, "adds r1, #1");
-    test_disasm(0x31ff, "adds r1, #255");
-    test_disasm(0x3700, "adds r7, #0");
-    test_disasm(0x3701, "adds r7, #1");
-    test_disasm(0x37ff, "adds r7, #255");
+    test_disasm(0x3000, "add r0, #0");
+    test_disasm(0x3001, "add r0, #1");
+    test_disasm(0x30ff, "add r0, #255");
+    test_disasm(0x3100, "add r1, #0");
+    test_disasm(0x3101, "add r1, #1");
+    test_disasm(0x31ff, "add r1, #255");
+    test_disasm(0x3700, "add r7, #0");
+    test_disasm(0x3701, "add r7, #1");
+    test_disasm(0x37ff, "add r7, #255");
 
-    test_disasm(0x3800, "subs r0, #0");
-    test_disasm(0x3801, "subs r0, #1");
-    test_disasm(0x38ff, "subs r0, #255");
-    test_disasm(0x3900, "subs r1, #0");
-    test_disasm(0x3901, "subs r1, #1");
-    test_disasm(0x39ff, "subs r1, #255");
-    test_disasm(0x3f00, "subs r7, #0");
-    test_disasm(0x3f01, "subs r7, #1");
-    test_disasm(0x3fff, "subs r7, #255");
+    test_disasm(0x3800, "sub r0, #0");
+    test_disasm(0x3801, "sub r0, #1");
+    test_disasm(0x38ff, "sub r0, #255");
+    test_disasm(0x3900, "sub r1, #0");
+    test_disasm(0x3901, "sub r1, #1");
+    test_disasm(0x39ff, "sub r1, #255");
+    test_disasm(0x3f00, "sub r7, #0");
+    test_disasm(0x3f01, "sub r7, #1");
+    test_disasm(0x3fff, "sub r7, #255");
 
     test_disasm(0x4000, "ands r0, r0");
     test_disasm(0x4001, "ands r1, r0");

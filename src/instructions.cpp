@@ -153,8 +153,8 @@ void Processor::process_opcode32()
 //
 // movs r1, #255
 // cmp r1, #255
-// adds r1, #255
-// subs r1, #255
+// add r1, #255
+// sub r1, #255
 //
 void Processor::thumb_arith_imm()
 {
@@ -173,10 +173,11 @@ void Processor::thumb_arith_imm()
         terminate_simulation("cmp"); // TODO
         break;
     case 2:
-        terminate_simulation("adds"); // TODO
+        // ADD instruction.
+        set_reg(rd, add_with_carry(get_reg(rd), imm, 0));
         break;
     case 3:
-        terminate_simulation("subs"); // TODO
+        terminate_simulation("sub"); // TODO
         break;
     }
 }

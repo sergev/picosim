@@ -145,10 +145,10 @@ static std::string thumb_arith_imm(unsigned opcode)
         mnemonic = "cmp";
         break;
     case 2:
-        mnemonic = "adds";
+        mnemonic = "add";
         break;
     case 3:
-        mnemonic = "subs";
+        mnemonic = "sub";
         break;
     }
 
