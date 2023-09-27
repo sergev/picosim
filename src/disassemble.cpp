@@ -27,227 +27,26 @@
 #include <stdio.h>
 #include <string.h>
 
-/*
- *  - ARM decoding
- *     * Old-style syntax (not UAL) is generally used
- *     * VFP instructions are not understood (ARMv5 and later)
- *       except as coprocessor 10/11 operations
- *     * Most ARM instructions through ARMv6 are decoded, but some
- *       of the post-ARMv4 opcodes may not be handled yet
- *              CPS, SDIV, UDIV, LDREX*, STREX*, QASX, ...
- *     * NEON instructions are not understood (ARMv7-A)
- *
- *  - Thumb/Thumb2 decoding
- *     * UAL syntax should be consistently used
- *     * Any Thumb2 instructions used in Cortex-M3 (ARMv7-M) should
- *       be handled properly.  Accordingly, so should the subset
- *       used in Cortex-M0/M1; and "original" 16-bit Thumb from
- *       ARMv4T and ARMv5T.
- *     * Conditional effects of Thumb2 "IT" (if-then) instructions
- *       are not handled:  the affected instructions are not shown
- *       with their now-conditional suffixes.
- *     * Some ARMv6 and ARMv7-M Thumb2 instructions may not be
- *       handled (minimally for coprocessor access).
- *     * SIMD instructions, and some other Thumb2 instructions
- *       from ARMv7-A, are not understood.
- *
- *  - ThumbEE decoding
- *     * As a Thumb2 variant, the Thumb2 comments (above) apply.
- *     * Opcodes changed by ThumbEE mode are not handled; these
- *       instructions wrongly decode as LDM and STM.
- *
- *  - Jazelle decoding ...  no support whatsoever for Jazelle mode
- *    or decoding.  ARM encourages use of the more generic ThumbEE
- *    mode, instead of Jazelle mode, in current chips.
- *
- *  - Single-step/emulation ... spotty support, which is only weakly
- *    tested.  Thumb2 is not supported.  (Arguably a full simulator
- *    is not needed to support just single stepping.  Recognizing
- *    branch vs non-branch instructions suffices, except when the
- *    instruction faults and triggers a synchronous exception which
- *    can be intercepted using other means.)
- *
- * ARM DDI 0406B "ARM Architecture Reference Manual, ARM v7-A and
- * ARM v7-R edition" gives the most complete coverage of the various
- * generations of ARM instructions.  At this writing it is publicly
- * accessible to anyone willing to create an account at the ARM
- * web site; see http://www.arm.com/documentation/ for information.
- *
- * ARM DDI 0403C "ARMv7-M Architecture Reference Manual" provides
- * more details relevant to the Thumb2-only processors (such as
- * the Cortex-M implementations).
- */
-
-enum arm_instruction_type {
-    ARM_UNKNOWN_INSTUCTION,
-
-    /* Branch instructions */
-    ARM_B,
-    ARM_BL,
-    ARM_BX,
-    ARM_BLX,
-
-    /* Data processing instructions */
-    ARM_AND,
-    ARM_EOR,
-    ARM_SUB,
-    ARM_RSB,
-    ARM_ADD,
-    ARM_ADC,
-    ARM_SBC,
-    ARM_RSC,
-    ARM_TST,
-    ARM_TEQ,
-    ARM_CMP,
-    ARM_CMN,
-    ARM_ORR,
-    ARM_MOV,
-    ARM_BIC,
-    ARM_MVN,
-
-    /* Load/store instructions */
-    ARM_LDR,
-    ARM_LDRB,
-    ARM_LDRT,
-    ARM_LDRBT,
-
-    ARM_LDRH,
-    ARM_LDRSB,
-    ARM_LDRSH,
-
-    ARM_LDM,
-
-    ARM_STR,
-    ARM_STRB,
-    ARM_STRT,
-    ARM_STRBT,
-
-    ARM_STRH,
-
-    ARM_STM,
-
-    /* Status register access instructions */
-    ARM_MRS,
-    ARM_MSR,
-
-    /* Multiply instructions */
-    ARM_MUL,
-    ARM_MLA,
-    ARM_SMULL,
-    ARM_SMLAL,
-    ARM_UMULL,
-    ARM_UMLAL,
-
-    /* Miscellaneous instructions */
-    ARM_CLZ,
-
-    /* Exception generating instructions */
-    ARM_BKPT,
-    ARM_SWI,
-
-    /* Coprocessor instructions */
-    ARM_CDP,
-    ARM_LDC,
-    ARM_STC,
-    ARM_MCR,
-    ARM_MRC,
-
-    /* Semaphore instructions */
-    ARM_SWP,
-    ARM_SWPB,
-
-    /* Enhanced DSP extensions */
-    ARM_MCRR,
-    ARM_MRRC,
-    ARM_PLD,
-    ARM_QADD,
-    ARM_QDADD,
-    ARM_QSUB,
-    ARM_QDSUB,
-    ARM_SMLAxy,
-    ARM_SMLALxy,
-    ARM_SMLAWy,
-    ARM_SMULxy,
-    ARM_SMULWy,
-    ARM_LDRD,
-    ARM_STRD,
-
-    ARM_UNDEFINED_INSTRUCTION = 0xffffffff,
-};
-
-struct arm_b_bl_bx_blx_instr {
-    int reg_operand;
-    unsigned target_address;
-};
-
-union arm_shifter_operand {
-    struct {
-        unsigned immediate;
-    } immediate;
-    struct {
-        unsigned char Rm;
-        unsigned char shift; /* 0: LSL, 1: LSR, 2: ASR, 3: ROR, 4: RRX */
-        unsigned char shift_imm;
-    } immediate_shift;
-    struct {
-        unsigned char Rm;
-        unsigned char shift;
-        unsigned char Rs;
-    } register_shift;
-};
-
-struct arm_data_proc_instr {
-    int variant; /* 0: immediate, 1: immediate_shift, 2: register_shift */
-    unsigned char S;
-    unsigned char Rn;
-    unsigned char Rd;
-    union arm_shifter_operand shifter_operand;
-};
-
-struct arm_load_store_instr {
-    unsigned char Rd;
-    unsigned char Rn;
-    unsigned char U;
-    int index_mode;  /* 0: offset, 1: pre-indexed, 2: post-indexed */
-    int offset_mode; /* 0: immediate, 1: (scaled) register */
-    union {
-        unsigned offset;
-        struct {
-            unsigned char Rm;
-            unsigned char shift; /* 0: LSL, 1: LSR, 2: ASR, 3: ROR, 4: RRX */
-            unsigned char shift_imm;
-        } reg;
-    } offset;
-};
-
-struct arm_load_store_multiple_instr {
-    unsigned char Rn;
-    unsigned register_list;
-    unsigned char addressing_mode; /* 0: IA, 1: IB, 2: DA, 3: DB */
-    unsigned char S;
-    unsigned char W;
-};
-
 struct arm_instruction {
-    enum arm_instruction_type type;
     char text[128];
-    unsigned opcode;
-
-    /* return value ... Thumb-2 sizes vary */
-    unsigned instruction_size;
-
-    union {
-        struct arm_b_bl_bx_blx_instr b_bl_bx_blx;
-        struct arm_data_proc_instr data_proc;
-        struct arm_load_store_instr load_store;
-        struct arm_load_store_multiple_instr load_store_multiple;
-    } info;
 };
 
-/* textual represenation of the condition field */
-/* ALways (default) is ommitted (empty string) */
-static const char *arm_condition_strings[] = { "EQ", "NE", "CS", "CC", "MI", "PL", "VS", "VC",
-                                               "HI", "LS", "GE", "LT", "GT", "LE", "",   "NV" };
+//
+// Textual represenation of the condition field.
+// ALways (default) is ommitted (empty string).
+//
+static const char *condition_strings[16] = {
+    "EQ", "NE", "CS", "CC", "MI", "PL", "VS", "VC",
+    "HI", "LS", "GE", "LT", "GT", "LE", "",   "NV",
+};
+
+//
+// Register names
+//
+static const char *reg_name[16] = {
+    "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",
+    "r8", "r9", "sl", "fp", "ip", "r13", "lr", "r15",
+};
 
 /* make up for C's missing ROR */
 static unsigned ror(unsigned value, int places)
@@ -272,24 +71,20 @@ static int evaluate_b_bl_blx_thumb(unsigned short opcode, unsigned address,
     switch (opc) {
     /* unconditional branch */
     case 0:
-        instruction->type = ARM_B;
         mnemonic = "B";
         break;
     /* BLX suffix */
     case 1:
-        instruction->type = ARM_BLX;
         mnemonic = "BLX";
         target_address &= 0xfffffffc;
         break;
     /* BL/BLX prefix */
     case 2:
-        instruction->type = ARM_UNKNOWN_INSTUCTION;
         mnemonic = "prefix";
         target_address = offset << 12;
         break;
     /* BL suffix */
     case 3:
-        instruction->type = ARM_BL;
         mnemonic = "BL";
         break;
     }
@@ -302,12 +97,7 @@ static int evaluate_b_bl_blx_thumb(unsigned short opcode, unsigned address,
      * where exceptions may occur between the two.  The ETMv3.2+ ID
      * register has a bit which exposes this behavior.
      */
-
-    snprintf(instruction->text, 128, "0x%8.8x  0x%4.4x    \t%s\t%#8.8x", address, opcode, mnemonic,
-             target_address);
-
-    instruction->info.b_bl_bx_blx.reg_operand = -1;
-    instruction->info.b_bl_bx_blx.target_address = target_address;
+    snprintf(instruction->text, sizeof(instruction->text), "%s %#8.8x", mnemonic, target_address);
 
     return 0;
 }
@@ -323,28 +113,18 @@ static int evaluate_add_sub_thumb(unsigned short opcode, unsigned address,
     const char *mnemonic;
 
     if (opc) {
-        instruction->type = ARM_SUB;
         mnemonic = "SUBS";
     } else {
         /* REVISIT:  if reg_imm == 0, display as "MOVS" */
-        instruction->type = ARM_ADD;
         mnemonic = "ADDS";
     }
 
-    instruction->info.data_proc.Rd = Rd;
-    instruction->info.data_proc.Rn = Rn;
-    instruction->info.data_proc.S = 1;
-
     if (reg_imm) {
-        instruction->info.data_proc.variant = 0; /*immediate*/
-        instruction->info.data_proc.shifter_operand.immediate.immediate = Rm_imm;
-        snprintf(instruction->text, 128, "0x%8.8x  0x%4.4x    \t%s\tr%i, r%i, #%d", address, opcode,
-                 mnemonic, Rd, Rn, Rm_imm);
+        snprintf(instruction->text, sizeof(instruction->text), "%s %s, %s, #%d",
+                 mnemonic, reg_name[Rd], reg_name[Rn], Rm_imm);
     } else {
-        instruction->info.data_proc.variant = 1; /*immediate shift*/
-        instruction->info.data_proc.shifter_operand.immediate_shift.Rm = Rm_imm;
-        snprintf(instruction->text, 128, "0x%8.8x  0x%4.4x    \t%s\tr%i, r%i, r%i", address, opcode,
-                 mnemonic, Rd, Rn, Rm_imm);
+        snprintf(instruction->text, sizeof(instruction->text), "%s %s, %s, %s",
+                 mnemonic, reg_name[Rd], reg_name[Rn], reg_name[Rm_imm]);
     }
 
     return 0;
@@ -361,35 +141,21 @@ static int evaluate_shift_imm_thumb(unsigned short opcode, unsigned address,
 
     switch (opc) {
     case 0:
-        instruction->type = ARM_MOV;
         mnemonic = "LSLS";
-        instruction->info.data_proc.shifter_operand.immediate_shift.shift = 0;
         break;
     case 1:
-        instruction->type = ARM_MOV;
         mnemonic = "LSRS";
-        instruction->info.data_proc.shifter_operand.immediate_shift.shift = 1;
         break;
     case 2:
-        instruction->type = ARM_MOV;
         mnemonic = "ASRS";
-        instruction->info.data_proc.shifter_operand.immediate_shift.shift = 2;
         break;
     }
 
     if ((imm == 0) && (opc != 0))
         imm = 32;
 
-    instruction->info.data_proc.Rd = Rd;
-    instruction->info.data_proc.Rn = -1;
-    instruction->info.data_proc.S = 1;
-
-    instruction->info.data_proc.variant = 1; /*immediate_shift*/
-    instruction->info.data_proc.shifter_operand.immediate_shift.Rm = Rm;
-    instruction->info.data_proc.shifter_operand.immediate_shift.shift_imm = imm;
-
-    snprintf(instruction->text, 128, "0x%8.8x  0x%4.4x    \t%s\tr%i, r%i, #%#2.2x", address, opcode,
-             mnemonic, Rd, Rm, imm);
+    snprintf(instruction->text, sizeof(instruction->text), "%s %s, %s, #%#2.2x",
+             mnemonic, reg_name[Rd], reg_name[Rm], imm);
 
     return 0;
 }
@@ -402,35 +168,23 @@ static int evaluate_data_proc_imm_thumb(unsigned short opcode, unsigned address,
     unsigned opc = (opcode >> 11) & 0x3;
     const char *mnemonic = NULL;
 
-    instruction->info.data_proc.Rd = Rd;
-    instruction->info.data_proc.Rn = Rd;
-    instruction->info.data_proc.S = 1;
-    instruction->info.data_proc.variant = 0; /*immediate*/
-    instruction->info.data_proc.shifter_operand.immediate.immediate = imm;
-
     switch (opc) {
     case 0:
-        instruction->type = ARM_MOV;
         mnemonic = "MOVS";
-        instruction->info.data_proc.Rn = -1;
         break;
     case 1:
-        instruction->type = ARM_CMP;
         mnemonic = "CMP";
-        instruction->info.data_proc.Rd = -1;
         break;
     case 2:
-        instruction->type = ARM_ADD;
         mnemonic = "ADDS";
         break;
     case 3:
-        instruction->type = ARM_SUB;
         mnemonic = "SUBS";
         break;
     }
 
-    snprintf(instruction->text, 128, "0x%8.8x  0x%4.4x    \t%s\tr%i, #%#2.2x", address, opcode,
-             mnemonic, Rd, imm);
+    snprintf(instruction->text, sizeof(instruction->text), "%s %s, #%#2.2x",
+             mnemonic, reg_name[Rd], imm);
 
     return 0;
 }
@@ -450,12 +204,6 @@ static int evaluate_data_proc_thumb(unsigned short opcode, unsigned address,
     H1 = (opcode & 0x0080) >> 7;
     H2 = (opcode & 0x0040) >> 6;
 
-    instruction->info.data_proc.Rd = Rd;
-    instruction->info.data_proc.Rn = Rd;
-    instruction->info.data_proc.S = (!high_reg || (instruction->type == ARM_CMP));
-    instruction->info.data_proc.variant = 1 /*immediate shift*/;
-    instruction->info.data_proc.shifter_operand.immediate_shift.Rm = Rm;
-
     if (high_reg) {
         Rd |= H1 << 3;
         Rm |= H2 << 3;
@@ -463,42 +211,28 @@ static int evaluate_data_proc_thumb(unsigned short opcode, unsigned address,
 
         switch (op) {
         case 0x0:
-            instruction->type = ARM_ADD;
             mnemonic = "ADD";
             break;
         case 0x1:
-            instruction->type = ARM_CMP;
             mnemonic = "CMP";
             break;
         case 0x2:
-            instruction->type = ARM_MOV;
             mnemonic = "MOV";
             if (Rd == Rm)
                 nop = 1;
             break;
         case 0x3:
             if ((opcode & 0x7) == 0x0) {
-                instruction->info.b_bl_bx_blx.reg_operand = Rm;
                 if (H1) {
-                    instruction->type = ARM_BLX;
-                    snprintf(instruction->text, 128,
-                             "0x%8.8x"
-                             "  0x%4.4x    \tBLX\tr%i",
-                             address, opcode, Rm);
+                    snprintf(instruction->text, sizeof(instruction->text),
+                             "BLX %s", reg_name[Rm]);
                 } else {
-                    instruction->type = ARM_BX;
-                    snprintf(instruction->text, 128,
-                             "0x%8.8x"
-                             "  0x%4.4x    \tBX\tr%i",
-                             address, opcode, Rm);
+                    snprintf(instruction->text, sizeof(instruction->text),
+                             "BX %s", reg_name[Rm]);
                 }
             } else {
-                instruction->type = ARM_UNDEFINED_INSTRUCTION;
-                snprintf(instruction->text, 128,
-                         "0x%8.8x"
-                         "  0x%4.4x    \t"
-                         "UNDEFINED INSTRUCTION",
-                         address, opcode);
+                snprintf(instruction->text, sizeof(instruction->text),
+                         "UNDEFINED INSTRUCTION");
             }
             return 0;
             break;
@@ -506,99 +240,62 @@ static int evaluate_data_proc_thumb(unsigned short opcode, unsigned address,
     } else {
         switch (op) {
         case 0x0:
-            instruction->type = ARM_AND;
             mnemonic = "ANDS";
             break;
         case 0x1:
-            instruction->type = ARM_EOR;
             mnemonic = "EORS";
             break;
         case 0x2:
-            instruction->type = ARM_MOV;
             mnemonic = "LSLS";
-            instruction->info.data_proc.variant = 2 /*register shift*/;
-            instruction->info.data_proc.shifter_operand.register_shift.shift = 0;
-            instruction->info.data_proc.shifter_operand.register_shift.Rm = Rd;
-            instruction->info.data_proc.shifter_operand.register_shift.Rs = Rm;
             break;
         case 0x3:
-            instruction->type = ARM_MOV;
             mnemonic = "LSRS";
-            instruction->info.data_proc.variant = 2 /*register shift*/;
-            instruction->info.data_proc.shifter_operand.register_shift.shift = 1;
-            instruction->info.data_proc.shifter_operand.register_shift.Rm = Rd;
-            instruction->info.data_proc.shifter_operand.register_shift.Rs = Rm;
             break;
         case 0x4:
-            instruction->type = ARM_MOV;
             mnemonic = "ASRS";
-            instruction->info.data_proc.variant = 2 /*register shift*/;
-            instruction->info.data_proc.shifter_operand.register_shift.shift = 2;
-            instruction->info.data_proc.shifter_operand.register_shift.Rm = Rd;
-            instruction->info.data_proc.shifter_operand.register_shift.Rs = Rm;
             break;
         case 0x5:
-            instruction->type = ARM_ADC;
             mnemonic = "ADCS";
             break;
         case 0x6:
-            instruction->type = ARM_SBC;
             mnemonic = "SBCS";
             break;
         case 0x7:
-            instruction->type = ARM_MOV;
             mnemonic = "RORS";
-            instruction->info.data_proc.variant = 2 /*register shift*/;
-            instruction->info.data_proc.shifter_operand.register_shift.shift = 3;
-            instruction->info.data_proc.shifter_operand.register_shift.Rm = Rd;
-            instruction->info.data_proc.shifter_operand.register_shift.Rs = Rm;
             break;
         case 0x8:
-            instruction->type = ARM_TST;
             mnemonic = "TST";
             break;
         case 0x9:
-            instruction->type = ARM_RSB;
             mnemonic = "RSBS";
-            instruction->info.data_proc.variant = 0 /*immediate*/;
-            instruction->info.data_proc.shifter_operand.immediate.immediate = 0;
-            instruction->info.data_proc.Rn = Rm;
             break;
         case 0xA:
-            instruction->type = ARM_CMP;
             mnemonic = "CMP";
             break;
         case 0xB:
-            instruction->type = ARM_CMN;
             mnemonic = "CMN";
             break;
         case 0xC:
-            instruction->type = ARM_ORR;
             mnemonic = "ORRS";
             break;
         case 0xD:
-            instruction->type = ARM_MUL;
             mnemonic = "MULS";
             break;
         case 0xE:
-            instruction->type = ARM_BIC;
             mnemonic = "BICS";
             break;
         case 0xF:
-            instruction->type = ARM_MVN;
             mnemonic = "MVNS";
             break;
         }
     }
 
     if (nop)
-        snprintf(instruction->text, 128,
-                 "0x%8.8x  0x%4.4x    \tNOP\t\t\t"
-                 "; (%s r%i, r%i)",
-                 address, opcode, mnemonic, Rd, Rm);
+        snprintf(instruction->text, sizeof(instruction->text),
+                 "NOP ; (%s %s, %s)", mnemonic, reg_name[Rd], reg_name[Rm]);
     else
-        snprintf(instruction->text, 128, "0x%8.8x  0x%4.4x    \t%s\tr%i, r%i", address, opcode,
-                 mnemonic, Rd, Rm);
+        snprintf(instruction->text, sizeof(instruction->text), "%s %s, %s",
+                 mnemonic, reg_name[Rd], reg_name[Rm]);
 
     return 0;
 }
@@ -615,20 +312,12 @@ static int evaluate_load_literal_thumb(unsigned short opcode, unsigned address,
     unsigned immediate;
     unsigned char Rd = (opcode >> 8) & 0x7;
 
-    instruction->type = ARM_LDR;
     immediate = opcode & 0x000000ff;
     immediate *= 4;
 
-    instruction->info.load_store.Rd = Rd;
-    instruction->info.load_store.Rn = 15 /*PC*/;
-    instruction->info.load_store.index_mode = 0;  /*offset*/
-    instruction->info.load_store.offset_mode = 0; /*immediate*/
-    instruction->info.load_store.offset.offset = immediate;
-
-    snprintf(instruction->text, 128,
-             "0x%8.8x  0x%4.4x    \t"
-             "LDR\tr%i, [pc, #%#x]\t; %#8.8x",
-             address, opcode, Rd, immediate, thumb_alignpc4(address) + immediate);
+    snprintf(instruction->text, sizeof(instruction->text),
+             "LDR %s, [pc, #%#x] ; %#8.8x",
+             reg_name[Rd], immediate, thumb_alignpc4(address) + immediate);
 
     return 0;
 }
@@ -644,47 +333,33 @@ static int evaluate_load_store_reg_thumb(unsigned short opcode, unsigned address
 
     switch (opc) {
     case 0:
-        instruction->type = ARM_STR;
         mnemonic = "STR";
         break;
     case 1:
-        instruction->type = ARM_STRH;
         mnemonic = "STRH";
         break;
     case 2:
-        instruction->type = ARM_STRB;
         mnemonic = "STRB";
         break;
     case 3:
-        instruction->type = ARM_LDRSB;
         mnemonic = "LDRSB";
         break;
     case 4:
-        instruction->type = ARM_LDR;
         mnemonic = "LDR";
         break;
     case 5:
-        instruction->type = ARM_LDRH;
         mnemonic = "LDRH";
         break;
     case 6:
-        instruction->type = ARM_LDRB;
         mnemonic = "LDRB";
         break;
     case 7:
-        instruction->type = ARM_LDRSH;
         mnemonic = "LDRSH";
         break;
     }
 
-    snprintf(instruction->text, 128, "0x%8.8x  0x%4.4x    \t%s\tr%i, [r%i, r%i]", address, opcode,
-             mnemonic, Rd, Rn, Rm);
-
-    instruction->info.load_store.Rd = Rd;
-    instruction->info.load_store.Rn = Rn;
-    instruction->info.load_store.index_mode = 0;  /*offset*/
-    instruction->info.load_store.offset_mode = 1; /*register*/
-    instruction->info.load_store.offset.reg.Rm = Rm;
+    snprintf(instruction->text, sizeof(instruction->text), "%s %s, [%s, %s]",
+             mnemonic, reg_name[Rd], reg_name[Rn], reg_name[Rm]);
 
     return 0;
 }
@@ -702,10 +377,8 @@ static int evaluate_load_store_imm_thumb(unsigned short opcode, unsigned address
     unsigned shift = 2;
 
     if (L) {
-        instruction->type = ARM_LDR;
         mnemonic = "LDR";
     } else {
-        instruction->type = ARM_STR;
         mnemonic = "STR";
     }
 
@@ -717,14 +390,8 @@ static int evaluate_load_store_imm_thumb(unsigned short opcode, unsigned address
         shift = 0;
     }
 
-    snprintf(instruction->text, 128, "0x%8.8x  0x%4.4x    \t%s%c\tr%i, [r%i, #%#x]", address,
-             opcode, mnemonic, suffix, Rd, Rn, offset << shift);
-
-    instruction->info.load_store.Rd = Rd;
-    instruction->info.load_store.Rn = Rn;
-    instruction->info.load_store.index_mode = 0;  /*offset*/
-    instruction->info.load_store.offset_mode = 0; /*immediate*/
-    instruction->info.load_store.offset.offset = offset << shift;
+    snprintf(instruction->text, sizeof(instruction->text), "%s%c %s, [%s, #%#x]",
+             mnemonic, suffix, reg_name[Rd], reg_name[Rn], offset << shift);
 
     return 0;
 }
@@ -738,21 +405,13 @@ static int evaluate_load_store_stack_thumb(unsigned short opcode, unsigned addre
     const char *mnemonic;
 
     if (L) {
-        instruction->type = ARM_LDR;
         mnemonic = "LDR";
     } else {
-        instruction->type = ARM_STR;
         mnemonic = "STR";
     }
 
-    snprintf(instruction->text, 128, "0x%8.8x  0x%4.4x    \t%s\tr%i, [SP, #%#x]", address, opcode,
-             mnemonic, Rd, offset * 4);
-
-    instruction->info.load_store.Rd = Rd;
-    instruction->info.load_store.Rn = 13 /*SP*/;
-    instruction->info.load_store.index_mode = 0;  /*offset*/
-    instruction->info.load_store.offset_mode = 0; /*immediate*/
-    instruction->info.load_store.offset.offset = offset * 4;
+    snprintf(instruction->text, sizeof(instruction->text), "%s %s, [SP, #%#x]",
+             mnemonic, reg_name[Rd], offset * 4);
 
     return 0;
 }
@@ -762,27 +421,17 @@ static int evaluate_add_sp_pc_thumb(unsigned short opcode, unsigned address,
 {
     unsigned imm = opcode & 0xff;
     unsigned char Rd = (opcode >> 8) & 0x7;
-    unsigned char Rn;
     unsigned SP = opcode & (1 << 11);
-    const char *reg_name;
-
-    instruction->type = ARM_ADD;
+    const char *src_name;
 
     if (SP) {
-        reg_name = "SP";
-        Rn = 13;
+        src_name = "SP";
     } else {
-        reg_name = "PC";
-        Rn = 15;
+        src_name = "PC";
     }
 
-    snprintf(instruction->text, 128, "0x%8.8x  0x%4.4x  \tADD\tr%i, %s, #%#x", address, opcode, Rd,
-             reg_name, imm * 4);
-
-    instruction->info.data_proc.variant = 0 /* immediate */;
-    instruction->info.data_proc.Rd = Rd;
-    instruction->info.data_proc.Rn = Rn;
-    instruction->info.data_proc.shifter_operand.immediate.immediate = imm * 4;
+    snprintf(instruction->text, sizeof(instruction->text), "ADD %s, %s, #%#x", reg_name[Rd],
+             src_name, imm * 4);
 
     return 0;
 }
@@ -795,20 +444,13 @@ static int evaluate_adjust_stack_thumb(unsigned short opcode, unsigned address,
     const char *mnemonic;
 
     if (opc) {
-        instruction->type = ARM_SUB;
         mnemonic = "SUB";
     } else {
-        instruction->type = ARM_ADD;
         mnemonic = "ADD";
     }
 
-    snprintf(instruction->text, 128, "0x%8.8x  0x%4.4x    \t%s\tSP, #%#x", address, opcode,
+    snprintf(instruction->text, sizeof(instruction->text), "%s SP, #%#x",
              mnemonic, imm * 4);
-
-    instruction->info.data_proc.variant = 0 /* immediate */;
-    instruction->info.data_proc.Rd = 13 /*SP*/;
-    instruction->info.data_proc.Rn = 13 /*SP*/;
-    instruction->info.data_proc.shifter_operand.immediate.immediate = imm * 4;
 
     return 0;
 }
@@ -818,9 +460,7 @@ static int evaluate_breakpoint_thumb(unsigned short opcode, unsigned address,
 {
     unsigned imm = opcode & 0xff;
 
-    instruction->type = ARM_BKPT;
-
-    snprintf(instruction->text, 128, "0x%8.8x  0x%4.4x  \tBKPT\t%#2.2x", address, opcode, imm);
+    snprintf(instruction->text, sizeof(instruction->text), "BKPT %#2.2x", imm);
 
     return 0;
 }
@@ -832,9 +472,8 @@ static int evaluate_load_store_multiple_thumb(unsigned short opcode, unsigned ad
     unsigned L = opcode & (1 << 11);
     unsigned R = opcode & (1 << 8);
     unsigned char Rn = (opcode >> 8) & 7;
-    unsigned char addr_mode = 0 /* IA */;
-    char reg_names[40];
-    char *reg_names_p;
+    char list[40];
+    char *list_p;
     const char *mnemonic;
     char ptr_name[7] = "";
     int i;
@@ -847,47 +486,38 @@ static int evaluate_load_store_multiple_thumb(unsigned short opcode, unsigned ad
         const char *wback = "!";
 
         if (L) {
-            instruction->type = ARM_LDM;
             mnemonic = "LDM";
             if (opcode & (1 << Rn))
                 wback = "";
         } else {
-            instruction->type = ARM_STM;
             mnemonic = "STM";
         }
-        snprintf(ptr_name, sizeof ptr_name, "r%i%s, ", Rn, wback);
+        snprintf(ptr_name, sizeof ptr_name, "%s%s, ", reg_name[Rn], wback);
     } else {     /* push/pop */
         Rn = 13; /* SP */
         if (L) {
-            instruction->type = ARM_LDM;
             mnemonic = "POP";
             if (R)
                 reg_list |= (1 << 15) /*PC*/;
         } else {
-            instruction->type = ARM_STM;
             mnemonic = "PUSH";
-            addr_mode = 3; /*DB*/
             if (R)
                 reg_list |= (1 << 14) /*LR*/;
         }
     }
 
-    reg_names_p = reg_names;
+    list_p = list;
     for (i = 0; i <= 15; i++) {
         if (reg_list & (1 << i))
-            reg_names_p += snprintf(reg_names_p, (reg_names + 40 - reg_names_p), "r%i, ", i);
+            list_p += snprintf(list_p, (list + 40 - list_p), "%s, ", reg_name[i]);
     }
-    if (reg_names_p > reg_names)
-        reg_names_p[-2] = '\0';
+    if (list_p > list)
+        list_p[-2] = '\0';
     else /* invalid op : no registers */
-        reg_names[0] = '\0';
+        list[0] = '\0';
 
-    snprintf(instruction->text, 128, "0x%8.8x  0x%4.4x  \t%s\t%s{%s}", address, opcode, mnemonic,
-             ptr_name, reg_names);
-
-    instruction->info.load_store_multiple.register_list = reg_list;
-    instruction->info.load_store_multiple.Rn = Rn;
-    instruction->info.load_store_multiple.addressing_mode = addr_mode;
+    snprintf(instruction->text, sizeof(instruction->text), "%s %s{%s}", mnemonic,
+             ptr_name, list);
 
     return 0;
 }
@@ -900,14 +530,11 @@ static int evaluate_cond_branch_thumb(unsigned short opcode, unsigned address,
     unsigned target_address;
 
     if (cond == 0xf) {
-        instruction->type = ARM_SWI;
-        snprintf(instruction->text, 128, "0x%8.8x  0x%4.4x    \tSVC\t%#2.2x", address, opcode,
+        snprintf(instruction->text, sizeof(instruction->text), "SVC %#2.2x",
                  offset);
         return 0;
     } else if (cond == 0xe) {
-        instruction->type = ARM_UNDEFINED_INSTRUCTION;
-        snprintf(instruction->text, 128, "0x%8.8x  0x%4.4x    \tUNDEFINED INSTRUCTION", address,
-                 opcode);
+        snprintf(instruction->text, sizeof(instruction->text), "UNDEFINED INSTRUCTION");
         return 0;
     }
 
@@ -917,12 +544,8 @@ static int evaluate_cond_branch_thumb(unsigned short opcode, unsigned address,
 
     target_address = address + 4 + (offset << 1);
 
-    snprintf(instruction->text, 128, "0x%8.8x  0x%4.4x    \tB%s\t%#8.8x", address, opcode,
-             arm_condition_strings[cond], target_address);
-
-    instruction->type = ARM_B;
-    instruction->info.b_bl_bx_blx.reg_operand = -1;
-    instruction->info.b_bl_bx_blx.target_address = target_address;
+    snprintf(instruction->text, sizeof(instruction->text), "B%s %#8.8x",
+             condition_strings[cond], target_address);
 
     return 0;
 }
@@ -936,8 +559,8 @@ static int evaluate_cb_thumb(unsigned short opcode, unsigned address,
     offset = (opcode >> 3) & 0x1f;
     offset |= (opcode & 0x0200) >> 4;
 
-    snprintf(instruction->text, 128, "0x%8.8x  0x%4.4x    \tCB%sZ\tr%d, %#8.8x", address, opcode,
-             (opcode & 0x0800) ? "N" : "", opcode & 0x7, address + 4 + (offset << 1));
+    snprintf(instruction->text, sizeof(instruction->text), "CB%sZ %s, %#8.8x",
+             (opcode & 0x0800) ? "N" : "", reg_name[opcode & 0x7], address + 4 + (offset << 1));
 
     return 0;
 }
@@ -946,8 +569,8 @@ static int evaluate_extend_thumb(unsigned short opcode, unsigned address,
                                  struct arm_instruction *instruction)
 {
     /* added in ARMv6 */
-    snprintf(instruction->text, 128, "0x%8.8x  0x%4.4x    \t%cXT%c\tr%d, r%d", address, opcode,
-             (opcode & 0x0080) ? 'U' : 'S', (opcode & 0x0040) ? 'B' : 'H', opcode & 0x7,
+    snprintf(instruction->text, sizeof(instruction->text), "%cXT%c %s, r%d",
+             (opcode & 0x0080) ? 'U' : 'S', (opcode & 0x0040) ? 'B' : 'H', reg_name[opcode & 0x7],
              (opcode >> 3) & 0x7);
 
     return 0;
@@ -958,10 +581,10 @@ static int evaluate_cps_thumb(unsigned short opcode, unsigned address,
 {
     /* added in ARMv6 */
     if ((opcode & 0x0ff0) == 0x0650)
-        snprintf(instruction->text, 128, "0x%8.8x  0x%4.4x    \tSETEND %s", address, opcode,
+        snprintf(instruction->text, sizeof(instruction->text), "SETEND %s",
                  (opcode & 0x80) ? "BE" : "LE");
     else /* ASSUME (opcode & 0x0fe0) == 0x0660 */
-        snprintf(instruction->text, 128, "0x%8.8x  0x%4.4x    \tCPSI%c\t%s%s%s", address, opcode,
+        snprintf(instruction->text, sizeof(instruction->text), "CPSI%c %s%s%s",
                  (opcode & 0x0010) ? 'D' : 'E', (opcode & 0x0004) ? "A" : "",
                  (opcode & 0x0002) ? "I" : "", (opcode & 0x0001) ? "F" : "");
 
@@ -985,8 +608,8 @@ static int evaluate_byterev_thumb(unsigned short opcode, unsigned address,
         suffix = "SH";
         break;
     }
-    snprintf(instruction->text, 128, "0x%8.8x  0x%4.4x    \tREV%s\tr%d, r%d", address, opcode,
-             suffix, opcode & 0x7, (opcode >> 3) & 0x7);
+    snprintf(instruction->text, sizeof(instruction->text), "REV%s %s, %s",
+             suffix, reg_name[opcode & 0x7], reg_name[(opcode >> 3) & 0x7]);
 
     return 0;
 }
@@ -1017,7 +640,7 @@ static int evaluate_hint_thumb(unsigned short opcode, unsigned address,
         break;
     }
 
-    snprintf(instruction->text, 128, "0x%8.8x  0x%4.4x    \t%s", address, opcode, hint);
+    snprintf(instruction->text, sizeof(instruction->text), "%s", hint);
 
     return 0;
 }
@@ -1035,8 +658,8 @@ static int evaluate_ifthen_thumb(unsigned short opcode, unsigned address,
     if (opcode & 0x07)
         x = (opcode & 0x08) ? "T" : "E";
 
-    snprintf(instruction->text, 128, "0x%8.8x  0x%4.4x    \tIT%s%s%s\t%s", address, opcode, x, y, z,
-             arm_condition_strings[cond]);
+    snprintf(instruction->text, sizeof(instruction->text), "IT%s%s%s %s", x, y, z,
+             condition_strings[cond]);
 
     /* NOTE:  strictly speaking, the next 1-4 instructions should
      * now be displayed with the relevant conditional suffix...
@@ -1048,8 +671,6 @@ static int evaluate_ifthen_thumb(unsigned short opcode, unsigned address,
 static std::string evaluate_opcode16(unsigned short opcode, unsigned address)
 {
     struct arm_instruction instruction{};
-    instruction.opcode = opcode;
-    instruction.instruction_size = 2;
 
     if ((opcode & 0xe000) == 0x0000) {
         /* add/substract register or immediate */
@@ -1133,9 +754,7 @@ static std::string evaluate_opcode16(unsigned short opcode, unsigned address)
                 evaluate_hint_thumb(opcode, address, &instruction);
             break;
         default:
-            instruction.type = ARM_UNDEFINED_INSTRUCTION;
-            snprintf(instruction.text, 128, "0x%8.8x  0x%4.4x    \tUNDEFINED INSTRUCTION", address,
-                     opcode);
+            snprintf(instruction.text, sizeof(instruction.text), "UNDEFINED INSTRUCTION");
         }
     }
 
@@ -1152,12 +771,9 @@ static std::string evaluate_opcode16(unsigned short opcode, unsigned address)
     else if ((opcode & 0xe000) == 0xe000) {
         /* Undefined instructions */
         if ((opcode & 0xf801) == 0xe801) {
-            instruction.type = ARM_UNDEFINED_INSTRUCTION;
-            snprintf(instruction.text, 128,
-                     "0x%8.8x  0x%8.8x\t"
-                     "UNDEFINED INSTRUCTION",
-                     address, opcode);
-        } else { /* Branch to offset */
+            strcpy(instruction.text, "UNDEFINED INSTRUCTION");
+        } else {
+            /* Branch to offset */
             evaluate_b_bl_blx_thumb(opcode, address, &instruction);
         }
     } else {
@@ -1197,10 +813,7 @@ static int t2ev_b_bl(unsigned opcode, unsigned address, struct arm_instruction *
     address += 4;
     address += offset << 1;
 
-    instruction->type = (opcode & (1 << 14)) ? ARM_BL : ARM_B;
-    instruction->info.b_bl_bx_blx.reg_operand = -1;
-    instruction->info.b_bl_bx_blx.target_address = address;
-    snprintf(cp, cpsize, "%s\t%#8.8x", (opcode & (1 << 14)) ? "BL" : "B.W", address);
+    snprintf(cp, cpsize, "%s %#8.8x", (opcode & (1 << 14)) ? "bl" : "B.W", address);
 
     return 0;
 }
@@ -1233,10 +846,7 @@ static int t2ev_cond_b(unsigned opcode, unsigned address, struct arm_instruction
     address += 4;
     address += offset << 1;
 
-    instruction->type = ARM_B;
-    instruction->info.b_bl_bx_blx.reg_operand = -1;
-    instruction->info.b_bl_bx_blx.target_address = address;
-    snprintf(cp, cpsize, "B%s.W\t%#8.8x", arm_condition_strings[cond], address);
+    snprintf(cp, cpsize, "B%s.W %#8.8x", condition_strings[cond], address);
 
     return 0;
 }
@@ -1247,46 +857,79 @@ static const char *special_name(int number)
 
     switch (number) {
     case 0:
-        special = "apsr";
+        special = "APSR";
         break;
     case 1:
-        special = "iapsr";
+        special = "IAPSR";
         break;
     case 2:
-        special = "eapsr";
+        special = "EAPSR";
         break;
     case 3:
-        special = "xpsr";
+        special = "PSR";
         break;
     case 5:
-        special = "ipsr";
+        special = "IPSR";
         break;
     case 6:
-        special = "epsr";
+        special = "EPSR";
         break;
     case 7:
-        special = "iepsr";
+        special = "IEPSR";
         break;
     case 8:
-        special = "msp";
+        special = "MSP";
         break;
     case 9:
-        special = "psp";
+        special = "PSP";
+        break;
+    case 10:
+        special = "MSPLIM";
+        break;
+    case 11:
+        special = "PSPLIM";
         break;
     case 16:
-        special = "primask";
+        special = "PRIMASK";
         break;
     case 17:
-        special = "basepri";
+        special = "BASEPRI";
         break;
     case 18:
-        special = "basepri_max";
+        special = "BASEPRI_MAX";
         break;
     case 19:
-        special = "faultmask";
+        special = "FAULTMASK";
         break;
     case 20:
-        special = "control";
+        special = "CONTROL";
+        break;
+    case 0x88:
+        special = "MSP_NS";
+        break;
+    case 0x89:
+        special = "PSP_NS";
+        break;
+    case 0x8a:
+        special = "MSPLIM_NS";
+        break;
+    case 0x8b:
+        special = "PSPLIM_NS";
+        break;
+    case 0x90:
+        special = "PRIMASK_NS";
+        break;
+    case 0x91:
+        special = "BASEPRI_NS";
+        break;
+    case 0x93:
+        special = "FAULTMASK_NS";
+        break;
+    case 0x94:
+        special = "CONTROL_NS";
+        break;
+    case 0x98:
+        special = "SP_NS";
         break;
     }
     return special;
@@ -1298,13 +941,12 @@ static int t2ev_hint(unsigned opcode, unsigned address, struct arm_instruction *
     const char *mnemonic;
 
     if (opcode & 0x0700) {
-        instruction->type = ARM_UNDEFINED_INSTRUCTION;
         strcpy(cp, "UNDEFINED");
         return 0;
     }
 
     if (opcode & 0x00f0) {
-        snprintf(cp, cpsize, "DBG\t#%d", (int)opcode & 0xf);
+        snprintf(cp, cpsize, "DBG #%d", (int)opcode & 0xf);
         return 0;
     }
 
@@ -1335,31 +977,28 @@ static int t2ev_hint(unsigned opcode, unsigned address, struct arm_instruction *
 static int t2ev_misc(unsigned opcode, unsigned address, struct arm_instruction *instruction,
                      char *cp, unsigned cpsize)
 {
+    unsigned option = opcode & 0x0f;
     const char *mnemonic;
 
     switch ((opcode >> 4) & 0x0f) {
-    case 0:
-        mnemonic = "LEAVEX";
-        break;
-    case 1:
-        mnemonic = "ENTERX";
-        break;
-    case 2:
-        mnemonic = "CLREX";
-        break;
     case 4:
-        mnemonic = "DSB";
+        mnemonic = "dsb";
         break;
     case 5:
-        mnemonic = "DMB";
+        mnemonic = "dmb";
         break;
     case 6:
-        mnemonic = "ISB";
+        mnemonic = "isb";
         break;
     default:
         return -1;
     }
-    strcpy(cp, mnemonic);
+
+    if (option)
+        snprintf(cp, cpsize, "%s #%u", mnemonic, option);
+    else
+        strcpy(cp, mnemonic);
+
     return 0;
 }
 
@@ -1368,7 +1007,6 @@ static int t2ev_b_misc(unsigned opcode, unsigned address, struct arm_instruction
 {
     /* permanently undefined */
     if ((opcode & 0x07f07000) == 0x07f02000) {
-        instruction->type = ARM_UNDEFINED_INSTRUCTION;
         strcpy(cp, "UNDEFINED");
         return 0;
     }
@@ -1390,18 +1028,18 @@ static int t2ev_b_misc(unsigned opcode, unsigned address, struct arm_instruction
     switch ((opcode >> 20) & 0x7f) {
     case 0x38:
     case 0x39:
-        snprintf(cp, cpsize, "MSR\t%s, r%d", special_name(opcode & 0xff), (int)(opcode >> 16) & 0x0f);
+        snprintf(cp, cpsize, "msr %s, %s", special_name(opcode & 0xff), reg_name[(opcode >> 16) & 0x0f]);
         return 0;
     case 0x3a:
         return t2ev_hint(opcode, address, instruction, cp, cpsize);
     case 0x3b:
         return t2ev_misc(opcode, address, instruction, cp, cpsize);
     case 0x3c:
-        snprintf(cp, cpsize, "BXJ\tr%d", (int)(opcode >> 16) & 0x0f);
+        snprintf(cp, cpsize, "BXJ %s", reg_name[(opcode >> 16) & 0x0f]);
         return 0;
     case 0x3e:
     case 0x3f:
-        snprintf(cp, cpsize, "MRS\tr%d, %s", (int)(opcode >> 8) & 0x0f, special_name(opcode & 0xff));
+        snprintf(cp, cpsize, "mrs %s, %s", reg_name[(opcode >> 8) & 0x0f], special_name(opcode & 0xff));
         return 0;
     }
 
@@ -1453,90 +1091,74 @@ static int t2ev_data_mod_immed(unsigned opcode, unsigned address,
     switch ((opcode >> 21) & 0xf) {
     case 0:
         if (rd == 0xf) {
-            instruction->type = ARM_TST;
             mnemonic = "TST";
             one = 1;
             suffix = "";
             rd = rn;
         } else {
-            instruction->type = ARM_AND;
             mnemonic = "AND";
         }
         break;
     case 1:
-        instruction->type = ARM_BIC;
         mnemonic = "BIC";
         break;
     case 2:
         if (rn == 0xf) {
-            instruction->type = ARM_MOV;
             mnemonic = "MOV";
             one = 1;
             suffix2 = ".W";
         } else {
-            instruction->type = ARM_ORR;
             mnemonic = "ORR";
         }
         break;
     case 3:
         if (rn == 0xf) {
-            instruction->type = ARM_MVN;
             mnemonic = "MVN";
             one = 1;
         } else {
-            // instruction->type = ARM_ORN;
             mnemonic = "ORN";
         }
         break;
     case 4:
         if (rd == 0xf) {
-            instruction->type = ARM_TEQ;
             mnemonic = "TEQ";
             one = 1;
             suffix = "";
             rd = rn;
         } else {
-            instruction->type = ARM_EOR;
             mnemonic = "EOR";
         }
         break;
     case 8:
         if (rd == 0xf) {
-            instruction->type = ARM_CMN;
             mnemonic = "CMN";
             one = 1;
             suffix = "";
             rd = rn;
         } else {
-            instruction->type = ARM_ADD;
             mnemonic = "ADD";
             suffix2 = ".W";
         }
         break;
     case 10:
-        instruction->type = ARM_ADC;
         mnemonic = "ADC";
         suffix2 = ".W";
         break;
     case 11:
-        instruction->type = ARM_SBC;
         mnemonic = "SBC";
         break;
     case 13:
         if (rd == 0xf) {
-            instruction->type = ARM_CMP;
             mnemonic = "CMP";
             one = 1;
             suffix = "";
             rd = rn;
         } else {
-            instruction->type = ARM_SUB;
             mnemonic = "SUB";
         }
         suffix2 = ".W";
         break;
     case 14:
-        instruction->type = ARM_RSB;
         mnemonic = "RSB";
         suffix2 = ".W";
         break;
@@ -1545,9 +1167,9 @@ static int t2ev_data_mod_immed(unsigned opcode, unsigned address,
     }
 
     if (one)
-        snprintf(cp, cpsize, "%s%s\tr%d, #%d\t; %#8.8x", mnemonic, suffix2, rd, immed, immed);
+        snprintf(cp, cpsize, "%s%s %s, #%d ; %#8.8x", mnemonic, suffix2, reg_name[rd], immed, immed);
     else
-        snprintf(cp, cpsize, "%s%s%s\tr%d, r%d, #%d\t; %#8.8x", mnemonic, suffix, suffix2, rd, rn, immed,
+        snprintf(cp, cpsize, "%s%s%s %s, %s, #%d ; %#8.8x", mnemonic, suffix, suffix2, reg_name[rd], reg_name[rn], immed,
                 immed);
 
     return 0;
@@ -1577,7 +1199,7 @@ static int t2ev_data_immed(unsigned opcode, unsigned address, struct arm_instruc
         break;
     case 4:
         immed |= (opcode >> 4) & 0xf000;
-        snprintf(cp, cpsize, "MOVW\tr%d, #%d\t; %#3.3x", rd, immed, immed);
+        snprintf(cp, cpsize, "MOVW %s, #%d ; %#3.3x", reg_name[rd], immed, immed);
         return 0;
     case 0x0a:
         if (rn == 0xf)
@@ -1587,7 +1209,7 @@ static int t2ev_data_immed(unsigned opcode, unsigned address, struct arm_instruc
     case 0x0c:
         /* move constant to top 16 bits of register */
         immed |= (opcode >> 4) & 0xf000;
-        snprintf(cp, cpsize, "MOVT\tr%d, #%d\t; %#4.4x", rd, immed, immed);
+        snprintf(cp, cpsize, "MOVT %s, #%d ; %#4.4x", reg_name[rd], immed, immed);
         return 0;
     case 0x10:
     case 0x12:
@@ -1597,8 +1219,8 @@ static int t2ev_data_immed(unsigned opcode, unsigned address, struct arm_instruc
         /* signed/unsigned saturated add */
         immed = (opcode >> 6) & 0x03;
         immed |= (opcode >> 10) & 0x1c;
-        snprintf(cp, cpsize, "%sSAT\tr%d, #%d, r%d, %s #%d\t", is_signed ? "S" : "U", rd,
-                (int)(opcode & 0x1f) + is_signed, rn, (opcode & (1 << 21)) ? "ASR" : "LSL",
+        snprintf(cp, cpsize, "%sSAT %s, #%d, %s, %s #%d ", is_signed ? "S" : "U", reg_name[rd],
+                (int)(opcode & 0x1f) + is_signed, reg_name[rn], (opcode & (1 << 21)) ? "ASR" : "LSL",
                 immed ? immed : 32);
         return 0;
     case 0x14:
@@ -1608,23 +1230,23 @@ static int t2ev_data_immed(unsigned opcode, unsigned address, struct arm_instruc
         /* signed/unsigned bitfield extract */
         immed = (opcode >> 6) & 0x03;
         immed |= (opcode >> 10) & 0x1c;
-        snprintf(cp, cpsize, "%sBFX\tr%d, r%d, #%d, #%d\t", is_signed ? "S" : "U", rd, rn, immed,
+        snprintf(cp, cpsize, "%sBFX %s, %s, #%d, #%d ", is_signed ? "S" : "U", reg_name[rd], reg_name[rn], immed,
                 (int)(opcode & 0x1f) + 1);
         return 0;
     case 0x16:
         immed = (opcode >> 6) & 0x03;
         immed |= (opcode >> 10) & 0x1c;
         if (rn == 0xf) /* bitfield clear */
-            snprintf(cp, cpsize, "BFC\tr%d, #%d, #%d\t", rd, immed, (int)(opcode & 0x1f) + 1 - immed);
+            snprintf(cp, cpsize, "BFC %s, #%d, #%d ", reg_name[rd], immed, (int)(opcode & 0x1f) + 1 - immed);
         else /* bitfield insert */
-            snprintf(cp, cpsize, "BFI\tr%d, r%d, #%d, #%d\t", rd, rn, immed,
+            snprintf(cp, cpsize, "BFI %s, %s, #%d, #%d ", reg_name[rd], reg_name[rn], immed,
                     (int)(opcode & 0x1f) + 1 - immed);
         return 0;
     default:
         return -1;
     }
 
-    snprintf(cp, cpsize, "%s\tr%d, r%d, #%d\t; %#3.3x", mnemonic, rd, rn, immed, immed);
+    snprintf(cp, cpsize, "%s %s, %s, #%d ; %#3.3x", mnemonic, reg_name[rd], reg_name[rn], immed, immed);
     return 0;
 
 do_adr:
@@ -1633,10 +1255,11 @@ do_adr:
         address += immed;
     else
         address -= immed;
+
     /* REVISIT "ADD/SUB Rd, PC, #const ; 0x..." might be better;
      * not hiding the pc-relative stuff will sometimes be useful.
      */
-    snprintf(cp, cpsize, "ADR.W\tr%d, %#8.8x", rd, address);
+    snprintf(cp, cpsize, "ADR.W %s, %#8.8x", reg_name[rd], address);
     return 0;
 }
 
@@ -1693,13 +1316,13 @@ static int t2ev_store_single(unsigned opcode, unsigned address, struct arm_instr
         return -1;
     }
 
-    snprintf(cp, cpsize, "STR%s.W\tr%d, [r%d, r%d, LSL #%d]", size, rt, rn, (int)opcode & 0x0f,
+    snprintf(cp, cpsize, "STR%s.W %s, [%s, %s, LSL #%d]", size, reg_name[rt], reg_name[rn], reg_name[opcode & 0x0f],
             (int)(opcode >> 4) & 0x03);
     return 0;
 
 imm12:
     immed = opcode & 0x0fff;
-    snprintf(cp, cpsize, "STR%s.W\tr%d, [r%d, #%u]\t; %#3.3x", size, rt, rn, immed, immed);
+    snprintf(cp, cpsize, "STR%s.W %s, [%s, #%u] ; %#3.3x", size, reg_name[rt], reg_name[rn], immed, immed);
     return 0;
 
 imm8:
@@ -1724,7 +1347,7 @@ imm8:
         }
     }
 
-    snprintf(cp, cpsize, "STR%s%s\tr%d, [r%d%s, #%s%u%s\t; %#2.2x", size, suffix, rt, rn, p1,
+    snprintf(cp, cpsize, "STR%s%s %s, [%s%s, #%s%u%s ; %#2.2x", size, suffix, reg_name[rt], reg_name[rn], p1,
             (opcode & 0x200) ? "" : "-", immed, p2, immed);
     return 0;
 }
@@ -1737,15 +1360,15 @@ static int t2ev_mul32(unsigned opcode, unsigned address, struct arm_instruction 
     switch (opcode & 0x007000f0) {
     case 0:
         if (ra == 0xf)
-            snprintf(cp, cpsize, "MUL\tr%d, r%d, r%d", (int)(opcode >> 8) & 0xf, (int)(opcode >> 16) & 0xf,
-                    (int)(opcode >> 0) & 0xf);
+            snprintf(cp, cpsize, "MUL %s, %s, %s", reg_name[(opcode >> 8) & 0xf], reg_name[(opcode >> 16) & 0xf],
+                    reg_name[(opcode >> 0) & 0xf]);
         else
-            snprintf(cp, cpsize, "MLA\tr%d, r%d, r%d, r%d", (int)(opcode >> 8) & 0xf,
-                    (int)(opcode >> 16) & 0xf, (int)(opcode >> 0) & 0xf, ra);
+            snprintf(cp, cpsize, "MLA %s, %s, %s, %s", reg_name[(opcode >> 8) & 0xf],
+                    reg_name[(opcode >> 16) & 0xf], reg_name[(opcode >> 0) & 0xf], reg_name[ra]);
         break;
     case 0x10:
-        snprintf(cp, cpsize, "MLS\tr%d, r%d, r%d, r%d", (int)(opcode >> 8) & 0xf, (int)(opcode >> 16) & 0xf,
-                (int)(opcode >> 0) & 0xf, ra);
+        snprintf(cp, cpsize, "MLS %s, %s, %s, %s", reg_name[(opcode >> 8) & 0xf], reg_name[(opcode >> 16) & 0xf],
+                reg_name[(opcode >> 0) & 0xf], reg_name[ra]);
         break;
     default:
         return -1;
@@ -1767,14 +1390,14 @@ static int t2ev_mul64_div(unsigned opcode, unsigned address, struct arm_instruct
         /* FALLTHROUGH */
     case 0:
     case 0x20:
-        snprintf(cp, cpsize, "%c%sL\tr%d, r%d, r%d, r%d", (op & 0x20) ? 'U' : 'S', infix,
-                (int)(opcode >> 12) & 0xf, (int)(opcode >> 8) & 0xf, (int)(opcode >> 16) & 0xf,
-                (int)(opcode >> 0) & 0xf);
+        snprintf(cp, cpsize, "%c%sL %s, %s, %s, %s", (op & 0x20) ? 'U' : 'S', infix,
+                reg_name[(opcode >> 12) & 0xf], reg_name[(opcode >> 8) & 0xf], reg_name[(opcode >> 16) & 0xf],
+                reg_name[(opcode >> 0) & 0xf]);
         break;
     case 0x1f:
     case 0x3f:
-        snprintf(cp, cpsize, "%cDIV\tr%d, r%d, r%d", (op & 0x20) ? 'U' : 'S', (int)(opcode >> 8) & 0xf,
-                (int)(opcode >> 16) & 0xf, (int)(opcode >> 0) & 0xf);
+        snprintf(cp, cpsize, "%cDIV %s, %s, %s", (op & 0x20) ? 'U' : 'S', reg_name[(opcode >> 8) & 0xf],
+                reg_name[(opcode >> 16) & 0xf], reg_name[(opcode >> 0) & 0xf]);
         break;
     default:
         return -1;
@@ -1800,31 +1423,31 @@ static int t2ev_ldm_stm(unsigned opcode, unsigned address, struct arm_instructio
         mode = "DB";
         /* FALL THROUGH */
     case 6:
-        snprintf(cp, cpsize, "SRS%s\tsp%s, #%d", mode, t ? "!" : "", (unsigned)(opcode & 0x1f));
+        snprintf(cp, cpsize, "SRS%s sp%s, #%d", mode, t ? "!" : "", (unsigned)(opcode & 0x1f));
         return 0;
     case 1:
         mode = "DB";
         /* FALL THROUGH */
     case 7:
-        snprintf(cp, cpsize, "RFE%s\tr%d%s", mode, (unsigned)((opcode >> 16) & 0xf), t ? "!" : "");
+        snprintf(cp, cpsize, "RFE%s %s%s", mode, reg_name[(opcode >> 16) & 0xf], t ? "!" : "");
         return 0;
     case 2:
-        snprintf(cp, cpsize, "STM.W\tr%d%s, ", rn, t ? "!" : "");
+        snprintf(cp, cpsize, "STM.W %s%s, ", reg_name[rn], t ? "!" : "");
         break;
     case 3:
         if (rn == 13 && t)
-            snprintf(cp, cpsize, "POP.W\t");
+            snprintf(cp, cpsize, "POP.W ");
         else
-            snprintf(cp, cpsize, "LDM.W\tr%d%s, ", rn, t ? "!" : "");
+            snprintf(cp, cpsize, "LDM.W %s%s, ", reg_name[rn], t ? "!" : "");
         break;
     case 4:
         if (rn == 13 && t)
-            snprintf(cp, cpsize, "PUSH.W\t");
+            snprintf(cp, cpsize, "PUSH.W ");
         else
-            snprintf(cp, cpsize, "STMDB\tr%d%s, ", rn, t ? "!" : "");
+            snprintf(cp, cpsize, "STMDB %s%s, ", reg_name[rn], t ? "!" : "");
         break;
     case 5:
-        snprintf(cp, cpsize, "LDMDB.W\tr%d%s, ", rn, t ? "!" : "");
+        snprintf(cp, cpsize, "LDMDB.W %s%s, ", reg_name[rn], t ? "!" : "");
         break;
     default:
         return -1;
@@ -1836,7 +1459,7 @@ static int t2ev_ldm_stm(unsigned opcode, unsigned address, struct arm_instructio
         if ((registers & 1) == 0)
             continue;
         registers &= ~1;
-        snprintf(cp, cpsize, "r%d%s", t, registers ? ", " : "");
+        snprintf(cp, cpsize, "%s%s", reg_name[t], registers ? ", " : "");
         cp = strchr(cp, 0);
     }
     *cp++ = '}';
@@ -1903,10 +1526,10 @@ static int t2ev_ldrex_strex(unsigned opcode, unsigned address, struct arm_instru
     case 5:
         switch (op3) {
         case 0:
-            snprintf(cp, cpsize, "TBB\t[r%u, r%u]", rn, imm & 0xf);
+            snprintf(cp, cpsize, "TBB [%s, %s]", reg_name[rn], reg_name[imm & 0xf]);
             return 0;
         case 1:
-            snprintf(cp, cpsize, "TBH\t[r%u, r%u, LSL #1]", rn, imm & 0xf);
+            snprintf(cp, cpsize, "TBH [%s, %s, LSL #1]", reg_name[rn], reg_name[imm & 0xf]);
             return 0;
         case 4:
             mnemonic = "LDREXB";
@@ -1925,17 +1548,17 @@ static int t2ev_ldrex_strex(unsigned opcode, unsigned address, struct arm_instru
 strex:
     imm <<= 2;
     if (imm)
-        snprintf(cp, cpsize, "%s\tr%u, r%u, [r%u, #%u]\t; %#2.2x", mnemonic, rd, rt, rn, imm, imm);
+        snprintf(cp, cpsize, "%s %s, %s, [%s, #%u] ; %#2.2x", mnemonic, reg_name[rd], reg_name[rt], reg_name[rn], imm, imm);
     else
-        snprintf(cp, cpsize, "%s\tr%u, r%u, [r%u]", mnemonic, rd, rt, rn);
+        snprintf(cp, cpsize, "%s %s, %s, [%s]", mnemonic, reg_name[rd], reg_name[rt], reg_name[rn]);
     return 0;
 
 ldrex:
     imm <<= 2;
     if (imm)
-        snprintf(cp, cpsize, "%s\tr%u, [r%u, #%u]\t; %#2.2x", mnemonic, rt, rn, imm, imm);
+        snprintf(cp, cpsize, "%s %s, [%s, #%u] ; %#2.2x", mnemonic, reg_name[rt], reg_name[rn], imm, imm);
     else
-        snprintf(cp, cpsize, "%s\tr%u, [r%u]", mnemonic, rt, rn);
+        snprintf(cp, cpsize, "%s %s, [%s]", mnemonic, reg_name[rt], reg_name[rn]);
     return 0;
 
 immediate:
@@ -1950,7 +1573,7 @@ immediate:
     }
 
     imm <<= 2;
-    snprintf(cp, cpsize, "%s\tr%u, r%u, [r%u%s, #%s%u%s\t; %#2.2x", mnemonic, rt, rd, rn, p1,
+    snprintf(cp, cpsize, "%s %s, %s, [%s%s, #%s%u%s ; %#2.2x", mnemonic, reg_name[rt], reg_name[rd], reg_name[rn], p1,
             (opcode & (1 << 23)) ? "" : "-", imm, p2, imm);
     return 0;
 
@@ -1961,7 +1584,7 @@ literal:
         address += imm;
     else
         address -= imm;
-    snprintf(cp, cpsize, "%s\tr%u, r%u, %#8.8x", mnemonic, rt, rd, address);
+    snprintf(cp, cpsize, "%s %s, %s, %#8.8x", mnemonic, reg_name[rt], reg_name[rd], address);
     return 0;
 }
 
@@ -1985,25 +1608,21 @@ static int t2ev_data_shift(unsigned opcode, unsigned address, struct arm_instruc
         if (rd == 0xf) {
             if (!(opcode & (1 << 20)))
                 return -1;
-            instruction->type = ARM_TST;
             mnemonic = "TST";
             suffix = "";
             goto two;
         }
-        instruction->type = ARM_AND;
         mnemonic = "AND";
         break;
     case 1:
-        instruction->type = ARM_BIC;
         mnemonic = "BIC";
         break;
     case 2:
         if (rn == 0xf) {
-            instruction->type = ARM_MOV;
             switch (type) {
             case 0:
                 if (immed == 0) {
-                    snprintf(cp, cpsize, "MOV%s.W\tr%d, r%d", suffix, rd, (int)(opcode & 0xf));
+                    snprintf(cp, cpsize, "MOV%s.W %s, %s", suffix, reg_name[rd], reg_name[opcode & 0xf]);
                     return 0;
                 }
                 mnemonic = "LSL";
@@ -2016,7 +1635,7 @@ static int t2ev_data_shift(unsigned opcode, unsigned address, struct arm_instruc
                 break;
             default:
                 if (immed == 0) {
-                    snprintf(cp, cpsize, "RRX%s\tr%d, r%d", suffix, rd, (int)(opcode & 0xf));
+                    snprintf(cp, cpsize, "RRX%s %s, %s", suffix, reg_name[rd], reg_name[opcode & 0xf]);
                     return 0;
                 }
                 mnemonic = "ROR";
@@ -2024,18 +1643,15 @@ static int t2ev_data_shift(unsigned opcode, unsigned address, struct arm_instruc
             }
             goto immediate;
         } else {
-            instruction->type = ARM_ORR;
             mnemonic = "ORR";
         }
         break;
     case 3:
         if (rn == 0xf) {
-            instruction->type = ARM_MVN;
             mnemonic = "MVN";
             rn = rd;
             goto two;
         } else {
-            // instruction->type = ARM_ORN;
             mnemonic = "ORN";
         }
         break;
@@ -2043,55 +1659,46 @@ static int t2ev_data_shift(unsigned opcode, unsigned address, struct arm_instruc
         if (rd == 0xf) {
             if (!(opcode & (1 << 20)))
                 return -1;
-            instruction->type = ARM_TEQ;
             mnemonic = "TEQ";
             suffix = "";
             goto two;
         }
-        instruction->type = ARM_EOR;
         mnemonic = "EOR";
         break;
     case 8:
         if (rd == 0xf) {
             if (!(opcode & (1 << 20)))
                 return -1;
-            instruction->type = ARM_CMN;
             mnemonic = "CMN";
             suffix = "";
             goto two;
         }
-        instruction->type = ARM_ADD;
         mnemonic = "ADD";
         break;
     case 0xa:
-        instruction->type = ARM_ADC;
         mnemonic = "ADC";
         break;
     case 0xb:
-        instruction->type = ARM_SBC;
         mnemonic = "SBC";
         break;
     case 0xd:
         if (rd == 0xf) {
             if (!(opcode & (1 << 21)))
                 return -1;
-            instruction->type = ARM_CMP;
             mnemonic = "CMP";
             suffix = "";
             goto two;
         }
-        instruction->type = ARM_SUB;
         mnemonic = "SUB";
         break;
     case 0xe:
-        instruction->type = ARM_RSB;
         mnemonic = "RSB";
         break;
     default:
         return -1;
     }
 
-    snprintf(cp, cpsize, "%s%s.W\tr%d, r%d, r%d", mnemonic, suffix, rd, rn, (int)(opcode & 0xf));
+    snprintf(cp, cpsize, "%s%s.W %s, %s, %s", mnemonic, suffix, reg_name[rd], reg_name[rn], reg_name[opcode & 0xf]);
 
 shift:
     cp = strchr(cp, 0);
@@ -2124,11 +1731,11 @@ shift:
     return 0;
 
 two:
-    snprintf(cp, cpsize, "%s%s.W\tr%d, r%d", mnemonic, suffix, rn, (int)(opcode & 0xf));
+    snprintf(cp, cpsize, "%s%s.W %s, %s", mnemonic, suffix, reg_name[rn], reg_name[opcode & 0xf]);
     goto shift;
 
 immediate:
-    snprintf(cp, cpsize, "%s%s.W\tr%d, r%d, #%d", mnemonic, suffix, rd, (int)(opcode & 0xf),
+    snprintf(cp, cpsize, "%s%s.W %s, %s, #%d", mnemonic, suffix, reg_name[rd], reg_name[opcode & 0xf],
             immed ? immed : 32);
     return 0;
 }
@@ -2157,11 +1764,10 @@ static int t2ev_data_reg(unsigned opcode, unsigned address, struct arm_instructi
             return -1;
         }
 
-        instruction->type = ARM_MOV;
         if (opcode & (1 << 20))
             suffix = "S";
-        snprintf(cp, cpsize, "%s%s.W\tr%d, r%d, r%d", mnemonic, suffix, (int)(opcode >> 8) & 0xf,
-                (int)(opcode >> 16) & 0xf, (int)(opcode >> 0) & 0xf);
+        snprintf(cp, cpsize, "%s%s.W %s, %s, %s", mnemonic, suffix, reg_name[(opcode >> 8) & 0xf],
+                reg_name[(opcode >> 16) & 0xf], reg_name[(opcode >> 0) & 0xf]);
 
     } else if (opcode & (1 << 7)) {
         switch ((opcode >> 20) & 0xf) {
@@ -2180,9 +1786,9 @@ static int t2ev_data_reg(unsigned opcode, unsigned address, struct arm_instructi
                 suffix = ", ROR #24";
                 break;
             }
-            snprintf(cp, cpsize, "%cXT%c.W\tr%d, r%d%s", (opcode & (1 << 24)) ? 'U' : 'S',
-                    (opcode & (1 << 26)) ? 'B' : 'H', (int)(opcode >> 8) & 0xf,
-                    (int)(opcode >> 0) & 0xf, suffix);
+            snprintf(cp, cpsize, "%cXT%c.W %s, %s%s", (opcode & (1 << 24)) ? 'U' : 'S',
+                    (opcode & (1 << 26)) ? 'B' : 'H', reg_name[(opcode >> 8) & 0xf],
+                    reg_name[(opcode >> 0) & 0xf], suffix);
             break;
         case 8:
         case 9:
@@ -2214,8 +1820,8 @@ static int t2ev_data_reg(unsigned opcode, unsigned address, struct arm_instructi
             default:
                 return -1;
             }
-            snprintf(cp, cpsize, "%s\tr%d, r%d", mnemonic, (int)(opcode >> 8) & 0xf,
-                    (int)(opcode >> 0) & 0xf);
+            snprintf(cp, cpsize, "%s %s, %s", mnemonic, reg_name[(opcode >> 8) & 0xf],
+                    reg_name[(opcode >> 0) & 0xf]);
             break;
         default:
             return -1;
@@ -2231,33 +1837,31 @@ static int t2ev_load_word(unsigned opcode, unsigned address, struct arm_instruct
     int rn = (opcode >> 16) & 0xf;
     int immed;
 
-    instruction->type = ARM_LDR;
-
     if (rn == 0xf) {
         immed = opcode & 0x0fff;
         if ((opcode & (1 << 23)) == 0)
             immed = -immed;
-        snprintf(cp, cpsize, "LDR\tr%d, %#8.8x", (int)(opcode >> 12) & 0xf, thumb_alignpc4(address) + immed);
+        snprintf(cp, cpsize, "LDR %s, %#8.8x", reg_name[(opcode >> 12) & 0xf], thumb_alignpc4(address) + immed);
         return 0;
     }
 
     if (opcode & (1 << 23)) {
         immed = opcode & 0x0fff;
-        snprintf(cp, cpsize, "LDR.W\tr%d, [r%d, #%d]\t; %#3.3x", (int)(opcode >> 12) & 0xf, rn, immed,
+        snprintf(cp, cpsize, "LDR.W %s, [%s, #%d] ; %#3.3x", reg_name[(opcode >> 12) & 0xf], reg_name[rn], immed,
                 immed);
         return 0;
     }
 
     if (!(opcode & (0x3f << 6))) {
-        snprintf(cp, cpsize, "LDR.W\tr%d, [r%d, r%d, LSL #%d]", (int)(opcode >> 12) & 0xf, rn,
-                (int)(opcode >> 0) & 0xf, (int)(opcode >> 4) & 0x3);
+        snprintf(cp, cpsize, "LDR.W %s, [%s, %s, LSL #%d]", reg_name[(opcode >> 12) & 0xf], reg_name[rn],
+                reg_name[(opcode >> 0) & 0xf], (int)(opcode >> 4) & 0x3);
         return 0;
     }
 
     if (((opcode >> 8) & 0xf) == 0xe) {
         immed = opcode & 0x00ff;
 
-        snprintf(cp, cpsize, "LDRT\tr%d, [r%d, #%d]\t; %#2.2x", (int)(opcode >> 12) & 0xf, rn, immed, immed);
+        snprintf(cp, cpsize, "LDRT %s, [%s, #%d] ; %#2.2x", reg_name[(opcode >> 12) & 0xf], reg_name[rn], immed, immed);
         return 0;
     }
 
@@ -2279,7 +1883,7 @@ static int t2ev_load_word(unsigned opcode, unsigned address, struct arm_instruct
             }
         }
 
-        snprintf(cp, cpsize, "LDR\tr%d, [r%d%s, #%s%u%s\t; %#2.2x", (int)(opcode >> 12) & 0xf, rn, p1,
+        snprintf(cp, cpsize, "LDR %s, [%s%s, #%s%u%s ; %#2.2x", reg_name[(opcode >> 12) & 0xf], reg_name[rn], p1,
                 (opcode & 0x200) ? "" : "-", immed, p2, immed);
         return 0;
     }
@@ -2307,7 +1911,7 @@ static int t2ev_load_byte_hints(unsigned opcode, unsigned address,
                 address += immed;
             else
                 address -= immed;
-            snprintf(cp, cpsize, "PLD\tr%d, %#8.8x", rt, address);
+            snprintf(cp, cpsize, "PLD %s, %#8.8x", reg_name[rt], address);
             return 0;
         }
         if (rn == 0x0f && rt != 0x0f) {
@@ -2318,14 +1922,14 @@ static int t2ev_load_byte_hints(unsigned opcode, unsigned address,
                 address += immed;
             else
                 address -= immed;
-            snprintf(cp, cpsize, "LDRB\tr%d, %#8.8x", rt, address);
+            snprintf(cp, cpsize, "LDRB %s, %#8.8x", reg_name[rt], address);
             return 0;
         }
         if (rn == 0x0f)
             break;
         if ((op2 & 0x3c) == 0x38) {
             immed = opcode & 0xff;
-            snprintf(cp, cpsize, "LDRBT\tr%d, [r%d, #%d]\t; %#2.2x", rt, rn, immed, immed);
+            snprintf(cp, cpsize, "LDRBT %s, [%s, #%d] ; %#2.2x", reg_name[rt], reg_name[rn], immed, immed);
             return 0;
         }
         if ((op2 & 0x3c) == 0x30) {
@@ -2334,7 +1938,7 @@ static int t2ev_load_byte_hints(unsigned opcode, unsigned address,
                 immed = -immed;
             preload_immediate:
                 p1 = (opcode & (1 << 21)) ? "W" : "";
-                snprintf(cp, cpsize, "PLD%s\t[r%d, #%d]\t; %#6.6x", p1, rn, immed, immed);
+                snprintf(cp, cpsize, "PLD%s [%s, #%d] ; %#6.6x", p1, reg_name[rn], immed, immed);
                 return 0;
             }
             mnemonic = "LDRB";
@@ -2353,7 +1957,7 @@ static int t2ev_load_byte_hints(unsigned opcode, unsigned address,
                 }
             }
         ldrxb_immediate_t2:
-            snprintf(cp, cpsize, "%s\tr%d, [r%d%s, #%d%s\t; %#8.8x", mnemonic, rt, rn, p1, immed, p2, immed);
+            snprintf(cp, cpsize, "%s %s, [%s%s, #%d%s ; %#8.8x", mnemonic, reg_name[rt], reg_name[rn], p1, immed, p2, immed);
             return 0;
         }
         if ((op2 & 0x24) == 0x24) {
@@ -2364,12 +1968,12 @@ static int t2ev_load_byte_hints(unsigned opcode, unsigned address,
             int rm = opcode & 0xf;
 
             if (rt == 0x0f)
-                snprintf(cp, cpsize, "PLD\t");
+                snprintf(cp, cpsize, "PLD ");
             else
-                snprintf(cp, cpsize, "LDRB.W\tr%d, ", rt);
+                snprintf(cp, cpsize, "LDRB.W %s, ", reg_name[rt]);
             immed = (opcode >> 4) & 0x3;
             cp = strchr(cp, 0);
-            snprintf(cp, cpsize, "[r%d, r%d, LSL #%d]", rn, rm, immed);
+            snprintf(cp, cpsize, "[%s, %s, LSL #%d]", reg_name[rn], reg_name[rm], immed);
             return 0;
         }
         break;
@@ -2393,7 +1997,7 @@ static int t2ev_load_byte_hints(unsigned opcode, unsigned address,
                 address += immed;
             else
                 address -= immed;
-            snprintf(cp, cpsize, "PLI\t%#8.8x", address);
+            snprintf(cp, cpsize, "PLI %#8.8x", address);
             return 0;
         }
         if (rn == 0xf && rt != 0xf) {
@@ -2404,21 +2008,21 @@ static int t2ev_load_byte_hints(unsigned opcode, unsigned address,
                 address += immed;
             else
                 address -= immed;
-            snprintf(cp, cpsize, "LDRSB\t%#8.8x", address);
+            snprintf(cp, cpsize, "LDRSB %#8.8x", address);
             return 0;
         }
         if (rn == 0xf)
             break;
         if ((op2 & 0x3c) == 0x38) {
             immed = opcode & 0xff;
-            snprintf(cp, cpsize, "LDRSBT\tr%d, [r%d, #%d]\t; %#2.2x", rt, rn, immed, immed);
+            snprintf(cp, cpsize, "LDRSBT %s, [%s, #%d] ; %#2.2x", reg_name[rt], reg_name[rn], immed, immed);
             return 0;
         }
         if ((op2 & 0x3c) == 0x30) {
             if (rt == 0xf) {
                 immed = opcode & 0xff;
                 immed = -immed; // pli
-                snprintf(cp, cpsize, "PLI\t[r%d, #%d]\t; -%#2.2x", rn, immed, -immed);
+                snprintf(cp, cpsize, "PLI [%s, #%d] ; -%#2.2x", reg_name[rn], immed, -immed);
                 return 0;
             }
             mnemonic = "LDRSB";
@@ -2432,19 +2036,19 @@ static int t2ev_load_byte_hints(unsigned opcode, unsigned address,
             int rm = opcode & 0xf;
 
             if (rt == 0x0f)
-                snprintf(cp, cpsize, "PLI\t");
+                snprintf(cp, cpsize, "PLI ");
             else
-                snprintf(cp, cpsize, "LDRSB.W\tr%d, ", rt);
+                snprintf(cp, cpsize, "LDRSB.W %s, ", reg_name[rt]);
             immed = (opcode >> 4) & 0x3;
             cp = strchr(cp, 0);
-            snprintf(cp, cpsize, "[r%d, r%d, LSL #%d]", rn, rm, immed);
+            snprintf(cp, cpsize, "[%s, %s, LSL #%d]", reg_name[rn], reg_name[rm], immed);
             return 0;
         }
         break;
     case 3:
         if (rt == 0xf) {
             immed = opcode & 0xfff;
-            snprintf(cp, cpsize, "PLI\t[r%d, #%d]\t; %#3.3x", rn, immed, immed);
+            snprintf(cp, cpsize, "PLI [%s, #%d] ; %#3.3x", reg_name[rn], immed, immed);
             return 0;
         }
         if (rn == 0xf)
@@ -2483,19 +2087,19 @@ static int t2ev_load_halfword(unsigned opcode, unsigned address,
                 address += immed;
             else
                 address -= immed;
-            snprintf(cp, cpsize, "LDR%sH\tr%d, %#8.8x", sign, rt, address);
+            snprintf(cp, cpsize, "LDR%sH %s, %#8.8x", sign, reg_name[rt], address);
             return 0;
         }
         if (op2 == 0) {
             int rm = opcode & 0xf;
 
             immed = (opcode >> 4) & 0x3;
-            snprintf(cp, cpsize, "LDR%sH.W\tr%d, [r%d, r%d, LSL #%d]", sign, rt, rn, rm, immed);
+            snprintf(cp, cpsize, "LDR%sH.W %s, [%s, %s, LSL #%d]", sign, reg_name[rt], reg_name[rn], reg_name[rm], immed);
             return 0;
         }
         if ((op2 & 0x3c) == 0x38) {
             immed = opcode & 0xff;
-            snprintf(cp, cpsize, "LDR%sHT\tr%d, [r%d, #%d]\t; %#2.2x", sign, rt, rn, immed, immed);
+            snprintf(cp, cpsize, "LDR%sHT %s, [%s, #%d] ; %#2.2x", sign, reg_name[rt], reg_name[rn], immed, immed);
             return 0;
         }
         if ((op2 & 0x3c) == 0x30 || (op2 & 0x24) == 0x24) {
@@ -2514,7 +2118,7 @@ static int t2ev_load_halfword(unsigned opcode, unsigned address,
                     p2 = "";
                 }
             }
-            snprintf(cp, cpsize, "LDR%sH\tr%d, [r%d%s, #%d%s\t; %#8.8x", sign, rt, rn, p1, immed, p2, immed);
+            snprintf(cp, cpsize, "LDR%sH %s, [%s%s, #%d%s ; %#8.8x", sign, reg_name[rt], reg_name[rn], p1, immed, p2, immed);
             return 0;
         }
     } else {
@@ -2522,7 +2126,7 @@ static int t2ev_load_halfword(unsigned opcode, unsigned address,
             goto ldrh_literal;
 
         immed = opcode & 0xfff;
-        snprintf(cp, cpsize, "LDR%sH%s\tr%d, [r%d, #%d]\t; %#6.6x", sign, *sign ? "" : ".W", rt, rn, immed,
+        snprintf(cp, cpsize, "LDR%sH%s %s, [%s, #%d] ; %#6.6x", sign, *sign ? "" : ".W", reg_name[rt], reg_name[rn], immed,
                 immed);
         return 0;
     }
@@ -2534,11 +2138,8 @@ static std::string evaluate_opcode32(unsigned opcode, unsigned address)
 {
     // 32-bit instructions.
     struct arm_instruction instruction{};
-    instruction.instruction_size = 4;
-    instruction.opcode = opcode;
-    snprintf(instruction.text, 128, "0x%8.8x  0x%8.8x\t", address, opcode);
 
-    char *cp = strchr(instruction.text, 0);
+    char *cp = instruction.text;
     int retval = -2;
 
     /* ARMv7-M: A5.3.1 Data processing (modified immediate) */
