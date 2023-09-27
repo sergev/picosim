@@ -280,7 +280,9 @@ void Processor::thumb_shift_imm()
             set_reg_nz(rd, get_reg(rm));
         } else {
             // LSL instruction.
-            terminate_simulation("lsl"); // TODO
+            uint32_t value = get_reg(rm);
+            set_reg_nz(rd, value << imm);
+            xpsr.field.c = value >> (32 - imm);
         }
         break;
 
