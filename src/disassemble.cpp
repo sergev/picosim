@@ -227,7 +227,7 @@ static int thumb_data_proc(unsigned short opcode, unsigned address,
                 if (H1) {
                     snprintf(instruction->text, sizeof(instruction->text), "BLX %s", reg_name[Rm]);
                 } else {
-                    snprintf(instruction->text, sizeof(instruction->text), "BX %s", reg_name[Rm]);
+                    snprintf(instruction->text, sizeof(instruction->text), "bx %s", reg_name[Rm]);
                 }
             } else {
                 snprintf(instruction->text, sizeof(instruction->text), "UNDEFINED INSTRUCTION");
@@ -293,11 +293,6 @@ static int thumb_data_proc(unsigned short opcode, unsigned address,
     return 0;
 }
 
-/* PC-relative data addressing is word-aligned even with Thumb */
-static inline unsigned thumb_alignpc4(unsigned addr)
-{
-    return (addr + 4) & ~3;
-}
 
 static int thumb_load_literal(unsigned short opcode, unsigned address,
                               struct arm_instruction *instruction)
@@ -308,9 +303,15 @@ static int thumb_load_literal(unsigned short opcode, unsigned address,
     immediate = opcode & 0x000000ff;
     immediate *= 4;
 
-    snprintf(instruction->text, sizeof(instruction->text), "LDR %s, [pc, #%#x] ; %#8.8x",
-             reg_name[Rd], immediate, thumb_alignpc4(address) + immediate);
+    snprintf(instruction->text, sizeof(instruction->text), "ldr %s, [pc, #%u]",
+             reg_name[Rd], immediate);
 
+#if 0
+    // TODO: show address = thumb_alignpc4(address) + immediate.
+    // PC-relative data addressing is word-aligned even with Thumb.
+    address = (address + 4) & ~3;
+    sprintf(..., "%#8.8x", address + immediate);
+#endif
     return 0;
 }
 
@@ -325,28 +326,28 @@ static int thumb_load_store_reg(unsigned short opcode, unsigned address,
 
     switch (opc) {
     case 0:
-        mnemonic = "STR";
+        mnemonic = "str";
         break;
     case 1:
-        mnemonic = "STRH";
+        mnemonic = "strh";
         break;
     case 2:
-        mnemonic = "STRB";
+        mnemonic = "strb";
         break;
     case 3:
-        mnemonic = "LDRSB";
+        mnemonic = "ldrsb";
         break;
     case 4:
-        mnemonic = "LDR";
+        mnemonic = "ldr";
         break;
     case 5:
-        mnemonic = "LDRH";
+        mnemonic = "ldrh";
         break;
     case 6:
-        mnemonic = "LDRB";
+        mnemonic = "ldrb";
         break;
     case 7:
-        mnemonic = "LDRSH";
+        mnemonic = "ldrsh";
         break;
     }
 
@@ -365,24 +366,20 @@ static int thumb_load_store_imm(unsigned short opcode, unsigned address,
     unsigned L = opcode & (1 << 11);
     unsigned B = opcode & (1 << 12);
     const char *mnemonic;
-    char suffix = ' ';
-    unsigned shift = 2;
-
-    if (L) {
-        mnemonic = "LDR";
-    } else {
-        mnemonic = "STR";
-    }
+    unsigned shift;
 
     if ((opcode & 0xF000) == 0x8000) {
-        suffix = 'H';
+        mnemonic = L ? "ldrh" : "strh";
         shift = 1;
     } else if (B) {
-        suffix = 'B';
+        mnemonic = L ? "ldrb" : "strb";
         shift = 0;
+    } else {
+        mnemonic = L ? "ldr" : "str";
+        shift = 2;
     }
 
-    snprintf(instruction->text, sizeof(instruction->text), "%s%c %s, [%s, #%#x]", mnemonic, suffix,
+    snprintf(instruction->text, sizeof(instruction->text), "%s %s, [%s, #%u]", mnemonic,
              reg_name[Rd], reg_name[Rn], offset << shift);
 
     return 0;
@@ -397,13 +394,13 @@ static int thumb_load_store_stack(unsigned short opcode, unsigned address,
     const char *mnemonic;
 
     if (L) {
-        mnemonic = "LDR";
+        mnemonic = "ldr";
     } else {
-        mnemonic = "STR";
+        mnemonic = "str";
     }
 
-    snprintf(instruction->text, sizeof(instruction->text), "%s %s, [SP, #%#x]", mnemonic,
-             reg_name[Rd], offset * 4);
+    snprintf(instruction->text, sizeof(instruction->text), "%s %s, [%s, #%u]", mnemonic,
+             reg_name[Rd], reg_name[13], offset * 4);
 
     return 0;
 }
