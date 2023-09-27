@@ -24,6 +24,7 @@ PROG            = movs_imm.elf \
                   strh_reg_reg.elf \
                   add_sp_imm.elf \
                   add_pc_imm.elf \
+                  add_reg_reg.elf \
                   psr.elf \
                   sysreg.elf \
                   nop.elf \

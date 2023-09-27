@@ -71,7 +71,7 @@ static std::string thumb_add_sub(unsigned opcode)
     unsigned Rm_imm      = (opcode >> 6) & 0x7;
     unsigned opc         = opcode & (1 << 9);
     unsigned reg_imm     = opcode & (1 << 10);
-    const char *mnemonic = opc ? "subs" : "adds";
+    const char *mnemonic = opc ? "sub" : "add";
     std::ostringstream text;
 
     if (reg_imm == 0) {
