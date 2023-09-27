@@ -1,0 +1,655 @@
+f380 8000 msr	CPSR_, r0
+f380 8001 msr	IAPSR, r0
+f380 8002 msr	EAPSR, r0
+f380 8003 msr	PSR, r0
+f380 8004 msr	<unknown>, r0
+f380 8005 msr	IPSR, r0
+f380 8006 msr	EPSR, r0
+f380 8007 msr	IEPSR, r0
+f380 8008 msr	MSP, r0
+f380 8009 msr	PSP, r0
+f380 800a msr	MSPLIM, r0
+f380 800b msr	PSPLIM, r0
+f380 800c msr	<unknown>, r0
+f380 800d msr	<unknown>, r0
+f380 800e msr	<unknown>, r0
+f380 800f msr	<unknown>, r0
+f380 8010 msr	PRIMASK, r0
+f380 8011 msr	BASEPRI, r0
+f380 8012 msr	BASEPRI_MAX, r0
+f380 8013 msr	FAULTMASK, r0
+f380 8014 msr	CONTROL, r0
+f380 8015 msr	<unknown>, r0
+f380 8016 msr	<unknown>, r0
+f380 8017 msr	<unknown>, r0
+f380 8018 msr	<unknown>, r0
+f380 8019 msr	<unknown>, r0
+f380 801a msr	<unknown>, r0
+f380 801b msr	<unknown>, r0
+f380 801c msr	<unknown>, r0
+f380 801d msr	<unknown>, r0
+f380 801e msr	<unknown>, r0
+f380 801f msr	<unknown>, r0
+f380 8020 msr	R8_usr, r0
+f380 8021 msr	R8_usr, r0
+f380 8022 msr	R8_usr, r0
+f380 8023 msr	R8_usr, r0
+f380 8024 msr	R8_usr, r0
+f380 8025 msr	R8_usr, r0
+f380 8026 msr	R8_usr, r0
+f380 8027 msr	R8_usr, r0
+f380 8028 msr	R8_usr, r0
+f380 8029 msr	R8_usr, r0
+f380 802a msr	R8_usr, r0
+f380 802b msr	R8_usr, r0
+f380 802c msr	R8_usr, r0
+f380 802d msr	R8_usr, r0
+f380 802e msr	R8_usr, r0
+f380 802f msr	R8_usr, r0
+f380 8030 msr	LR_irq, r0
+f380 8031 msr	LR_irq, r0
+f380 8032 msr	LR_irq, r0
+f380 8033 msr	LR_irq, r0
+f380 8034 msr	LR_irq, r0
+f380 8035 msr	LR_irq, r0
+f380 8036 msr	LR_irq, r0
+f380 8037 msr	LR_irq, r0
+f380 8038 msr	LR_irq, r0
+f380 8039 msr	LR_irq, r0
+f380 803a msr	LR_irq, r0
+f380 803b msr	LR_irq, r0
+f380 803c msr	LR_irq, r0
+f380 803d msr	LR_irq, r0
+f380 803e msr	LR_irq, r0
+f380 803f msr	LR_irq, r0
+f380 8040 msr	<unknown>, r0
+f380 8041 msr	<unknown>, r0
+f380 8042 msr	<unknown>, r0
+f380 8043 msr	<unknown>, r0
+f380 8044 msr	<unknown>, r0
+f380 8045 msr	<unknown>, r0
+f380 8046 msr	<unknown>, r0
+f380 8047 msr	<unknown>, r0
+f380 8048 msr	<unknown>, r0
+f380 8049 msr	<unknown>, r0
+f380 804a msr	<unknown>, r0
+f380 804b msr	<unknown>, r0
+f380 804c msr	<unknown>, r0
+f380 804d msr	<unknown>, r0
+f380 804e msr	<unknown>, r0
+f380 804f msr	<unknown>, r0
+f380 8050 msr	<unknown>, r0
+f380 8051 msr	<unknown>, r0
+f380 8052 msr	<unknown>, r0
+f380 8053 msr	<unknown>, r0
+f380 8054 msr	<unknown>, r0
+f380 8055 msr	<unknown>, r0
+f380 8056 msr	<unknown>, r0
+f380 8057 msr	<unknown>, r0
+f380 8058 msr	<unknown>, r0
+f380 8059 msr	<unknown>, r0
+f380 805a msr	<unknown>, r0
+f380 805b msr	<unknown>, r0
+f380 805c msr	<unknown>, r0
+f380 805d msr	<unknown>, r0
+f380 805e msr	<unknown>, r0
+f380 805f msr	<unknown>, r0
+f380 8060 msr	R8_usr, r0
+f380 8061 msr	R8_usr, r0
+f380 8062 msr	R8_usr, r0
+f380 8063 msr	R8_usr, r0
+f380 8064 msr	R8_usr, r0
+f380 8065 msr	R8_usr, r0
+f380 8066 msr	R8_usr, r0
+f380 8067 msr	R8_usr, r0
+f380 8068 msr	R8_usr, r0
+f380 8069 msr	R8_usr, r0
+f380 806a msr	R8_usr, r0
+f380 806b msr	R8_usr, r0
+f380 806c msr	R8_usr, r0
+f380 806d msr	R8_usr, r0
+f380 806e msr	R8_usr, r0
+f380 806f msr	R8_usr, r0
+f380 8070 msr	LR_irq, r0
+f380 8071 msr	LR_irq, r0
+f380 8072 msr	LR_irq, r0
+f380 8073 msr	LR_irq, r0
+f380 8074 msr	LR_irq, r0
+f380 8075 msr	LR_irq, r0
+f380 8076 msr	LR_irq, r0
+f380 8077 msr	LR_irq, r0
+f380 8078 msr	LR_irq, r0
+f380 8079 msr	LR_irq, r0
+f380 807a msr	LR_irq, r0
+f380 807b msr	LR_irq, r0
+f380 807c msr	LR_irq, r0
+f380 807d msr	LR_irq, r0
+f380 807e msr	LR_irq, r0
+f380 807f msr	LR_irq, r0
+f380 8080 msr	<unknown>, r0
+f380 8081 msr	<unknown>, r0
+f380 8082 msr	<unknown>, r0
+f380 8083 msr	<unknown>, r0
+f380 8084 msr	<unknown>, r0
+f380 8085 msr	<unknown>, r0
+f380 8086 msr	<unknown>, r0
+f380 8087 msr	<unknown>, r0
+f380 8088 msr	MSP_NS, r0
+f380 8089 msr	PSP_NS, r0
+f380 808a msr	MSPLIM_NS, r0
+f380 808b msr	PSPLIM_NS, r0
+f380 808c msr	<unknown>, r0
+f380 808d msr	<unknown>, r0
+f380 808e msr	<unknown>, r0
+f380 808f msr	<unknown>, r0
+f380 8090 msr	PRIMASK_NS, r0
+f380 8091 msr	BASEPRI_NS, r0
+f380 8092 msr	<unknown>, r0
+f380 8093 msr	FAULTMASK_NS, r0
+f380 8094 msr	CONTROL_NS, r0
+f380 8095 msr	<unknown>, r0
+f380 8096 msr	<unknown>, r0
+f380 8097 msr	<unknown>, r0
+f380 8098 msr	SP_NS, r0
+f380 8099 msr	<unknown>, r0
+f380 809a msr	<unknown>, r0
+f380 809b msr	<unknown>, r0
+f380 809c msr	<unknown>, r0
+f380 809d msr	<unknown>, r0
+f380 809e msr	<unknown>, r0
+f380 809f msr	<unknown>, r0
+f380 80a0 msr	R8_usr, r0
+f380 80a1 msr	R8_usr, r0
+f380 80a2 msr	R8_usr, r0
+f380 80a3 msr	R8_usr, r0
+f380 80a4 msr	R8_usr, r0
+f380 80a5 msr	R8_usr, r0
+f380 80a6 msr	R8_usr, r0
+f380 80a7 msr	R8_usr, r0
+f380 80a8 msr	R8_usr, r0
+f380 80a9 msr	R8_usr, r0
+f380 80aa msr	R8_usr, r0
+f380 80ab msr	R8_usr, r0
+f380 80ac msr	R8_usr, r0
+f380 80ad msr	R8_usr, r0
+f380 80ae msr	R8_usr, r0
+f380 80af msr	R8_usr, r0
+f380 80b0 msr	LR_irq, r0
+f380 80b1 msr	LR_irq, r0
+f380 80b2 msr	LR_irq, r0
+f380 80b3 msr	LR_irq, r0
+f380 80b4 msr	LR_irq, r0
+f380 80b5 msr	LR_irq, r0
+f380 80b6 msr	LR_irq, r0
+f380 80b7 msr	LR_irq, r0
+f380 80b8 msr	LR_irq, r0
+f380 80b9 msr	LR_irq, r0
+f380 80ba msr	LR_irq, r0
+f380 80bb msr	LR_irq, r0
+f380 80bc msr	LR_irq, r0
+f380 80bd msr	LR_irq, r0
+f380 80be msr	LR_irq, r0
+f380 80bf msr	LR_irq, r0
+f380 80c0 msr	<unknown>, r0
+f380 80c1 msr	<unknown>, r0
+f380 80c2 msr	<unknown>, r0
+f380 80c3 msr	<unknown>, r0
+f380 80c4 msr	<unknown>, r0
+f380 80c5 msr	<unknown>, r0
+f380 80c6 msr	<unknown>, r0
+f380 80c7 msr	<unknown>, r0
+f380 80c8 msr	<unknown>, r0
+f380 80c9 msr	<unknown>, r0
+f380 80ca msr	<unknown>, r0
+f380 80cb msr	<unknown>, r0
+f380 80cc msr	<unknown>, r0
+f380 80cd msr	<unknown>, r0
+f380 80ce msr	<unknown>, r0
+f380 80cf msr	<unknown>, r0
+f380 80d0 msr	<unknown>, r0
+f380 80d1 msr	<unknown>, r0
+f380 80d2 msr	<unknown>, r0
+f380 80d3 msr	<unknown>, r0
+f380 80d4 msr	<unknown>, r0
+f380 80d5 msr	<unknown>, r0
+f380 80d6 msr	<unknown>, r0
+f380 80d7 msr	<unknown>, r0
+f380 80d8 msr	<unknown>, r0
+f380 80d9 msr	<unknown>, r0
+f380 80da msr	<unknown>, r0
+f380 80db msr	<unknown>, r0
+f380 80dc msr	<unknown>, r0
+f380 80dd msr	<unknown>, r0
+f380 80de msr	<unknown>, r0
+f380 80df msr	<unknown>, r0
+f380 80e0 msr	R8_usr, r0
+f380 80e1 msr	R8_usr, r0
+f380 80e2 msr	R8_usr, r0
+f380 80e3 msr	R8_usr, r0
+f380 80e4 msr	R8_usr, r0
+f380 80e5 msr	R8_usr, r0
+f380 80e6 msr	R8_usr, r0
+f380 80e7 msr	R8_usr, r0
+f380 80e8 msr	R8_usr, r0
+f380 80e9 msr	R8_usr, r0
+f380 80ea msr	R8_usr, r0
+f380 80eb msr	R8_usr, r0
+f380 80ec msr	R8_usr, r0
+f380 80ed msr	R8_usr, r0
+f380 80ee msr	R8_usr, r0
+f380 80ef msr	R8_usr, r0
+f380 80f0 msr	LR_irq, r0
+f380 80f1 msr	LR_irq, r0
+f380 80f2 msr	LR_irq, r0
+f380 80f3 msr	LR_irq, r0
+f380 80f4 msr	LR_irq, r0
+f380 80f5 msr	LR_irq, r0
+f380 80f6 msr	LR_irq, r0
+f380 80f7 msr	LR_irq, r0
+f380 80f8 msr	LR_irq, r0
+f380 80f9 msr	LR_irq, r0
+f380 80fa msr	LR_irq, r0
+f380 80fb msr	LR_irq, r0
+f380 80fc msr	LR_irq, r0
+f380 80fd msr	LR_irq, r0
+f380 80fe msr	LR_irq, r0
+f380 80ff msr	LR_irq, r0
+f381 8000 msr	CPSR_, r1
+f382 8000 msr	CPSR_, r2
+f383 8000 msr	CPSR_, r3
+f384 8000 msr	CPSR_, r4
+f385 8000 msr	CPSR_, r5
+f386 8000 msr	CPSR_, r6
+f387 8000 msr	CPSR_, r7
+f388 8000 msr	CPSR_, r8
+f389 8000 msr	CPSR_, r9
+f38a 8000 msr	CPSR_, sl
+f38b 8000 msr	CPSR_, fp
+f38c 8000 msr	CPSR_, ip
+f38d 8000 msr	CPSR_, sp
+f38e 8000 msr	CPSR_, lr
+f38f 8000 msr	CPSR_, pc
+f3bf 8f40 ssbb
+f3bf 8f41 dsb	oshld
+f3bf 8f42 dsb	oshst
+f3bf 8f43 dsb	osh
+f3bf 8f44 pssbb
+f3bf 8f45 dsb	nshld
+f3bf 8f46 dsb	unst
+f3bf 8f47 dsb	un
+f3bf 8f48 dsb	#8
+f3bf 8f49 dsb	ishld
+f3bf 8f4a dsb	ishst
+f3bf 8f4b dsb	ish
+f3bf 8f4c dfb
+f3bf 8f4d dsb	ld
+f3bf 8f4e dsb	st
+f3bf 8f4f dsb	sy
+f3bf 8f50 dmb	#0
+f3bf 8f51 dmb	oshld
+f3bf 8f52 dmb	oshst
+f3bf 8f53 dmb	osh
+f3bf 8f54 dmb	#4
+f3bf 8f55 dmb	nshld
+f3bf 8f56 dmb	unst
+f3bf 8f57 dmb	un
+f3bf 8f58 dmb	#8
+f3bf 8f59 dmb	ishld
+f3bf 8f5a dmb	ishst
+f3bf 8f5b dmb	ish
+f3bf 8f5c dmb	#12
+f3bf 8f5d dmb	ld
+f3bf 8f5e dmb	st
+f3bf 8f5f dmb	sy
+f3bf 8f60 isb	#0
+f3bf 8f61 isb	#1
+f3bf 8f62 isb	#2
+f3bf 8f63 isb	#3
+f3bf 8f64 isb	#4
+f3bf 8f65 isb	#5
+f3bf 8f66 isb	#6
+f3bf 8f67 isb	#7
+f3bf 8f68 isb	#8
+f3bf 8f69 isb	#9
+f3bf 8f6a isb	#10
+f3bf 8f6b isb	#11
+f3bf 8f6c isb	#12
+f3bf 8f6d isb	#13
+f3bf 8f6e isb	#14
+f3bf 8f6f isb	sy
+f3ef 8000 mrs	r0, CPSR
+f3ef 8001 mrs	r0, IAPSR
+f3ef 8002 mrs	r0, EAPSR
+f3ef 8003 mrs	r0, PSR
+f3ef 8004 mrs	r0, <unknown>
+f3ef 8005 mrs	r0, IPSR
+f3ef 8006 mrs	r0, EPSR
+f3ef 8007 mrs	r0, IEPSR
+f3ef 8008 mrs	r0, MSP
+f3ef 8009 mrs	r0, PSP
+f3ef 800a mrs	r0, MSPLIM
+f3ef 800b mrs	r0, PSPLIM
+f3ef 800c mrs	r0, <unknown>
+f3ef 800d mrs	r0, <unknown>
+f3ef 800e mrs	r0, <unknown>
+f3ef 800f mrs	r0, <unknown>
+f3ef 8010 mrs	r0, PRIMASK
+f3ef 8011 mrs	r0, BASEPRI
+f3ef 8012 mrs	r0, BASEPRI_MAX
+f3ef 8013 mrs	r0, FAULTMASK
+f3ef 8014 mrs	r0, CONTROL
+f3ef 8015 mrs	r0, <unknown>
+f3ef 8016 mrs	r0, <unknown>
+f3ef 8017 mrs	r0, <unknown>
+f3ef 8018 mrs	r0, <unknown>
+f3ef 8019 mrs	r0, <unknown>
+f3ef 801a mrs	r0, <unknown>
+f3ef 801b mrs	r0, <unknown>
+f3ef 801c mrs	r0, <unknown>
+f3ef 801d mrs	r0, <unknown>
+f3ef 801e mrs	r0, <unknown>
+f3ef 801f mrs	r0, <unknown>
+f3ef 8020 mrs	r0, (UNDEF: 47)
+f3ef 8021 mrs	r0, (UNDEF: 47)
+f3ef 8022 mrs	r0, (UNDEF: 47)
+f3ef 8023 mrs	r0, (UNDEF: 47)
+f3ef 8024 mrs	r0, (UNDEF: 47)
+f3ef 8025 mrs	r0, (UNDEF: 47)
+f3ef 8026 mrs	r0, (UNDEF: 47)
+f3ef 8027 mrs	r0, (UNDEF: 47)
+f3ef 8028 mrs	r0, (UNDEF: 47)
+f3ef 8029 mrs	r0, (UNDEF: 47)
+f3ef 802a mrs	r0, (UNDEF: 47)
+f3ef 802b mrs	r0, (UNDEF: 47)
+f3ef 802c mrs	r0, (UNDEF: 47)
+f3ef 802d mrs	r0, (UNDEF: 47)
+f3ef 802e mrs	r0, (UNDEF: 47)
+f3ef 802f mrs	r0, (UNDEF: 47)
+f3ef 8030 mrs	r0, SP_hyp
+f3ef 8031 mrs	r0, SP_hyp
+f3ef 8032 mrs	r0, SP_hyp
+f3ef 8033 mrs	r0, SP_hyp
+f3ef 8034 mrs	r0, SP_hyp
+f3ef 8035 mrs	r0, SP_hyp
+f3ef 8036 mrs	r0, SP_hyp
+f3ef 8037 mrs	r0, SP_hyp
+f3ef 8038 mrs	r0, SP_hyp
+f3ef 8039 mrs	r0, SP_hyp
+f3ef 803a mrs	r0, SP_hyp
+f3ef 803b mrs	r0, SP_hyp
+f3ef 803c mrs	r0, SP_hyp
+f3ef 803d mrs	r0, SP_hyp
+f3ef 803e mrs	r0, SP_hyp
+f3ef 803f mrs	r0, SP_hyp
+f3ef 8040 mrs	r0, <unknown>
+f3ef 8041 mrs	r0, <unknown>
+f3ef 8042 mrs	r0, <unknown>
+f3ef 8043 mrs	r0, <unknown>
+f3ef 8044 mrs	r0, <unknown>
+f3ef 8045 mrs	r0, <unknown>
+f3ef 8046 mrs	r0, <unknown>
+f3ef 8047 mrs	r0, <unknown>
+f3ef 8048 mrs	r0, <unknown>
+f3ef 8049 mrs	r0, <unknown>
+f3ef 804a mrs	r0, <unknown>
+f3ef 804b mrs	r0, <unknown>
+f3ef 804c mrs	r0, <unknown>
+f3ef 804d mrs	r0, <unknown>
+f3ef 804e mrs	r0, <unknown>
+f3ef 804f mrs	r0, <unknown>
+f3ef 8050 mrs	r0, <unknown>
+f3ef 8051 mrs	r0, <unknown>
+f3ef 8052 mrs	r0, <unknown>
+f3ef 8053 mrs	r0, <unknown>
+f3ef 8054 mrs	r0, <unknown>
+f3ef 8055 mrs	r0, <unknown>
+f3ef 8056 mrs	r0, <unknown>
+f3ef 8057 mrs	r0, <unknown>
+f3ef 8058 mrs	r0, <unknown>
+f3ef 8059 mrs	r0, <unknown>
+f3ef 805a mrs	r0, <unknown>
+f3ef 805b mrs	r0, <unknown>
+f3ef 805c mrs	r0, <unknown>
+f3ef 805d mrs	r0, <unknown>
+f3ef 805e mrs	r0, <unknown>
+f3ef 805f mrs	r0, <unknown>
+f3ef 8060 mrs	r0, (UNDEF: 47)
+f3ef 8061 mrs	r0, (UNDEF: 47)
+f3ef 8062 mrs	r0, (UNDEF: 47)
+f3ef 8063 mrs	r0, (UNDEF: 47)
+f3ef 8064 mrs	r0, (UNDEF: 47)
+f3ef 8065 mrs	r0, (UNDEF: 47)
+f3ef 8066 mrs	r0, (UNDEF: 47)
+f3ef 8067 mrs	r0, (UNDEF: 47)
+f3ef 8068 mrs	r0, (UNDEF: 47)
+f3ef 8069 mrs	r0, (UNDEF: 47)
+f3ef 806a mrs	r0, (UNDEF: 47)
+f3ef 806b mrs	r0, (UNDEF: 47)
+f3ef 806c mrs	r0, (UNDEF: 47)
+f3ef 806d mrs	r0, (UNDEF: 47)
+f3ef 806e mrs	r0, (UNDEF: 47)
+f3ef 806f mrs	r0, (UNDEF: 47)
+f3ef 8070 mrs	r0, SP_hyp
+f3ef 8071 mrs	r0, SP_hyp
+f3ef 8072 mrs	r0, SP_hyp
+f3ef 8073 mrs	r0, SP_hyp
+f3ef 8074 mrs	r0, SP_hyp
+f3ef 8075 mrs	r0, SP_hyp
+f3ef 8076 mrs	r0, SP_hyp
+f3ef 8077 mrs	r0, SP_hyp
+f3ef 8078 mrs	r0, SP_hyp
+f3ef 8079 mrs	r0, SP_hyp
+f3ef 807a mrs	r0, SP_hyp
+f3ef 807b mrs	r0, SP_hyp
+f3ef 807c mrs	r0, SP_hyp
+f3ef 807d mrs	r0, SP_hyp
+f3ef 807e mrs	r0, SP_hyp
+f3ef 807f mrs	r0, SP_hyp
+f3ef 8080 mrs	r0, <unknown>
+f3ef 8081 mrs	r0, <unknown>
+f3ef 8082 mrs	r0, <unknown>
+f3ef 8083 mrs	r0, <unknown>
+f3ef 8084 mrs	r0, <unknown>
+f3ef 8085 mrs	r0, <unknown>
+f3ef 8086 mrs	r0, <unknown>
+f3ef 8087 mrs	r0, <unknown>
+f3ef 8088 mrs	r0, MSP_NS
+f3ef 8089 mrs	r0, PSP_NS
+f3ef 808a mrs	r0, MSPLIM_NS
+f3ef 808b mrs	r0, PSPLIM_NS
+f3ef 808c mrs	r0, <unknown>
+f3ef 808d mrs	r0, <unknown>
+f3ef 808e mrs	r0, <unknown>
+f3ef 808f mrs	r0, <unknown>
+f3ef 8090 mrs	r0, PRIMASK_NS
+f3ef 8091 mrs	r0, BASEPRI_NS
+f3ef 8092 mrs	r0, <unknown>
+f3ef 8093 mrs	r0, FAULTMASK_NS
+f3ef 8094 mrs	r0, CONTROL_NS
+f3ef 8095 mrs	r0, <unknown>
+f3ef 8096 mrs	r0, <unknown>
+f3ef 8097 mrs	r0, <unknown>
+f3ef 8098 mrs	r0, SP_NS
+f3ef 8099 mrs	r0, <unknown>
+f3ef 809a mrs	r0, <unknown>
+f3ef 809b mrs	r0, <unknown>
+f3ef 809c mrs	r0, <unknown>
+f3ef 809d mrs	r0, <unknown>
+f3ef 809e mrs	r0, <unknown>
+f3ef 809f mrs	r0, <unknown>
+f3ef 80a0 mrs	r0, (UNDEF: 47)
+f3ef 80a1 mrs	r0, (UNDEF: 47)
+f3ef 80a2 mrs	r0, (UNDEF: 47)
+f3ef 80a3 mrs	r0, (UNDEF: 47)
+f3ef 80a4 mrs	r0, (UNDEF: 47)
+f3ef 80a5 mrs	r0, (UNDEF: 47)
+f3ef 80a6 mrs	r0, (UNDEF: 47)
+f3ef 80a7 mrs	r0, (UNDEF: 47)
+f3ef 80a8 mrs	r0, (UNDEF: 47)
+f3ef 80a9 mrs	r0, (UNDEF: 47)
+f3ef 80aa mrs	r0, (UNDEF: 47)
+f3ef 80ab mrs	r0, (UNDEF: 47)
+f3ef 80ac mrs	r0, (UNDEF: 47)
+f3ef 80ad mrs	r0, (UNDEF: 47)
+f3ef 80ae mrs	r0, (UNDEF: 47)
+f3ef 80af mrs	r0, (UNDEF: 47)
+f3ef 80b0 mrs	r0, SP_hyp
+f3ef 80b1 mrs	r0, SP_hyp
+f3ef 80b2 mrs	r0, SP_hyp
+f3ef 80b3 mrs	r0, SP_hyp
+f3ef 80b4 mrs	r0, SP_hyp
+f3ef 80b5 mrs	r0, SP_hyp
+f3ef 80b6 mrs	r0, SP_hyp
+f3ef 80b7 mrs	r0, SP_hyp
+f3ef 80b8 mrs	r0, SP_hyp
+f3ef 80b9 mrs	r0, SP_hyp
+f3ef 80ba mrs	r0, SP_hyp
+f3ef 80bb mrs	r0, SP_hyp
+f3ef 80bc mrs	r0, SP_hyp
+f3ef 80bd mrs	r0, SP_hyp
+f3ef 80be mrs	r0, SP_hyp
+f3ef 80bf mrs	r0, SP_hyp
+f3ef 80c0 mrs	r0, <unknown>
+f3ef 80c1 mrs	r0, <unknown>
+f3ef 80c2 mrs	r0, <unknown>
+f3ef 80c3 mrs	r0, <unknown>
+f3ef 80c4 mrs	r0, <unknown>
+f3ef 80c5 mrs	r0, <unknown>
+f3ef 80c6 mrs	r0, <unknown>
+f3ef 80c7 mrs	r0, <unknown>
+f3ef 80c8 mrs	r0, <unknown>
+f3ef 80c9 mrs	r0, <unknown>
+f3ef 80ca mrs	r0, <unknown>
+f3ef 80cb mrs	r0, <unknown>
+f3ef 80cc mrs	r0, <unknown>
+f3ef 80cd mrs	r0, <unknown>
+f3ef 80ce mrs	r0, <unknown>
+f3ef 80cf mrs	r0, <unknown>
+f3ef 80d0 mrs	r0, <unknown>
+f3ef 80d1 mrs	r0, <unknown>
+f3ef 80d2 mrs	r0, <unknown>
+f3ef 80d3 mrs	r0, <unknown>
+f3ef 80d4 mrs	r0, <unknown>
+f3ef 80d5 mrs	r0, <unknown>
+f3ef 80d6 mrs	r0, <unknown>
+f3ef 80d7 mrs	r0, <unknown>
+f3ef 80d8 mrs	r0, <unknown>
+f3ef 80d9 mrs	r0, <unknown>
+f3ef 80da mrs	r0, <unknown>
+f3ef 80db mrs	r0, <unknown>
+f3ef 80dc mrs	r0, <unknown>
+f3ef 80dd mrs	r0, <unknown>
+f3ef 80de mrs	r0, <unknown>
+f3ef 80df mrs	r0, <unknown>
+f3ef 80e0 mrs	r0, (UNDEF: 47)
+f3ef 80e1 mrs	r0, (UNDEF: 47)
+f3ef 80e2 mrs	r0, (UNDEF: 47)
+f3ef 80e3 mrs	r0, (UNDEF: 47)
+f3ef 80e4 mrs	r0, (UNDEF: 47)
+f3ef 80e5 mrs	r0, (UNDEF: 47)
+f3ef 80e6 mrs	r0, (UNDEF: 47)
+f3ef 80e7 mrs	r0, (UNDEF: 47)
+f3ef 80e8 mrs	r0, (UNDEF: 47)
+f3ef 80e9 mrs	r0, (UNDEF: 47)
+f3ef 80ea mrs	r0, (UNDEF: 47)
+f3ef 80eb mrs	r0, (UNDEF: 47)
+f3ef 80ec mrs	r0, (UNDEF: 47)
+f3ef 80ed mrs	r0, (UNDEF: 47)
+f3ef 80ee mrs	r0, (UNDEF: 47)
+f3ef 80ef mrs	r0, (UNDEF: 47)
+f3ef 80f0 mrs	r0, SP_hyp
+f3ef 80f1 mrs	r0, SP_hyp
+f3ef 80f2 mrs	r0, SP_hyp
+f3ef 80f3 mrs	r0, SP_hyp
+f3ef 80f4 mrs	r0, SP_hyp
+f3ef 80f5 mrs	r0, SP_hyp
+f3ef 80f6 mrs	r0, SP_hyp
+f3ef 80f7 mrs	r0, SP_hyp
+f3ef 80f8 mrs	r0, SP_hyp
+f3ef 80f9 mrs	r0, SP_hyp
+f3ef 80fa mrs	r0, SP_hyp
+f3ef 80fb mrs	r0, SP_hyp
+f3ef 80fc mrs	r0, SP_hyp
+f3ef 80fd mrs	r0, SP_hyp
+f3ef 80fe mrs	r0, SP_hyp
+f3ef 80ff mrs	r0, SP_hyp
+f3ef 8100 mrs	r1, CPSR
+f3ef 8200 mrs	r2, CPSR
+f3ef 8300 mrs	r3, CPSR
+f3ef 8400 mrs	r4, CPSR
+f3ef 8500 mrs	r5, CPSR
+f3ef 8600 mrs	r6, CPSR
+f3ef 8700 mrs	r7, CPSR
+f3ef 8800 mrs	r8, CPSR
+f3ef 8900 mrs	r9, CPSR
+f3ef 8a00 mrs	sl, CPSR
+f3ef 8b00 mrs	fp, CPSR
+f3ef 8c00 mrs	ip, CPSR
+f3ef 8d00 mrs	sp, CPSR
+f3ef 8e00 mrs	lr, CPSR
+f3ef 8f00 mrs	pc, CPSR
+f7f0 a000 udf.w	#0
+f7f0 a001 udf.w	#1
+f7f0 a002 udf.w	#2
+f7f0 a004 udf.w	#4
+f7f0 a008 udf.w	#8
+f7f0 a010 udf.w	#16
+f7f0 a020 udf.w	#32
+f7f0 a040 udf.w	#64	@ 0x40
+f7f0 a080 udf.w	#128	@ 0x80
+f7f0 a100 udf.w	#256	@ 0x100
+f7f0 a200 udf.w	#512	@ 0x200
+f7f0 a400 udf.w	#1024	@ 0x400
+f7f0 a800 udf.w	#2048	@ 0x800
+f7f1 a000 udf.w	#4096	@ 0x1000
+f7f2 a000 udf.w	#8192	@ 0x2000
+f7f4 a000 udf.w	#16384	@ 0x4000
+f7f8 a000 udf.w	#32768	@ 0x8000
+f000 d000 bl	0x00c00980
+f000 d001 bl	0x00c00986
+f000 d002 bl	0x00c0098c
+f000 d004 bl	0x00c00994
+f000 d008 bl	0x00c009a0
+f000 d010 bl	0x00c009b4
+f000 d020 bl	0x00c009d8
+f000 d040 bl	0x00c00a1c
+f000 d080 bl	0x00c00aa0
+f000 d100 bl	0x00c00ba4
+f000 d200 bl	0x00c00da8
+f000 d400 bl	0x00c011ac
+f000 d800 bl	0x008009b0
+f001 d000 bl	0x00c019b4
+f002 d000 bl	0x00c029b8
+f004 d000 bl	0x00c049bc
+f008 d000 bl	0x00c089c0
+f010 d000 bl	0x00c109c4
+f020 d000 bl	0x00c209c8
+f040 d000 bl	0x00c409cc
+f080 d000 bl	0x00c809d0
+f100 d000 bl	0x00d009d4
+f200 d000 bl	0x00e009d8
+f400 d000 bl	0xffffffffff0009dc
+f000 f000 bl	0x004009e0
+f000 f001 bl	0x004009e6
+f000 f002 bl	0x004009ec
+f000 f004 bl	0x004009f4
+f000 f008 bl	0x00400a00
+f000 f010 bl	0x00400a14
+f000 f020 bl	0x00400a38
+f000 f040 bl	0x00400a7c
+f000 f080 bl	0x00400b00
+f000 f100 bl	0x00400c04
+f000 f200 bl	0x00400e08
+f000 f400 bl	0x0040120c
+f000 f800 bl	0x00000a10
+f001 f000 bl	0x00401a14
+f002 f000 bl	0x00402a18
+f004 f000 bl	0x00404a1c
+f008 f000 bl	0x00408a20
+f010 f000 bl	0x00410a24
+f020 f000 bl	0x00420a28
+f040 f000 bl	0x00440a2c
+f080 f000 bl	0x00480a30
+f100 f000 bl	0x00500a34
+f200 f000 bl	0x00600a38
+f400 f000 bl	0xffffffffff800a3c
