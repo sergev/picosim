@@ -1619,70 +1619,70 @@ TEST(disasm, opcode16)
     test_disasm(0xcf80, "ldmia r7, {r7}");
     test_disasm(0xcfff, "ldmia r7, {r0, r1, r2, r3, r4, r5, r6, r7}");
 
+    test_disasm(0xd000, "beq.n 0x1234567c");
+    test_disasm(0xd001, "beq.n 0x1234567e");
+    test_disasm(0xd0ff, "beq.n 0x1234567a");
+
+    test_disasm(0xd100, "bne.n 0x1234567c");
+    test_disasm(0xd101, "bne.n 0x1234567e");
+    test_disasm(0xd1ff, "bne.n 0x1234567a");
+
+    test_disasm(0xd200, "bcs.n 0x1234567c");
+    test_disasm(0xd201, "bcs.n 0x1234567e");
+    test_disasm(0xd2ff, "bcs.n 0x1234567a");
+
+    test_disasm(0xd300, "bcc.n 0x1234567c");
+    test_disasm(0xd301, "bcc.n 0x1234567e");
+    test_disasm(0xd3ff, "bcc.n 0x1234567a");
+
+    test_disasm(0xd400, "bmi.n 0x1234567c");
+    test_disasm(0xd401, "bmi.n 0x1234567e");
+    test_disasm(0xd4ff, "bmi.n 0x1234567a");
+
+    test_disasm(0xd500, "bpl.n 0x1234567c");
+    test_disasm(0xd501, "bpl.n 0x1234567e");
+    test_disasm(0xd5ff, "bpl.n 0x1234567a");
+
+    test_disasm(0xd600, "bvs.n 0x1234567c");
+    test_disasm(0xd601, "bvs.n 0x1234567e");
+    test_disasm(0xd6ff, "bvs.n 0x1234567a");
+
+    test_disasm(0xd700, "bvc.n 0x1234567c");
+    test_disasm(0xd701, "bvc.n 0x1234567e");
+    test_disasm(0xd7ff, "bvc.n 0x1234567a");
+
+    test_disasm(0xd800, "bhi.n 0x1234567c");
+    test_disasm(0xd801, "bhi.n 0x1234567e");
+    test_disasm(0xd8ff, "bhi.n 0x1234567a");
+
+    test_disasm(0xd900, "bls.n 0x1234567c");
+    test_disasm(0xd901, "bls.n 0x1234567e");
+    test_disasm(0xd9ff, "bls.n 0x1234567a");
+
+    test_disasm(0xda00, "bge.n 0x1234567c");
+    test_disasm(0xda01, "bge.n 0x1234567e");
+    test_disasm(0xdaff, "bge.n 0x1234567a");
+
+    test_disasm(0xdb00, "blt.n 0x1234567c");
+    test_disasm(0xdb01, "blt.n 0x1234567e");
+    test_disasm(0xdbff, "blt.n 0x1234567a");
+
+    test_disasm(0xdc00, "bgt.n 0x1234567c");
+    test_disasm(0xdc01, "bgt.n 0x1234567e");
+    test_disasm(0xdcff, "bgt.n 0x1234567a");
+
+    test_disasm(0xdd00, "ble.n 0x1234567c");
+    test_disasm(0xdd01, "ble.n 0x1234567e");
+    test_disasm(0xddff, "ble.n 0x1234567a");
+
 #if 0
-beq.n 0x0001a004             // d000 beq.n 0x0001a004
-beq.n 0x0001a008             // d001 beq.n 0x0001a008
-beq.n 0x0001a200             // d0ff beq.n 0x0001a200
-
-bne.n 0x0001a204             // d100 bne.n 0x0001a204
-bne.n 0x0001a208             // d101 bne.n 0x0001a208
-bne.n 0x0001a400             // d1ff bne.n 0x0001a400
-
-bcs.n 0x0001a404             // d200 bcs.n 0x0001a404
-bcs.n 0x0001a408             // d201 bcs.n 0x0001a408
-bcs.n 0x0001a600             // d2ff bcs.n 0x0001a600
-
-bcc.n 0x0001a604             // d300 bcc.n 0x0001a604
-bcc.n 0x0001a608             // d301 bcc.n 0x0001a608
-bcc.n 0x0001a800             // d3ff bcc.n 0x0001a800
-
-bmi.n 0x0001a804             // d400 bmi.n 0x0001a804
-bmi.n 0x0001a808             // d401 bmi.n 0x0001a808
-bmi.n 0x0001aa00             // d4ff bmi.n 0x0001aa00
-
-bpl.n 0x0001aa04             // d500 bpl.n 0x0001aa04
-bpl.n 0x0001aa08             // d501 bpl.n 0x0001aa08
-bpl.n 0x0001ac00             // d5ff bpl.n 0x0001ac00
-
-bvs.n 0x0001ac04             // d600 bvs.n 0x0001ac04
-bvs.n 0x0001ac08             // d601 bvs.n 0x0001ac08
-bvs.n 0x0001ae00             // d6ff bvs.n 0x0001ae00
-
-bvc.n 0x0001ae04             // d700 bvc.n 0x0001ae04
-bvc.n 0x0001ae08             // d701 bvc.n 0x0001ae08
-bvc.n 0x0001b000             // d7ff bvc.n 0x0001b000
-
-bhi.n 0x0001b004             // d800 bhi.n 0x0001b004
-bhi.n 0x0001b008             // d801 bhi.n 0x0001b008
-bhi.n 0x0001b200             // d8ff bhi.n 0x0001b200
-
-bls.n 0x0001b204             // d900 bls.n 0x0001b204
-bls.n 0x0001b208             // d901 bls.n 0x0001b208
-bls.n 0x0001b400             // d9ff bls.n 0x0001b400
-
-bge.n 0x0001b404             // da00 bge.n 0x0001b404
-bge.n 0x0001b408             // da01 bge.n 0x0001b408
-bge.n 0x0001b600             // daff bge.n 0x0001b600
-
-blt.n 0x0001b604             // db00 blt.n 0x0001b604
-blt.n 0x0001b608             // db01 blt.n 0x0001b608
-blt.n 0x0001b800             // dbff blt.n 0x0001b800
-
-bgt.n 0x0001b804             // dc00 bgt.n 0x0001b804
-bgt.n 0x0001b808             // dc01 bgt.n 0x0001b808
-bgt.n 0x0001ba00             // dcff bgt.n 0x0001ba00
-
-ble.n 0x0001ba04             // dd00 ble.n 0x0001ba04
-ble.n 0x0001ba08             // dd01 ble.n 0x0001ba08
-ble.n 0x0001bc00             // ddff ble.n 0x0001bc00
-
 udf #0                       // de00 udf #0
 udf #1                       // de01 udf #1
-udf #255 // 0xff              // deff udf #255 // 0xff
+udf #255                     // deff udf #255 // 0xff
 
 svc 0                        // df00 svc 0
 svc 1                        // df01 svc 1
-svc 255 // 0xff               // dfff svc 255 // 0xff
+svc 255                      // dfff svc 255 // 0xff
 
 b.n 0x0001c004               // e000 b.n 0x0001c004
 b.n 0x0001c008               // e001 b.n 0x0001c008

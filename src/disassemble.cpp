@@ -35,7 +35,7 @@ struct arm_instruction {
 // ALways (default) is ommitted (empty string).
 //
 static const char *condition_strings[16] = {
-    "EQ", "NE", "CS", "CC", "MI", "PL", "VS", "VC", "HI", "LS", "GE", "LT", "GT", "LE", "", "NV",
+    "eq", "ne", "cs", "cc", "mi", "pl", "vs", "vc", "hi", "ls", "ge", "lt", "gt", "le", "", "nv",
 };
 
 //
@@ -526,7 +526,7 @@ static int thumb_cond_branch(unsigned short opcode, unsigned address,
 
     target_address = address + 4 + (offset << 1);
 
-    snprintf(instruction->text, sizeof(instruction->text), "B%s %#8.8x", condition_strings[cond],
+    snprintf(instruction->text, sizeof(instruction->text), "b%s.n %#8.8x", condition_strings[cond],
              target_address);
 
     return 0;
