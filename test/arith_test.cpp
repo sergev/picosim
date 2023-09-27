@@ -37,6 +37,22 @@ TEST(arith, add_with_carry)
     // 0xce671cdd + 0x549c13ba -> 0x23033097, carry
     EXPECT_EQ(cpu.add_with_carry(-832103203, 1419514810, 0), 587411607);
     EXPECT_EQ(cpu.get_sysreg(Processor::SYSM_XPSR), 0x20000000); // Carry flag
+
+    // 0x7502fe1f - 0xc015a134 -> 0xb4ed5ceb, negative, overflow
+    EXPECT_EQ(cpu.add_with_carry(1963130399, ~-1072324300, 1), -1259512597);
+    EXPECT_EQ(cpu.get_sysreg(Processor::SYSM_XPSR), 0x90000000); // Negative+Overflow flags
+
+    // 0x8c832ed2 - 0xd306fde3 -> 0xb97c30ef, negative
+    EXPECT_EQ(cpu.add_with_carry(-1937559854, ~-754516509, 1), -1183043345);
+    EXPECT_EQ(cpu.get_sysreg(Processor::SYSM_XPSR), 0x80000000); // Negative flag
+
+    // 0x9b74a3db - 0x776dd37e -> 0x2406d05d, carry, overflow
+    EXPECT_EQ(cpu.add_with_carry(-1686854693, ~2003686270, 1), 604426333);
+    EXPECT_EQ(cpu.get_sysreg(Processor::SYSM_XPSR), 0x30000000); // Carry+Overflow flags
+
+    // 0xce671cdd - 0x549c13ba -> 0x79cb0923, carry, overflow
+    EXPECT_EQ(cpu.add_with_carry(-832103203, ~1419514810, 1), 2043349283);
+    EXPECT_EQ(cpu.get_sysreg(Processor::SYSM_XPSR), 0x30000000); // Carry+Overflow flags
 }
 
 #include "sc_main.cpp"
