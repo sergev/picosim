@@ -268,7 +268,42 @@ void Processor::thumb_sysreg()
 
 void Processor::thumb_shift_imm()
 {
-    terminate_simulation(__func__); // TODO
+    unsigned rd  = (opcode >> 0) & 7;
+    unsigned rm  = (opcode >> 3) & 7;
+    unsigned imm = (opcode >> 6) & 0x1f;
+    unsigned opc = (opcode >> 11) & 3;
+
+    switch (opc) {
+    case 0:
+        if (imm == 0) {
+            // MOVS instruction.
+            set_reg_nz(rd, get_reg(rm));
+        } else {
+            // LSL instruction.
+            terminate_simulation("lsl"); // TODO
+        }
+        break;
+
+    case 1:
+        // LSR instruction.
+        if (imm == 0) {
+            imm = 32;
+        }
+        terminate_simulation("lsr"); // TODO
+        break;
+
+    case 2:
+        // ASR instruction.
+        int64_t value = get_reg(rm);
+        if (imm == 0) {
+            imm = 32;
+        }
+        set_reg_nz(rd, value >> imm);
+        if (imm > 0) {
+            xpsr.field.c = value >> (imm - 1);
+        }
+        break;
+    }
 }
 
 //

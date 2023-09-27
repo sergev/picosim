@@ -223,10 +223,16 @@ void Processor::cpu_step()
     // instructions must update pc_next value.
     next_pc = pc + pc_increment;
 
+    unsigned prev_xpsr = xpsr.u32;
     if (pc_increment == 4) {
         process_opcode32();
     } else {
         process_opcode16();
+    }
+
+    if (Log::is_verbose() && xpsr.u32 != prev_xpsr) {
+        Log::out() << "          xpsr = " << std::hex << std::setw(8)
+                   << std::setfill('0') << xpsr.u32 << std::endl;
     }
 
     instructions_executed++;

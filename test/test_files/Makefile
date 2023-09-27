@@ -55,6 +55,7 @@ PROG            = movs_imm.elf \
                   bic.elf \
                   mvn.elf \
                   tst.elf \
+                  asr_imm.elf \
                   write.elf \
                   hello.elf
 

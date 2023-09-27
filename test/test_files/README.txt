@@ -2,15 +2,17 @@ Tests for instructions:
 
 File                Instruction
 ------------------------------------------
-        (Data Transfer)
+        Data Transfer
+
 movs_imm.S          movs r1, #255
 movs_reg.S          movs r1, r2
 mov_reg.S           mov r11, r12
 psr.S               msr APSR, r1
 sysreg.S            mrs r1, PRIMASK
-cpsie_cpsid.S       cpsie i; cpsid i
+cpsie_cpsid.S       cpsie; cpsid
 
-        (Memory Load)
+        Memory Load
+
 ldr_reg_imm.S       ldr r1, [r2, #124]
 ldr_sp.S            ldr r1, [sp, #1020]
 ldr_pc.S            ldr r1, [pc, #1020]
@@ -23,7 +25,8 @@ ldrh_reg_reg.S      ldrh r1, [r2, r3]
 ldrsh_reg_reg.S     ldrsh r1, [r2, r3]
 ldmia.S             ldmia r7, {r0, r1, r2, r3, r4, r5, r6, r7}
 
-        (Memory Store)
+        Memory Store
+
 str_reg_imm.S       str r1, [r2, #124]
 str_sp.S            str r1, [sp, #1020]
 str_reg_reg.S       str r1, [r2, r3]
@@ -33,11 +36,13 @@ strh_reg_imm.S      strh r1, [r2, #62]
 strh_reg_reg.S      strh r1, [r2, r3]
 stmia.S             stmia r7!, {r0, r1, r2, r3, r4, r5, r6}
 
-        (Stack)
+        Stack
+
 push.S              push {r1, r2, lr}
 pop.S               pop {r1, r2, pc}
 
-        (Arithmetic operations)
+        Arithmetic operations
+
 add_reg_reg.S       add r1, r2, r3
 add_reg_imm.S       add r1, r2, #7
 add_imm.S           add r1, #255
@@ -58,7 +63,8 @@ cmp_reg.S           cmp r1, r2
 cmp_hireg.S         cmp r11, r12
 cmn.S               cmn r1, r2
 
-        (Logic operations)
+        Logic operations
+
 and.S               and r1, r2
 orr.S               orr r1, r2
 eor.S               eor r1, r2
@@ -66,8 +72,9 @@ bic.S               bic r1, r2
 mvn.S               mvn r1, r2
 tst.S               tst r1, r2
 
-        (Shift operations)
-                    asr r1, r2, #32
+        Shift operations
+
+asr_imm.S           asr r1, r2, #32
                     asr r1, r2
                     lsl r1, r2, #31
                     lsl r1, r2
@@ -75,7 +82,8 @@ tst.S               tst r1, r2
                     lsr r1, r2
                     ror r1, r2
 
-        (Bit Shuffle)
+        Bit Shuffle
+
                     rev r1, r2
                     rev16 r1, r2
                     revsh r1, r2
@@ -84,16 +92,19 @@ tst.S               tst r1, r2
                     uxth r1, r2
                     uxtb r1, r2
 
-        (Branching)
+        Branching
+
                     b.n 0x12345678
                     bXX.n 0x12345678
                     bl 0x12f45678
                     bx r1
 
-        (Barriers)
-nop.S               nop, dsb, dmb, isb
+        Barriers
 
-        (Events)
+nop.S               nop; dsb; dmb; isb
+
+        Events
+
                     bkpt 0x00ff
 write.S             svc 255
                     wfi
