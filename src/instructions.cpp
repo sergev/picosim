@@ -357,7 +357,8 @@ void Processor::thumb_arith_reg()
         terminate_simulation("tst"); // TODO
         break;
     case 0x9:
-        terminate_simulation("neg"); // TODO
+        // NEG instruction.
+        set_reg(rd, add_with_carry(~get_reg(rm), 0, 1));
         break;
     case 0xA:
         terminate_simulation("cmp"); // TODO

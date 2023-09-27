@@ -52,7 +52,7 @@ sub_reg_imm.S       sub r1, r2, #7
 sub_imm.S           sub r1, #255
 sub_sp_imm.S        sub sp, #508
 sbc.S               sbc r1, r2
-                    neg r1, r2
+neg.S               neg r1, r2
                     mul r1, r2
                     cmp r1, #255
                     cmp r1, r2

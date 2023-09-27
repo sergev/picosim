@@ -523,15 +523,15 @@ TEST(disasm, opcode16)
     test_disasm(0x4239, "tst r1, r7");
     test_disasm(0x423f, "tst r7, r7");
 
-    test_disasm(0x4240, "negs r0, r0");
-    test_disasm(0x4241, "negs r1, r0");
-    test_disasm(0x4247, "negs r7, r0");
-    test_disasm(0x4248, "negs r0, r1");
-    test_disasm(0x4249, "negs r1, r1");
-    test_disasm(0x424f, "negs r7, r1");
-    test_disasm(0x4278, "negs r0, r7");
-    test_disasm(0x4279, "negs r1, r7");
-    test_disasm(0x427f, "negs r7, r7");
+    test_disasm(0x4240, "neg r0, r0");
+    test_disasm(0x4241, "neg r1, r0");
+    test_disasm(0x4247, "neg r7, r0");
+    test_disasm(0x4248, "neg r0, r1");
+    test_disasm(0x4249, "neg r1, r1");
+    test_disasm(0x424f, "neg r7, r1");
+    test_disasm(0x4278, "neg r0, r7");
+    test_disasm(0x4279, "neg r1, r7");
+    test_disasm(0x427f, "neg r7, r7");
 
     test_disasm(0x4280, "cmp r0, r0");
     test_disasm(0x4281, "cmp r1, r0");

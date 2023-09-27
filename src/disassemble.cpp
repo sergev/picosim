@@ -196,7 +196,7 @@ static std::string thumb_arith_reg(unsigned opcode)
         mnemonic = "tst";
         break;
     case 0x9:
-        mnemonic = "negs";
+        mnemonic = "neg";
         break;
     case 0xA:
         mnemonic = "cmp";
