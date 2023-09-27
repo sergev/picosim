@@ -283,8 +283,8 @@ void Processor::thumb_shift_imm()
 //
 int32_t Processor::add_with_carry(int32_t x, int32_t y, bool carry_in)
 {
-    uint64_t unsigned_sum = (uint32_t)x + (uint32_t)y + (uint64_t)carry_in;
-    int64_t  signed_sum   = (int64_t)x +  (int64_t)y +  (int64_t)carry_in;
+    uint64_t unsigned_sum = (uint64_t)(uint32_t)x + (uint64_t)(uint32_t)y + carry_in;
+    int64_t  signed_sum   = (int64_t)x + (int64_t)y + carry_in;
     int32_t  result       = (int32_t)unsigned_sum;
 
     xpsr.field.n = (result >> 31);                     // bit 31 of result
@@ -296,10 +296,10 @@ int32_t Processor::add_with_carry(int32_t x, int32_t y, bool carry_in)
 }
 
 //
-// adds r1, r2, r3
-// adds r1, r2, #7
-// subs r1, r2, r3
-// subs r1, r2, #7
+// add r1, r2, r3
+// add r1, r2, #7
+// sub r1, r2, r3
+// sub r1, r2, #7
 // movs r1, r2
 //
 void Processor::thumb_add_sub()
