@@ -35,8 +35,8 @@ strh_reg_reg.S      strh r1, [r2, r3]
 stmia.S             stmia r7!, {r0, r1, r2, r3, r4, r5, r6}
 
         (Stack)
-                    push {r1}
-pop.S               pop {r2}
+push.S              push {r1, r2, lr}
+pop.S               pop {r1, r2, pc}
 
         (Arithmetic operations)
                     adds r1, r2, r3

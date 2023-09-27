@@ -643,7 +643,25 @@ void Processor::thumb_pop()
 
 void Processor::thumb_push()
 {
-    terminate_simulation(__func__); // TODO
+    unsigned reg_list = opcode & 0xff;
+    unsigned lr_flag  = (opcode >> 8) & 1;
+    uint32_t address  = get_reg(Registers::SP);
+
+    if (lr_flag) {
+        // Save LR first.
+        address -= 4;
+        data_write32(address, get_reg(Registers::LR));
+    }
+
+    for (unsigned rd = 7; rd < 8; rd--) {
+        if ((reg_list >> rd) & 1) {
+            address -= 4;
+            data_write32(address, get_reg(rd));
+        }
+    }
+
+    // Update SP.
+    set_reg(Registers::SP, address);
 }
 
 //
