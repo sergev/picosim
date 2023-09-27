@@ -84,7 +84,7 @@ ror.S               ror r1, r2
 
         Bit Shuffle
 
-                    rev r1, r2
+rev.S               rev r1, r2
                     rev16 r1, r2
                     revsh r1, r2
                     sxth r1, r2

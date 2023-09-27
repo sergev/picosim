@@ -687,7 +687,32 @@ void Processor::thumb_cps()
 
 void Processor::thumb_byterev()
 {
-    terminate_simulation(__func__); // TODO
+    unsigned rd = opcode & 7;
+    unsigned rs = (opcode >> 3) & 7;
+    union {
+        uint32_t u32;
+        uint8_t byte[4];
+    } input, output;
+
+    switch ((opcode >> 6) & 3) {
+    case 0:
+        // REV instruction.
+        input.u32 = get_reg(rs);
+        output.byte[0] = input.byte[3];
+        output.byte[1] = input.byte[2];
+        output.byte[2] = input.byte[1];
+        output.byte[3] = input.byte[0];
+        set_reg(rd, output.u32);
+        break;
+    case 1:
+        terminate_simulation("rev16"); // TODO
+        break;
+    case 3:
+        terminate_simulation("revsh"); // TODO
+        break;
+    default:
+        terminate_simulation("Unknown byterev instruction");
+    }
 }
 
 void Processor::thumb_breakpoint()
