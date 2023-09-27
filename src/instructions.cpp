@@ -749,11 +749,11 @@ void Processor::thumb_barrier()
         // ISB instruction.
         break;
     default:
-        terminate_simulation("Uknown barrier instruction");
+        terminate_simulation("Unknown barrier instruction");
     }
 }
 
 void Processor::thumb_udf()
 {
-    terminate_simulation(__func__); // TODO
+    terminate_simulation("Undefined instruction");
 }

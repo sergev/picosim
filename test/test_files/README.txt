@@ -95,7 +95,6 @@ nop.S               nop, dsb, dmb, isb
 
         (Events)
                     bkpt 0x00ff
-                    udf #255
 write.S             svc 255
                     wfi
                     wfe
