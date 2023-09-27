@@ -457,7 +457,18 @@ void Processor::thumb_load_store_imm()
 
 void Processor::thumb_load_store_stack()
 {
-    terminate_simulation(__func__); // TODO
+    unsigned offset    = opcode & 0xff;
+    unsigned rd        = (opcode >> 8) & 0x7;
+    unsigned load_flag = opcode & (1 << 11);
+    unsigned address   = get_reg(Registers::SP) + (offset << 2);
+
+    if (load_flag) {
+        // LDR instruction.
+        set_reg(rd, data_read32(address));
+    } else {
+        // STR instruction.
+        terminate_simulation("str"); // TODO
+    }
 }
 
 void Processor::thumb_add_sp_pc()
