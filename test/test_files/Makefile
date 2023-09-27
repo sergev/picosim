@@ -7,6 +7,7 @@ PROG            = movs_imm.elf \
                   mov_reg.elf \
                   ldr_pc.elf \
                   ldr_reg_imm.elf \
+                  add_sp_imm.elf \
                   psr.elf \
                   sysreg.elf \
                   nop.elf \
