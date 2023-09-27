@@ -172,7 +172,7 @@ bool Processor::cpu_process_interrupt()
 //
 // Fetch two-byte instruction at given address.
 //
-unsigned Processor::fetch16(unsigned address)
+uint16_t Processor::fetch16(unsigned address)
 {
     uint16_t buf;
     sc_core::sc_time delay = sc_core::SC_ZERO_TIME;
@@ -218,7 +218,10 @@ unsigned Processor::fetch16(unsigned address)
     return buf;
 }
 
-bool Processor::cpu_step()
+//
+// Fetch and execute one instruction at PC.
+//
+void Processor::cpu_step()
 {
     // Fetch instruction.
     // Assume 16-bit opcode.
@@ -243,18 +246,22 @@ bool Processor::cpu_step()
     // Execute instruction.
     if (opcode == 0) {
         // Zero opcode cannot happen in valid program.
-        terminate_simulation("Bad instruction");
+        terminate_simulation("Illegal instruction");
     }
-    bool breakpoint{}, pc_affected{};
-    process_instruction(breakpoint, pc_affected);
+
+    // Assume next PC value for regular instructions.
+    // In case of jump or exception,
+    // instructions must update pc_next value.
+    next_pc = pc + pc_increment;
+
+    if (pc_increment == 4) {
+        process_opcode32();
+    } else {
+        process_opcode16();
+    }
 
     instructions_executed++;
-
-    if (!breakpoint && !pc_affected) {
-        inc_pc(pc_increment);
-    }
-
-    return breakpoint;
+    set_pc(next_pc);
 }
 
 void Processor::cpu_thread()
@@ -385,7 +392,7 @@ void Processor::set_sysreg(int sysm, uint32_t value)
     switch (sysm) {
     default:
         // Exception on write.
-        raise_exception(EXCEPTION_CAUSE_ILLEGAL_INSTRUCTION, opcode);
+        raise_exception(Exception::HardFault, opcode);
         return;
     //TODO
     }

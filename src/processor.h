@@ -18,18 +18,6 @@
 #include "tlm_utils/simple_initiator_socket.h"
 #include "tlm_utils/tlm_quantumkeeper.h"
 
-enum {
-    EXCEPTION_CAUSE_INSTRUCTION_ACCESS = 1,
-    EXCEPTION_CAUSE_ILLEGAL_INSTRUCTION = 2,
-    EXCEPTION_CAUSE_BREAKPOINT = 3,
-    EXCEPTION_CAUSE_LOAD_MISALIGN = 4,
-    EXCEPTION_CAUSE_LOAD_ACCESS_FAULT = 5,
-    EXCEPTION_CAUSE_STORE_MISALIGN = 6,
-    EXCEPTION_CAUSE_STORE_ACCESS_FAULT = 7,
-    EXCEPTION_CAUSE_ECALL_U = 8,
-    EXCEPTION_CAUSE_ECALL_M = 0xb,
-};
-
 /**
  * @brief ISC_V CPU model
  * @param name name of the module
@@ -61,21 +49,21 @@ public:
     Processor(sc_core::sc_module_name name, bool debug);
 
     //
-    // Fetch two-byte instruction at given address.
+    // Fetch two-byte value at given address.
     //
-    unsigned fetch16(unsigned address);
+    uint16_t fetch16(unsigned address);
 
     //
-    // Execute fetched instruction.
+    // Fetch and execute one instruction at PC.
     //
-    bool cpu_step();
+    void cpu_step();
 
     //
     // Execute current opcode.
-    // Set breakpoint flag on any exception.
-    // Set pc_affected when jump performed.
+    // Set pc_next when jump performed.
     //
-    void process_instruction(bool &breakpoint, bool &pc_affected);
+    void process_opcode16();
+    void process_opcode32();
 
     void raise_exception(uint32_t cause, uint32_t inst);
     void terminate_simulation(const std::string &reason) const;
@@ -223,15 +211,27 @@ private:
         } field;
     } control;
 
+    enum Exception {
+        Reset = 1,
+        NMI = 2,
+        HardFault = 3,
+        SVCall = 11,
+        PendSV = 14,
+        SysTick = 15,
+        ExternalInterrupt = 16,
+    };
+
     uint64_t instructions_executed{};
 
-    uint32_t opcode{ 0 };
-    bool interrupt{ false };
-    uint32_t int_cause{ 0 };
-    bool irq_already_down{ false };
+    uint32_t opcode{};  // Current instruction, 16-bit or 32-bit
+    uint32_t next_pc{}; // Set PC to this value after current instruction
 
-    bool dmi_ptr_valid{ false };
-    unsigned char *dmi_ptr{ nullptr };
+    bool interrupt{};
+    uint32_t int_cause{};
+    bool irq_already_down{};
+
+    bool dmi_ptr_valid{};
+    unsigned char *dmi_ptr{};
     sc_core::sc_time dmi_read_latency;
 
     /**
@@ -267,6 +267,30 @@ private:
     // Update system register unconditionally, and print.
     //
     void update_sysreg(uint32_t &reg, uint32_t value, uint32_t mask, const std::string &name);
+
+    //
+    // Instructions.
+    //
+    void thumb_shift_imm();
+    void thumb_add_sub();
+    void thumb_arith_imm();
+    void thumb_arith_reg();
+    void thumb_load_literal();
+    void thumb_load_store_reg();
+    void thumb_load_store_imm();
+    void thumb_load_store_stack();
+    void thumb_add_sp_pc();
+    void thumb_adjust_stack();
+    void thumb_extend();
+    void thumb_byterev();
+    void thumb_breakpoint();
+    void thumb_hint();
+    void thumb_load_store_multiple();
+    void thumb_cond_branch();
+    void thumb_branch();
+    void thumb_branch_link();
+    void thumb_barrier();
+    void thumb_sysreg();
 };
 
 #endif

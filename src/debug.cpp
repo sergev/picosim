@@ -175,7 +175,8 @@ void Debug::gdb_thread()
             bool breakpoint_hit = false;
             bool bkpt = false;
             do {
-                bkpt = cpu.cpu_step();
+                cpu.cpu_step();
+                bkpt = false; // TODO
                 uint32_t currentPC = cpu.get_pc();
 
                 auto search = breakpoints.find(currentPC);

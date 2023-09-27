@@ -41,7 +41,7 @@ public:
         SL = R10,   // Stack Limit
         FP = R11,   // Frame Pointer
         IP = R12,   // Intra-Procedure scratch register
-        SP = R13,   // Stack Pointer
+        SP = R13,   // Main Stack Pointer
         LR = R14,   // Link Register
         PC = R15,   // Program Counter
     };
@@ -64,7 +64,7 @@ public:
      * Returns PC value
      * @return PC value
      */
-    uint32_t getPC() const { return register_PC; }
+    uint32_t getPC() const { return register_bank[15]; }
 
     /**
      * Sets arbitraty value to PC
@@ -75,9 +75,9 @@ public:
     /**
      * Increments PC couunter to next address
      */
-    inline void incPC(unsigned increment)
+    void incPC(unsigned increment)
     {
-        register_PC += increment;
+        register_bank[15] += increment;
     }
 
     /**
@@ -89,12 +89,12 @@ private:
     /**
      * bank of registers (32 regs of 32bits each)
      */
-    std::array<int32_t, 16> register_bank = { { 0 } };
+    std::array<int32_t, 16> register_bank{};
 
     /**
-     * Program counter (32 bits width)
+     * Program stack pointer (32 bits width)
      */
-    uint32_t register_PC{ 0 };
+    uint32_t register_psp{};
 };
 
 #endif
