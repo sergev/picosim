@@ -12,7 +12,7 @@ add_definitions(-DTEST_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
 function(TLM_TEST TNAME)
     add_executable(${TNAME}
         ${TNAME}.cpp
-        #check_signature.cpp
+        util.cpp
     )
     target_include_directories(${TNAME} BEFORE PUBLIC
         ../src

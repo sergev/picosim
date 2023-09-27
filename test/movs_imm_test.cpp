@@ -1,6 +1,4 @@
-#include <gtest/gtest.h>
-#include <systemc.h>
-#include "simulator.h"
+#include "util.h"
 
 //
 // Make sure the SystemC library links correctly.
@@ -8,6 +6,7 @@
 TEST(opcode, movs_imm)
 {
     Simulator sim;
+    enable_trace();
 
     sim.debug_store16(0x8000, 0x2080);  // movs r0, #128
     sim.debug_store16(0x8002, 0x2140);  // movs r1, #64
@@ -20,6 +19,7 @@ TEST(opcode, movs_imm)
     sim.debug_store16(0x8010, 0xdf00);  // svc  0
 
     sim.run(0x8000);
+    show_trace();
 
     EXPECT_EQ(sim.get_instructions_executed(), 9);
     EXPECT_EQ(sim.get_reg(0), 128);

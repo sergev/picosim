@@ -7,6 +7,10 @@
 //
 void Processor::process_instruction(bool &breakpoint, bool &pc_affected)
 {
+    if (opcode == 0) {
+        terminate_simulation("");
+    }
+
     // TODO
     //switch (opcode) {
     //case OP_LUI:

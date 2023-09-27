@@ -239,6 +239,10 @@ bool Processor::cpu_step()
     }
 
     // Execute instruction.
+    if (opcode == 0) {
+        // Zero opcode cannot happen in valid program.
+        terminate_simulation("Bad instruction");
+    }
     bool breakpoint{}, pc_affected{};
     process_instruction(breakpoint, pc_affected);
 
