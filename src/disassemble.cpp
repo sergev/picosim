@@ -170,20 +170,20 @@ static int thumb_data_proc_imm(unsigned short opcode, unsigned address,
 
     switch (opc) {
     case 0:
-        mnemonic = "MOVS";
+        mnemonic = "movs";
         break;
     case 1:
-        mnemonic = "CMP";
+        mnemonic = "cmp";
         break;
     case 2:
-        mnemonic = "ADDS";
+        mnemonic = "adds";
         break;
     case 3:
-        mnemonic = "SUBS";
+        mnemonic = "subs";
         break;
     }
 
-    snprintf(instruction->text, sizeof(instruction->text), "%s %s, #%#2.2x", mnemonic, reg_name[Rd],
+    snprintf(instruction->text, sizeof(instruction->text), "%s %s, #%u", mnemonic, reg_name[Rd],
              imm);
 
     return 0;
@@ -237,52 +237,52 @@ static int thumb_data_proc(unsigned short opcode, unsigned address,
     } else {
         switch (op) {
         case 0x0:
-            mnemonic = "ANDS";
+            mnemonic = "ands";
             break;
         case 0x1:
-            mnemonic = "EORS";
+            mnemonic = "eors";
             break;
         case 0x2:
-            mnemonic = "LSLS";
+            mnemonic = "lsls";
             break;
         case 0x3:
-            mnemonic = "LSRS";
+            mnemonic = "lsrs";
             break;
         case 0x4:
-            mnemonic = "ASRS";
+            mnemonic = "asrs";
             break;
         case 0x5:
-            mnemonic = "ADCS";
+            mnemonic = "adcs";
             break;
         case 0x6:
-            mnemonic = "SBCS";
+            mnemonic = "sbcs";
             break;
         case 0x7:
-            mnemonic = "RORS";
+            mnemonic = "rors";
             break;
         case 0x8:
-            mnemonic = "TST";
+            mnemonic = "tst";
             break;
         case 0x9:
-            mnemonic = "RSBS";
+            mnemonic = "negs";
             break;
         case 0xA:
-            mnemonic = "CMP";
+            mnemonic = "cmp";
             break;
         case 0xB:
-            mnemonic = "CMN";
+            mnemonic = "cmn";
             break;
         case 0xC:
-            mnemonic = "ORRS";
+            mnemonic = "orrs";
             break;
         case 0xD:
-            mnemonic = "MULS";
+            mnemonic = "muls";
             break;
         case 0xE:
-            mnemonic = "BICS";
+            mnemonic = "bics";
             break;
         case 0xF:
-            mnemonic = "MVNS";
+            mnemonic = "mvns";
             break;
         }
     }

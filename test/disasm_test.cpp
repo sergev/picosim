@@ -391,1134 +391,207 @@ TEST(disasm, opcode16)
     test_disasm(0x1ff9, "subs r1, r7, #7");
     test_disasm(0x1fff, "subs r7, r7, #7");
 
+    test_disasm(0x2000, "movs r0, #0");
+    test_disasm(0x2001, "movs r0, #1");
+    test_disasm(0x20ff, "movs r0, #255");
+    test_disasm(0x2100, "movs r1, #0");
+    test_disasm(0x2101, "movs r1, #1");
+    test_disasm(0x21ff, "movs r1, #255");
+    test_disasm(0x2700, "movs r7, #0");
+    test_disasm(0x2701, "movs r7, #1");
+    test_disasm(0x27ff, "movs r7, #255");
+
+    test_disasm(0x2800, "cmp r0, #0");
+    test_disasm(0x2801, "cmp r0, #1");
+    test_disasm(0x28ff, "cmp r0, #255");
+    test_disasm(0x2900, "cmp r1, #0");
+    test_disasm(0x2901, "cmp r1, #1");
+    test_disasm(0x29ff, "cmp r1, #255");
+    test_disasm(0x2f00, "cmp r7, #0");
+    test_disasm(0x2f01, "cmp r7, #1");
+    test_disasm(0x2fff, "cmp r7, #255");
+
+    test_disasm(0x3000, "adds r0, #0");
+    test_disasm(0x3001, "adds r0, #1");
+    test_disasm(0x30ff, "adds r0, #255");
+    test_disasm(0x3100, "adds r1, #0");
+    test_disasm(0x3101, "adds r1, #1");
+    test_disasm(0x31ff, "adds r1, #255");
+    test_disasm(0x3700, "adds r7, #0");
+    test_disasm(0x3701, "adds r7, #1");
+    test_disasm(0x37ff, "adds r7, #255");
+
+    test_disasm(0x3800, "subs r0, #0");
+    test_disasm(0x3801, "subs r0, #1");
+    test_disasm(0x38ff, "subs r0, #255");
+    test_disasm(0x3900, "subs r1, #0");
+    test_disasm(0x3901, "subs r1, #1");
+    test_disasm(0x39ff, "subs r1, #255");
+    test_disasm(0x3f00, "subs r7, #0");
+    test_disasm(0x3f01, "subs r7, #1");
+    test_disasm(0x3fff, "subs r7, #255");
+
+    test_disasm(0x4000, "ands r0, r0");
+    test_disasm(0x4001, "ands r1, r0");
+    test_disasm(0x4007, "ands r7, r0");
+    test_disasm(0x4008, "ands r0, r1");
+    test_disasm(0x4009, "ands r1, r1");
+    test_disasm(0x400f, "ands r7, r1");
+    test_disasm(0x4038, "ands r0, r7");
+    test_disasm(0x4039, "ands r1, r7");
+    test_disasm(0x403f, "ands r7, r7");
+
+    test_disasm(0x4040, "eors r0, r0");
+    test_disasm(0x4041, "eors r1, r0");
+    test_disasm(0x4047, "eors r7, r0");
+    test_disasm(0x4048, "eors r0, r1");
+    test_disasm(0x4049, "eors r1, r1");
+    test_disasm(0x404f, "eors r7, r1");
+    test_disasm(0x4078, "eors r0, r7");
+    test_disasm(0x4079, "eors r1, r7");
+    test_disasm(0x407f, "eors r7, r7");
+
+    test_disasm(0x4080, "lsls r0, r0");
+    test_disasm(0x4081, "lsls r1, r0");
+    test_disasm(0x4087, "lsls r7, r0");
+    test_disasm(0x4088, "lsls r0, r1");
+    test_disasm(0x4089, "lsls r1, r1");
+    test_disasm(0x408f, "lsls r7, r1");
+    test_disasm(0x40b8, "lsls r0, r7");
+    test_disasm(0x40b9, "lsls r1, r7");
+    test_disasm(0x40bf, "lsls r7, r7");
+
+    test_disasm(0x40c0, "lsrs r0, r0");
+    test_disasm(0x40c1, "lsrs r1, r0");
+    test_disasm(0x40c7, "lsrs r7, r0");
+    test_disasm(0x40c8, "lsrs r0, r1");
+    test_disasm(0x40c9, "lsrs r1, r1");
+    test_disasm(0x40cf, "lsrs r7, r1");
+    test_disasm(0x40f8, "lsrs r0, r7");
+    test_disasm(0x40f9, "lsrs r1, r7");
+    test_disasm(0x40ff, "lsrs r7, r7");
+
+    test_disasm(0x4100, "asrs r0, r0");
+    test_disasm(0x4101, "asrs r1, r0");
+    test_disasm(0x4107, "asrs r7, r0");
+    test_disasm(0x4108, "asrs r0, r1");
+    test_disasm(0x4109, "asrs r1, r1");
+    test_disasm(0x410f, "asrs r7, r1");
+    test_disasm(0x4138, "asrs r0, r7");
+    test_disasm(0x4139, "asrs r1, r7");
+    test_disasm(0x413f, "asrs r7, r7");
+
+    test_disasm(0x4140, "adcs r0, r0");
+    test_disasm(0x4141, "adcs r1, r0");
+    test_disasm(0x4147, "adcs r7, r0");
+    test_disasm(0x4148, "adcs r0, r1");
+    test_disasm(0x4149, "adcs r1, r1");
+    test_disasm(0x414f, "adcs r7, r1");
+    test_disasm(0x4178, "adcs r0, r7");
+    test_disasm(0x4179, "adcs r1, r7");
+    test_disasm(0x417f, "adcs r7, r7");
+
+    test_disasm(0x4180, "sbcs r0, r0");
+    test_disasm(0x4181, "sbcs r1, r0");
+    test_disasm(0x4187, "sbcs r7, r0");
+    test_disasm(0x4188, "sbcs r0, r1");
+    test_disasm(0x4189, "sbcs r1, r1");
+    test_disasm(0x418f, "sbcs r7, r1");
+    test_disasm(0x41b8, "sbcs r0, r7");
+    test_disasm(0x41b9, "sbcs r1, r7");
+    test_disasm(0x41bf, "sbcs r7, r7");
+
+    test_disasm(0x41c0, "rors r0, r0");
+    test_disasm(0x41c1, "rors r1, r0");
+    test_disasm(0x41c7, "rors r7, r0");
+    test_disasm(0x41c8, "rors r0, r1");
+    test_disasm(0x41c9, "rors r1, r1");
+    test_disasm(0x41cf, "rors r7, r1");
+    test_disasm(0x41f8, "rors r0, r7");
+    test_disasm(0x41f9, "rors r1, r7");
+    test_disasm(0x41ff, "rors r7, r7");
+
+    test_disasm(0x4200, "tst r0, r0");
+    test_disasm(0x4201, "tst r1, r0");
+    test_disasm(0x4207, "tst r7, r0");
+    test_disasm(0x4208, "tst r0, r1");
+    test_disasm(0x4209, "tst r1, r1");
+    test_disasm(0x420f, "tst r7, r1");
+    test_disasm(0x4238, "tst r0, r7");
+    test_disasm(0x4239, "tst r1, r7");
+    test_disasm(0x423f, "tst r7, r7");
+
+    test_disasm(0x4240, "negs r0, r0");
+    test_disasm(0x4241, "negs r1, r0");
+    test_disasm(0x4247, "negs r7, r0");
+    test_disasm(0x4248, "negs r0, r1");
+    test_disasm(0x4249, "negs r1, r1");
+    test_disasm(0x424f, "negs r7, r1");
+    test_disasm(0x4278, "negs r0, r7");
+    test_disasm(0x4279, "negs r1, r7");
+    test_disasm(0x427f, "negs r7, r7");
+
+    test_disasm(0x4280, "cmp r0, r0");
+    test_disasm(0x4281, "cmp r1, r0");
+    test_disasm(0x4287, "cmp r7, r0");
+    test_disasm(0x4288, "cmp r0, r1");
+    test_disasm(0x4289, "cmp r1, r1");
+    test_disasm(0x428f, "cmp r7, r1");
+    test_disasm(0x42b8, "cmp r0, r7");
+    test_disasm(0x42b9, "cmp r1, r7");
+    test_disasm(0x42bf, "cmp r7, r7");
+
+    test_disasm(0x42c0, "cmn r0, r0");
+    test_disasm(0x42c1, "cmn r1, r0");
+    test_disasm(0x42c7, "cmn r7, r0");
+    test_disasm(0x42c8, "cmn r0, r1");
+    test_disasm(0x42c9, "cmn r1, r1");
+    test_disasm(0x42cf, "cmn r7, r1");
+    test_disasm(0x42f8, "cmn r0, r7");
+    test_disasm(0x42f9, "cmn r1, r7");
+    test_disasm(0x42ff, "cmn r7, r7");
+
+    test_disasm(0x4300, "orrs r0, r0");
+    test_disasm(0x4301, "orrs r1, r0");
+    test_disasm(0x4307, "orrs r7, r0");
+    test_disasm(0x4308, "orrs r0, r1");
+    test_disasm(0x4309, "orrs r1, r1");
+    test_disasm(0x430f, "orrs r7, r1");
+    test_disasm(0x4338, "orrs r0, r7");
+    test_disasm(0x4339, "orrs r1, r7");
+    test_disasm(0x433f, "orrs r7, r7");
+
+    test_disasm(0x4340, "muls r0, r0");
+    test_disasm(0x4341, "muls r1, r0");
+    test_disasm(0x4347, "muls r7, r0");
+    test_disasm(0x4348, "muls r0, r1");
+    test_disasm(0x4349, "muls r1, r1");
+    test_disasm(0x434f, "muls r7, r1");
+    test_disasm(0x4378, "muls r0, r7");
+    test_disasm(0x4379, "muls r1, r7");
+    test_disasm(0x437f, "muls r7, r7");
+
+    test_disasm(0x4380, "bics r0, r0");
+    test_disasm(0x4381, "bics r1, r0");
+    test_disasm(0x4387, "bics r7, r0");
+    test_disasm(0x4388, "bics r0, r1");
+    test_disasm(0x4389, "bics r1, r1");
+    test_disasm(0x438f, "bics r7, r1");
+    test_disasm(0x43b8, "bics r0, r7");
+    test_disasm(0x43b9, "bics r1, r7");
+    test_disasm(0x43bf, "bics r7, r7");
+
+    test_disasm(0x43c0, "mvns r0, r0");
+    test_disasm(0x43c1, "mvns r1, r0");
+    test_disasm(0x43c7, "mvns r7, r0");
+    test_disasm(0x43c8, "mvns r0, r1");
+    test_disasm(0x43c9, "mvns r1, r1");
+    test_disasm(0x43cf, "mvns r7, r1");
+    test_disasm(0x43f8, "mvns r0, r7");
+    test_disasm(0x43f9, "mvns r1, r7");
+    test_disasm(0x43ff, "mvns r7, r7");
+
 #if 0
-movs r0, #0                  // 2000 movs r0, #0
-movs r0, #1                  // 2001 movs r0, #1
-movs r0, #255 // 0xff         // 20ff movs r0, #255 // 0xff
-movs r1, #0                  // 2100 movs r1, #0
-movs r1, #1                  // 2101 movs r1, #1
-movs r1, #255 // 0xff         // 21ff movs r1, #255 // 0xff
-movs r2, #0                  // 2200 movs r2, #0
-movs r2, #1                  // 2201 movs r2, #1
-movs r2, #255 // 0xff         // 22ff movs r2, #255 // 0xff
-movs r3, #0                  // 2300 movs r3, #0
-movs r3, #1                  // 2301 movs r3, #1
-movs r3, #255 // 0xff         // 23ff movs r3, #255 // 0xff
-movs r4, #0                  // 2400 movs r4, #0
-movs r4, #1                  // 2401 movs r4, #1
-movs r4, #255 // 0xff         // 24ff movs r4, #255 // 0xff
-movs r5, #0                  // 2500 movs r5, #0
-movs r5, #1                  // 2501 movs r5, #1
-movs r5, #255 // 0xff         // 25ff movs r5, #255 // 0xff
-movs r6, #0                  // 2600 movs r6, #0
-movs r6, #1                  // 2601 movs r6, #1
-movs r6, #255 // 0xff         // 26ff movs r6, #255 // 0xff
-movs r7, #0                  // 2700 movs r7, #0
-movs r7, #1                  // 2701 movs r7, #1
-movs r7, #255 // 0xff         // 27ff movs r7, #255 // 0xff
-
-cmp r0, #0                   // 2800 cmp r0, #0
-cmp r0, #1                   // 2801 cmp r0, #1
-cmp r0, #255 // 0xff          // 28ff cmp r0, #255 // 0xff
-cmp r1, #0                   // 2900 cmp r1, #0
-cmp r1, #1                   // 2901 cmp r1, #1
-cmp r1, #255 // 0xff          // 29ff cmp r1, #255 // 0xff
-cmp r2, #0                   // 2a00 cmp r2, #0
-cmp r2, #1                   // 2a01 cmp r2, #1
-cmp r2, #255 // 0xff          // 2aff cmp r2, #255 // 0xff
-cmp r3, #0                   // 2b00 cmp r3, #0
-cmp r3, #1                   // 2b01 cmp r3, #1
-cmp r3, #255 // 0xff          // 2bff cmp r3, #255 // 0xff
-cmp r4, #0                   // 2c00 cmp r4, #0
-cmp r4, #1                   // 2c01 cmp r4, #1
-cmp r4, #255 // 0xff          // 2cff cmp r4, #255 // 0xff
-cmp r5, #0                   // 2d00 cmp r5, #0
-cmp r5, #1                   // 2d01 cmp r5, #1
-cmp r5, #255 // 0xff          // 2dff cmp r5, #255 // 0xff
-cmp r6, #0                   // 2e00 cmp r6, #0
-cmp r6, #1                   // 2e01 cmp r6, #1
-cmp r6, #255 // 0xff          // 2eff cmp r6, #255 // 0xff
-cmp r7, #0                   // 2f00 cmp r7, #0
-cmp r7, #1                   // 2f01 cmp r7, #1
-cmp r7, #255 // 0xff          // 2fff cmp r7, #255 // 0xff
-
-adds r0, #0                  // 3000 adds r0, #0
-adds r0, #1                  // 3001 adds r0, #1
-adds r0, #255 // 0xff         // 30ff adds r0, #255 // 0xff
-adds r1, #0                  // 3100 adds r1, #0
-adds r1, #1                  // 3101 adds r1, #1
-adds r1, #255 // 0xff         // 31ff adds r1, #255 // 0xff
-adds r2, #0                  // 3200 adds r2, #0
-adds r2, #1                  // 3201 adds r2, #1
-adds r2, #255 // 0xff         // 32ff adds r2, #255 // 0xff
-adds r3, #0                  // 3300 adds r3, #0
-adds r3, #1                  // 3301 adds r3, #1
-adds r3, #255 // 0xff         // 33ff adds r3, #255 // 0xff
-adds r4, #0                  // 3400 adds r4, #0
-adds r4, #1                  // 3401 adds r4, #1
-adds r4, #255 // 0xff         // 34ff adds r4, #255 // 0xff
-adds r5, #0                  // 3500 adds r5, #0
-adds r5, #1                  // 3501 adds r5, #1
-adds r5, #255 // 0xff         // 35ff adds r5, #255 // 0xff
-adds r6, #0                  // 3600 adds r6, #0
-adds r6, #1                  // 3601 adds r6, #1
-adds r6, #255 // 0xff         // 36ff adds r6, #255 // 0xff
-adds r7, #0                  // 3700 adds r7, #0
-adds r7, #1                  // 3701 adds r7, #1
-adds r7, #255 // 0xff         // 37ff adds r7, #255 // 0xff
-
-subs r0, #0                  // 3800 subs r0, #0
-subs r0, #1                  // 3801 subs r0, #1
-subs r0, #255 // 0xff         // 38ff subs r0, #255 // 0xff
-subs r1, #0                  // 3900 subs r1, #0
-subs r1, #1                  // 3901 subs r1, #1
-subs r1, #255 // 0xff         // 39ff subs r1, #255 // 0xff
-subs r2, #0                  // 3a00 subs r2, #0
-subs r2, #1                  // 3a01 subs r2, #1
-subs r2, #255 // 0xff         // 3aff subs r2, #255 // 0xff
-subs r3, #0                  // 3b00 subs r3, #0
-subs r3, #1                  // 3b01 subs r3, #1
-subs r3, #255 // 0xff         // 3bff subs r3, #255 // 0xff
-subs r4, #0                  // 3c00 subs r4, #0
-subs r4, #1                  // 3c01 subs r4, #1
-subs r4, #255 // 0xff         // 3cff subs r4, #255 // 0xff
-subs r5, #0                  // 3d00 subs r5, #0
-subs r5, #1                  // 3d01 subs r5, #1
-subs r5, #255 // 0xff         // 3dff subs r5, #255 // 0xff
-subs r6, #0                  // 3e00 subs r6, #0
-subs r6, #1                  // 3e01 subs r6, #1
-subs r6, #255 // 0xff         // 3eff subs r6, #255 // 0xff
-subs r7, #0                  // 3f00 subs r7, #0
-subs r7, #1                  // 3f01 subs r7, #1
-subs r7, #255 // 0xff         // 3fff subs r7, #255 // 0xff
-
-ands r0, r0                  // 4000 ands r0, r0
-ands r1, r0                  // 4001 ands r1, r0
-ands r2, r0                  // 4002 ands r2, r0
-ands r3, r0                  // 4003 ands r3, r0
-ands r4, r0                  // 4004 ands r4, r0
-ands r5, r0                  // 4005 ands r5, r0
-ands r6, r0                  // 4006 ands r6, r0
-ands r7, r0                  // 4007 ands r7, r0
-ands r0, r1                  // 4008 ands r0, r1
-ands r1, r1                  // 4009 ands r1, r1
-ands r2, r1                  // 400a ands r2, r1
-ands r3, r1                  // 400b ands r3, r1
-ands r4, r1                  // 400c ands r4, r1
-ands r5, r1                  // 400d ands r5, r1
-ands r6, r1                  // 400e ands r6, r1
-ands r7, r1                  // 400f ands r7, r1
-ands r0, r2                  // 4010 ands r0, r2
-ands r1, r2                  // 4011 ands r1, r2
-ands r2, r2                  // 4012 ands r2, r2
-ands r3, r2                  // 4013 ands r3, r2
-ands r4, r2                  // 4014 ands r4, r2
-ands r5, r2                  // 4015 ands r5, r2
-ands r6, r2                  // 4016 ands r6, r2
-ands r7, r2                  // 4017 ands r7, r2
-ands r0, r3                  // 4018 ands r0, r3
-ands r1, r3                  // 4019 ands r1, r3
-ands r2, r3                  // 401a ands r2, r3
-ands r3, r3                  // 401b ands r3, r3
-ands r4, r3                  // 401c ands r4, r3
-ands r5, r3                  // 401d ands r5, r3
-ands r6, r3                  // 401e ands r6, r3
-ands r7, r3                  // 401f ands r7, r3
-ands r0, r4                  // 4020 ands r0, r4
-ands r1, r4                  // 4021 ands r1, r4
-ands r2, r4                  // 4022 ands r2, r4
-ands r3, r4                  // 4023 ands r3, r4
-ands r4, r4                  // 4024 ands r4, r4
-ands r5, r4                  // 4025 ands r5, r4
-ands r6, r4                  // 4026 ands r6, r4
-ands r7, r4                  // 4027 ands r7, r4
-ands r0, r5                  // 4028 ands r0, r5
-ands r1, r5                  // 4029 ands r1, r5
-ands r2, r5                  // 402a ands r2, r5
-ands r3, r5                  // 402b ands r3, r5
-ands r4, r5                  // 402c ands r4, r5
-ands r5, r5                  // 402d ands r5, r5
-ands r6, r5                  // 402e ands r6, r5
-ands r7, r5                  // 402f ands r7, r5
-ands r0, r6                  // 4030 ands r0, r6
-ands r1, r6                  // 4031 ands r1, r6
-ands r2, r6                  // 4032 ands r2, r6
-ands r3, r6                  // 4033 ands r3, r6
-ands r4, r6                  // 4034 ands r4, r6
-ands r5, r6                  // 4035 ands r5, r6
-ands r6, r6                  // 4036 ands r6, r6
-ands r7, r6                  // 4037 ands r7, r6
-ands r0, r7                  // 4038 ands r0, r7
-ands r1, r7                  // 4039 ands r1, r7
-ands r2, r7                  // 403a ands r2, r7
-ands r3, r7                  // 403b ands r3, r7
-ands r4, r7                  // 403c ands r4, r7
-ands r5, r7                  // 403d ands r5, r7
-ands r6, r7                  // 403e ands r6, r7
-ands r7, r7                  // 403f ands r7, r7
-
-eors r0, r0                  // 4040 eors r0, r0
-eors r1, r0                  // 4041 eors r1, r0
-eors r2, r0                  // 4042 eors r2, r0
-eors r3, r0                  // 4043 eors r3, r0
-eors r4, r0                  // 4044 eors r4, r0
-eors r5, r0                  // 4045 eors r5, r0
-eors r6, r0                  // 4046 eors r6, r0
-eors r7, r0                  // 4047 eors r7, r0
-eors r0, r1                  // 4048 eors r0, r1
-eors r1, r1                  // 4049 eors r1, r1
-eors r2, r1                  // 404a eors r2, r1
-eors r3, r1                  // 404b eors r3, r1
-eors r4, r1                  // 404c eors r4, r1
-eors r5, r1                  // 404d eors r5, r1
-eors r6, r1                  // 404e eors r6, r1
-eors r7, r1                  // 404f eors r7, r1
-eors r0, r2                  // 4050 eors r0, r2
-eors r1, r2                  // 4051 eors r1, r2
-eors r2, r2                  // 4052 eors r2, r2
-eors r3, r2                  // 4053 eors r3, r2
-eors r4, r2                  // 4054 eors r4, r2
-eors r5, r2                  // 4055 eors r5, r2
-eors r6, r2                  // 4056 eors r6, r2
-eors r7, r2                  // 4057 eors r7, r2
-eors r0, r3                  // 4058 eors r0, r3
-eors r1, r3                  // 4059 eors r1, r3
-eors r2, r3                  // 405a eors r2, r3
-eors r3, r3                  // 405b eors r3, r3
-eors r4, r3                  // 405c eors r4, r3
-eors r5, r3                  // 405d eors r5, r3
-eors r6, r3                  // 405e eors r6, r3
-eors r7, r3                  // 405f eors r7, r3
-eors r0, r4                  // 4060 eors r0, r4
-eors r1, r4                  // 4061 eors r1, r4
-eors r2, r4                  // 4062 eors r2, r4
-eors r3, r4                  // 4063 eors r3, r4
-eors r4, r4                  // 4064 eors r4, r4
-eors r5, r4                  // 4065 eors r5, r4
-eors r6, r4                  // 4066 eors r6, r4
-eors r7, r4                  // 4067 eors r7, r4
-eors r0, r5                  // 4068 eors r0, r5
-eors r1, r5                  // 4069 eors r1, r5
-eors r2, r5                  // 406a eors r2, r5
-eors r3, r5                  // 406b eors r3, r5
-eors r4, r5                  // 406c eors r4, r5
-eors r5, r5                  // 406d eors r5, r5
-eors r6, r5                  // 406e eors r6, r5
-eors r7, r5                  // 406f eors r7, r5
-eors r0, r6                  // 4070 eors r0, r6
-eors r1, r6                  // 4071 eors r1, r6
-eors r2, r6                  // 4072 eors r2, r6
-eors r3, r6                  // 4073 eors r3, r6
-eors r4, r6                  // 4074 eors r4, r6
-eors r5, r6                  // 4075 eors r5, r6
-eors r6, r6                  // 4076 eors r6, r6
-eors r7, r6                  // 4077 eors r7, r6
-eors r0, r7                  // 4078 eors r0, r7
-eors r1, r7                  // 4079 eors r1, r7
-eors r2, r7                  // 407a eors r2, r7
-eors r3, r7                  // 407b eors r3, r7
-eors r4, r7                  // 407c eors r4, r7
-eors r5, r7                  // 407d eors r5, r7
-eors r6, r7                  // 407e eors r6, r7
-eors r7, r7                  // 407f eors r7, r7
-
-lsls r0, r0                  // 4080 lsls r0, r0
-lsls r1, r0                  // 4081 lsls r1, r0
-lsls r2, r0                  // 4082 lsls r2, r0
-lsls r3, r0                  // 4083 lsls r3, r0
-lsls r4, r0                  // 4084 lsls r4, r0
-lsls r5, r0                  // 4085 lsls r5, r0
-lsls r6, r0                  // 4086 lsls r6, r0
-lsls r7, r0                  // 4087 lsls r7, r0
-lsls r0, r1                  // 4088 lsls r0, r1
-lsls r1, r1                  // 4089 lsls r1, r1
-lsls r2, r1                  // 408a lsls r2, r1
-lsls r3, r1                  // 408b lsls r3, r1
-lsls r4, r1                  // 408c lsls r4, r1
-lsls r5, r1                  // 408d lsls r5, r1
-lsls r6, r1                  // 408e lsls r6, r1
-lsls r7, r1                  // 408f lsls r7, r1
-lsls r0, r2                  // 4090 lsls r0, r2
-lsls r1, r2                  // 4091 lsls r1, r2
-lsls r2, r2                  // 4092 lsls r2, r2
-lsls r3, r2                  // 4093 lsls r3, r2
-lsls r4, r2                  // 4094 lsls r4, r2
-lsls r5, r2                  // 4095 lsls r5, r2
-lsls r6, r2                  // 4096 lsls r6, r2
-lsls r7, r2                  // 4097 lsls r7, r2
-lsls r0, r3                  // 4098 lsls r0, r3
-lsls r1, r3                  // 4099 lsls r1, r3
-lsls r2, r3                  // 409a lsls r2, r3
-lsls r3, r3                  // 409b lsls r3, r3
-lsls r4, r3                  // 409c lsls r4, r3
-lsls r5, r3                  // 409d lsls r5, r3
-lsls r6, r3                  // 409e lsls r6, r3
-lsls r7, r3                  // 409f lsls r7, r3
-lsls r0, r4                  // 40a0 lsls r0, r4
-lsls r1, r4                  // 40a1 lsls r1, r4
-lsls r2, r4                  // 40a2 lsls r2, r4
-lsls r3, r4                  // 40a3 lsls r3, r4
-lsls r4, r4                  // 40a4 lsls r4, r4
-lsls r5, r4                  // 40a5 lsls r5, r4
-lsls r6, r4                  // 40a6 lsls r6, r4
-lsls r7, r4                  // 40a7 lsls r7, r4
-lsls r0, r5                  // 40a8 lsls r0, r5
-lsls r1, r5                  // 40a9 lsls r1, r5
-lsls r2, r5                  // 40aa lsls r2, r5
-lsls r3, r5                  // 40ab lsls r3, r5
-lsls r4, r5                  // 40ac lsls r4, r5
-lsls r5, r5                  // 40ad lsls r5, r5
-lsls r6, r5                  // 40ae lsls r6, r5
-lsls r7, r5                  // 40af lsls r7, r5
-lsls r0, r6                  // 40b0 lsls r0, r6
-lsls r1, r6                  // 40b1 lsls r1, r6
-lsls r2, r6                  // 40b2 lsls r2, r6
-lsls r3, r6                  // 40b3 lsls r3, r6
-lsls r4, r6                  // 40b4 lsls r4, r6
-lsls r5, r6                  // 40b5 lsls r5, r6
-lsls r6, r6                  // 40b6 lsls r6, r6
-lsls r7, r6                  // 40b7 lsls r7, r6
-lsls r0, r7                  // 40b8 lsls r0, r7
-lsls r1, r7                  // 40b9 lsls r1, r7
-lsls r2, r7                  // 40ba lsls r2, r7
-lsls r3, r7                  // 40bb lsls r3, r7
-lsls r4, r7                  // 40bc lsls r4, r7
-lsls r5, r7                  // 40bd lsls r5, r7
-lsls r6, r7                  // 40be lsls r6, r7
-lsls r7, r7                  // 40bf lsls r7, r7
-lsrs r0, r0                  // 40c0 lsrs r0, r0
-lsrs r1, r0                  // 40c1 lsrs r1, r0
-lsrs r2, r0                  // 40c2 lsrs r2, r0
-lsrs r3, r0                  // 40c3 lsrs r3, r0
-lsrs r4, r0                  // 40c4 lsrs r4, r0
-lsrs r5, r0                  // 40c5 lsrs r5, r0
-lsrs r6, r0                  // 40c6 lsrs r6, r0
-lsrs r7, r0                  // 40c7 lsrs r7, r0
-lsrs r0, r1                  // 40c8 lsrs r0, r1
-lsrs r1, r1                  // 40c9 lsrs r1, r1
-lsrs r2, r1                  // 40ca lsrs r2, r1
-lsrs r3, r1                  // 40cb lsrs r3, r1
-lsrs r4, r1                  // 40cc lsrs r4, r1
-lsrs r5, r1                  // 40cd lsrs r5, r1
-lsrs r6, r1                  // 40ce lsrs r6, r1
-lsrs r7, r1                  // 40cf lsrs r7, r1
-lsrs r0, r2                  // 40d0 lsrs r0, r2
-lsrs r1, r2                  // 40d1 lsrs r1, r2
-lsrs r2, r2                  // 40d2 lsrs r2, r2
-lsrs r3, r2                  // 40d3 lsrs r3, r2
-lsrs r4, r2                  // 40d4 lsrs r4, r2
-lsrs r5, r2                  // 40d5 lsrs r5, r2
-lsrs r6, r2                  // 40d6 lsrs r6, r2
-lsrs r7, r2                  // 40d7 lsrs r7, r2
-lsrs r0, r3                  // 40d8 lsrs r0, r3
-lsrs r1, r3                  // 40d9 lsrs r1, r3
-lsrs r2, r3                  // 40da lsrs r2, r3
-lsrs r3, r3                  // 40db lsrs r3, r3
-lsrs r4, r3                  // 40dc lsrs r4, r3
-lsrs r5, r3                  // 40dd lsrs r5, r3
-lsrs r6, r3                  // 40de lsrs r6, r3
-lsrs r7, r3                  // 40df lsrs r7, r3
-lsrs r0, r4                  // 40e0 lsrs r0, r4
-lsrs r1, r4                  // 40e1 lsrs r1, r4
-lsrs r2, r4                  // 40e2 lsrs r2, r4
-lsrs r3, r4                  // 40e3 lsrs r3, r4
-lsrs r4, r4                  // 40e4 lsrs r4, r4
-lsrs r5, r4                  // 40e5 lsrs r5, r4
-lsrs r6, r4                  // 40e6 lsrs r6, r4
-lsrs r7, r4                  // 40e7 lsrs r7, r4
-lsrs r0, r5                  // 40e8 lsrs r0, r5
-lsrs r1, r5                  // 40e9 lsrs r1, r5
-lsrs r2, r5                  // 40ea lsrs r2, r5
-lsrs r3, r5                  // 40eb lsrs r3, r5
-lsrs r4, r5                  // 40ec lsrs r4, r5
-lsrs r5, r5                  // 40ed lsrs r5, r5
-lsrs r6, r5                  // 40ee lsrs r6, r5
-lsrs r7, r5                  // 40ef lsrs r7, r5
-lsrs r0, r6                  // 40f0 lsrs r0, r6
-lsrs r1, r6                  // 40f1 lsrs r1, r6
-lsrs r2, r6                  // 40f2 lsrs r2, r6
-lsrs r3, r6                  // 40f3 lsrs r3, r6
-lsrs r4, r6                  // 40f4 lsrs r4, r6
-lsrs r5, r6                  // 40f5 lsrs r5, r6
-lsrs r6, r6                  // 40f6 lsrs r6, r6
-lsrs r7, r6                  // 40f7 lsrs r7, r6
-lsrs r0, r7                  // 40f8 lsrs r0, r7
-lsrs r1, r7                  // 40f9 lsrs r1, r7
-lsrs r2, r7                  // 40fa lsrs r2, r7
-lsrs r3, r7                  // 40fb lsrs r3, r7
-lsrs r4, r7                  // 40fc lsrs r4, r7
-lsrs r5, r7                  // 40fd lsrs r5, r7
-lsrs r6, r7                  // 40fe lsrs r6, r7
-lsrs r7, r7                  // 40ff lsrs r7, r7
-asrs r0, r0                  // 4100 asrs r0, r0
-asrs r1, r0                  // 4101 asrs r1, r0
-asrs r2, r0                  // 4102 asrs r2, r0
-asrs r3, r0                  // 4103 asrs r3, r0
-asrs r4, r0                  // 4104 asrs r4, r0
-asrs r5, r0                  // 4105 asrs r5, r0
-asrs r6, r0                  // 4106 asrs r6, r0
-asrs r7, r0                  // 4107 asrs r7, r0
-asrs r0, r1                  // 4108 asrs r0, r1
-asrs r1, r1                  // 4109 asrs r1, r1
-asrs r2, r1                  // 410a asrs r2, r1
-asrs r3, r1                  // 410b asrs r3, r1
-asrs r4, r1                  // 410c asrs r4, r1
-asrs r5, r1                  // 410d asrs r5, r1
-asrs r6, r1                  // 410e asrs r6, r1
-asrs r7, r1                  // 410f asrs r7, r1
-asrs r0, r2                  // 4110 asrs r0, r2
-asrs r1, r2                  // 4111 asrs r1, r2
-asrs r2, r2                  // 4112 asrs r2, r2
-asrs r3, r2                  // 4113 asrs r3, r2
-asrs r4, r2                  // 4114 asrs r4, r2
-asrs r5, r2                  // 4115 asrs r5, r2
-asrs r6, r2                  // 4116 asrs r6, r2
-asrs r7, r2                  // 4117 asrs r7, r2
-asrs r0, r3                  // 4118 asrs r0, r3
-asrs r1, r3                  // 4119 asrs r1, r3
-asrs r2, r3                  // 411a asrs r2, r3
-asrs r3, r3                  // 411b asrs r3, r3
-asrs r4, r3                  // 411c asrs r4, r3
-asrs r5, r3                  // 411d asrs r5, r3
-asrs r6, r3                  // 411e asrs r6, r3
-asrs r7, r3                  // 411f asrs r7, r3
-asrs r0, r4                  // 4120 asrs r0, r4
-asrs r1, r4                  // 4121 asrs r1, r4
-asrs r2, r4                  // 4122 asrs r2, r4
-asrs r3, r4                  // 4123 asrs r3, r4
-asrs r4, r4                  // 4124 asrs r4, r4
-asrs r5, r4                  // 4125 asrs r5, r4
-asrs r6, r4                  // 4126 asrs r6, r4
-asrs r7, r4                  // 4127 asrs r7, r4
-asrs r0, r5                  // 4128 asrs r0, r5
-asrs r1, r5                  // 4129 asrs r1, r5
-asrs r2, r5                  // 412a asrs r2, r5
-asrs r3, r5                  // 412b asrs r3, r5
-asrs r4, r5                  // 412c asrs r4, r5
-asrs r5, r5                  // 412d asrs r5, r5
-asrs r6, r5                  // 412e asrs r6, r5
-asrs r7, r5                  // 412f asrs r7, r5
-asrs r0, r6                  // 4130 asrs r0, r6
-asrs r1, r6                  // 4131 asrs r1, r6
-asrs r2, r6                  // 4132 asrs r2, r6
-asrs r3, r6                  // 4133 asrs r3, r6
-asrs r4, r6                  // 4134 asrs r4, r6
-asrs r5, r6                  // 4135 asrs r5, r6
-asrs r6, r6                  // 4136 asrs r6, r6
-asrs r7, r6                  // 4137 asrs r7, r6
-asrs r0, r7                  // 4138 asrs r0, r7
-asrs r1, r7                  // 4139 asrs r1, r7
-asrs r2, r7                  // 413a asrs r2, r7
-asrs r3, r7                  // 413b asrs r3, r7
-asrs r4, r7                  // 413c asrs r4, r7
-asrs r5, r7                  // 413d asrs r5, r7
-asrs r6, r7                  // 413e asrs r6, r7
-asrs r7, r7                  // 413f asrs r7, r7
-adcs r0, r0                  // 4140 adcs r0, r0
-adcs r1, r0                  // 4141 adcs r1, r0
-adcs r2, r0                  // 4142 adcs r2, r0
-adcs r3, r0                  // 4143 adcs r3, r0
-adcs r4, r0                  // 4144 adcs r4, r0
-adcs r5, r0                  // 4145 adcs r5, r0
-adcs r6, r0                  // 4146 adcs r6, r0
-adcs r7, r0                  // 4147 adcs r7, r0
-adcs r0, r1                  // 4148 adcs r0, r1
-adcs r1, r1                  // 4149 adcs r1, r1
-adcs r2, r1                  // 414a adcs r2, r1
-adcs r3, r1                  // 414b adcs r3, r1
-adcs r4, r1                  // 414c adcs r4, r1
-adcs r5, r1                  // 414d adcs r5, r1
-adcs r6, r1                  // 414e adcs r6, r1
-adcs r7, r1                  // 414f adcs r7, r1
-adcs r0, r2                  // 4150 adcs r0, r2
-adcs r1, r2                  // 4151 adcs r1, r2
-adcs r2, r2                  // 4152 adcs r2, r2
-adcs r3, r2                  // 4153 adcs r3, r2
-adcs r4, r2                  // 4154 adcs r4, r2
-adcs r5, r2                  // 4155 adcs r5, r2
-adcs r6, r2                  // 4156 adcs r6, r2
-adcs r7, r2                  // 4157 adcs r7, r2
-adcs r0, r3                  // 4158 adcs r0, r3
-adcs r1, r3                  // 4159 adcs r1, r3
-adcs r2, r3                  // 415a adcs r2, r3
-adcs r3, r3                  // 415b adcs r3, r3
-adcs r4, r3                  // 415c adcs r4, r3
-adcs r5, r3                  // 415d adcs r5, r3
-adcs r6, r3                  // 415e adcs r6, r3
-adcs r7, r3                  // 415f adcs r7, r3
-adcs r0, r4                  // 4160 adcs r0, r4
-adcs r1, r4                  // 4161 adcs r1, r4
-adcs r2, r4                  // 4162 adcs r2, r4
-adcs r3, r4                  // 4163 adcs r3, r4
-adcs r4, r4                  // 4164 adcs r4, r4
-adcs r5, r4                  // 4165 adcs r5, r4
-adcs r6, r4                  // 4166 adcs r6, r4
-adcs r7, r4                  // 4167 adcs r7, r4
-adcs r0, r5                  // 4168 adcs r0, r5
-adcs r1, r5                  // 4169 adcs r1, r5
-adcs r2, r5                  // 416a adcs r2, r5
-adcs r3, r5                  // 416b adcs r3, r5
-adcs r4, r5                  // 416c adcs r4, r5
-adcs r5, r5                  // 416d adcs r5, r5
-adcs r6, r5                  // 416e adcs r6, r5
-adcs r7, r5                  // 416f adcs r7, r5
-adcs r0, r6                  // 4170 adcs r0, r6
-adcs r1, r6                  // 4171 adcs r1, r6
-adcs r2, r6                  // 4172 adcs r2, r6
-adcs r3, r6                  // 4173 adcs r3, r6
-adcs r4, r6                  // 4174 adcs r4, r6
-adcs r5, r6                  // 4175 adcs r5, r6
-adcs r6, r6                  // 4176 adcs r6, r6
-adcs r7, r6                  // 4177 adcs r7, r6
-adcs r0, r7                  // 4178 adcs r0, r7
-adcs r1, r7                  // 4179 adcs r1, r7
-adcs r2, r7                  // 417a adcs r2, r7
-adcs r3, r7                  // 417b adcs r3, r7
-adcs r4, r7                  // 417c adcs r4, r7
-adcs r5, r7                  // 417d adcs r5, r7
-adcs r6, r7                  // 417e adcs r6, r7
-adcs r7, r7                  // 417f adcs r7, r7
-sbcs r0, r0                  // 4180 sbcs r0, r0
-sbcs r1, r0                  // 4181 sbcs r1, r0
-sbcs r2, r0                  // 4182 sbcs r2, r0
-sbcs r3, r0                  // 4183 sbcs r3, r0
-sbcs r4, r0                  // 4184 sbcs r4, r0
-sbcs r5, r0                  // 4185 sbcs r5, r0
-sbcs r6, r0                  // 4186 sbcs r6, r0
-sbcs r7, r0                  // 4187 sbcs r7, r0
-sbcs r0, r1                  // 4188 sbcs r0, r1
-sbcs r1, r1                  // 4189 sbcs r1, r1
-sbcs r2, r1                  // 418a sbcs r2, r1
-sbcs r3, r1                  // 418b sbcs r3, r1
-sbcs r4, r1                  // 418c sbcs r4, r1
-sbcs r5, r1                  // 418d sbcs r5, r1
-sbcs r6, r1                  // 418e sbcs r6, r1
-sbcs r7, r1                  // 418f sbcs r7, r1
-sbcs r0, r2                  // 4190 sbcs r0, r2
-sbcs r1, r2                  // 4191 sbcs r1, r2
-sbcs r2, r2                  // 4192 sbcs r2, r2
-sbcs r3, r2                  // 4193 sbcs r3, r2
-sbcs r4, r2                  // 4194 sbcs r4, r2
-sbcs r5, r2                  // 4195 sbcs r5, r2
-sbcs r6, r2                  // 4196 sbcs r6, r2
-sbcs r7, r2                  // 4197 sbcs r7, r2
-sbcs r0, r3                  // 4198 sbcs r0, r3
-sbcs r1, r3                  // 4199 sbcs r1, r3
-sbcs r2, r3                  // 419a sbcs r2, r3
-sbcs r3, r3                  // 419b sbcs r3, r3
-sbcs r4, r3                  // 419c sbcs r4, r3
-sbcs r5, r3                  // 419d sbcs r5, r3
-sbcs r6, r3                  // 419e sbcs r6, r3
-sbcs r7, r3                  // 419f sbcs r7, r3
-sbcs r0, r4                  // 41a0 sbcs r0, r4
-sbcs r1, r4                  // 41a1 sbcs r1, r4
-sbcs r2, r4                  // 41a2 sbcs r2, r4
-sbcs r3, r4                  // 41a3 sbcs r3, r4
-sbcs r4, r4                  // 41a4 sbcs r4, r4
-sbcs r5, r4                  // 41a5 sbcs r5, r4
-sbcs r6, r4                  // 41a6 sbcs r6, r4
-sbcs r7, r4                  // 41a7 sbcs r7, r4
-sbcs r0, r5                  // 41a8 sbcs r0, r5
-sbcs r1, r5                  // 41a9 sbcs r1, r5
-sbcs r2, r5                  // 41aa sbcs r2, r5
-sbcs r3, r5                  // 41ab sbcs r3, r5
-sbcs r4, r5                  // 41ac sbcs r4, r5
-sbcs r5, r5                  // 41ad sbcs r5, r5
-sbcs r6, r5                  // 41ae sbcs r6, r5
-sbcs r7, r5                  // 41af sbcs r7, r5
-sbcs r0, r6                  // 41b0 sbcs r0, r6
-sbcs r1, r6                  // 41b1 sbcs r1, r6
-sbcs r2, r6                  // 41b2 sbcs r2, r6
-sbcs r3, r6                  // 41b3 sbcs r3, r6
-sbcs r4, r6                  // 41b4 sbcs r4, r6
-sbcs r5, r6                  // 41b5 sbcs r5, r6
-sbcs r6, r6                  // 41b6 sbcs r6, r6
-sbcs r7, r6                  // 41b7 sbcs r7, r6
-sbcs r0, r7                  // 41b8 sbcs r0, r7
-sbcs r1, r7                  // 41b9 sbcs r1, r7
-sbcs r2, r7                  // 41ba sbcs r2, r7
-sbcs r3, r7                  // 41bb sbcs r3, r7
-sbcs r4, r7                  // 41bc sbcs r4, r7
-sbcs r5, r7                  // 41bd sbcs r5, r7
-sbcs r6, r7                  // 41be sbcs r6, r7
-sbcs r7, r7                  // 41bf sbcs r7, r7
-rors r0, r0                  // 41c0 rors r0, r0
-rors r1, r0                  // 41c1 rors r1, r0
-rors r2, r0                  // 41c2 rors r2, r0
-rors r3, r0                  // 41c3 rors r3, r0
-rors r4, r0                  // 41c4 rors r4, r0
-rors r5, r0                  // 41c5 rors r5, r0
-rors r6, r0                  // 41c6 rors r6, r0
-rors r7, r0                  // 41c7 rors r7, r0
-rors r0, r1                  // 41c8 rors r0, r1
-rors r1, r1                  // 41c9 rors r1, r1
-rors r2, r1                  // 41ca rors r2, r1
-rors r3, r1                  // 41cb rors r3, r1
-rors r4, r1                  // 41cc rors r4, r1
-rors r5, r1                  // 41cd rors r5, r1
-rors r6, r1                  // 41ce rors r6, r1
-rors r7, r1                  // 41cf rors r7, r1
-rors r0, r2                  // 41d0 rors r0, r2
-rors r1, r2                  // 41d1 rors r1, r2
-rors r2, r2                  // 41d2 rors r2, r2
-rors r3, r2                  // 41d3 rors r3, r2
-rors r4, r2                  // 41d4 rors r4, r2
-rors r5, r2                  // 41d5 rors r5, r2
-rors r6, r2                  // 41d6 rors r6, r2
-rors r7, r2                  // 41d7 rors r7, r2
-rors r0, r3                  // 41d8 rors r0, r3
-rors r1, r3                  // 41d9 rors r1, r3
-rors r2, r3                  // 41da rors r2, r3
-rors r3, r3                  // 41db rors r3, r3
-rors r4, r3                  // 41dc rors r4, r3
-rors r5, r3                  // 41dd rors r5, r3
-rors r6, r3                  // 41de rors r6, r3
-rors r7, r3                  // 41df rors r7, r3
-rors r0, r4                  // 41e0 rors r0, r4
-rors r1, r4                  // 41e1 rors r1, r4
-rors r2, r4                  // 41e2 rors r2, r4
-rors r3, r4                  // 41e3 rors r3, r4
-rors r4, r4                  // 41e4 rors r4, r4
-rors r5, r4                  // 41e5 rors r5, r4
-rors r6, r4                  // 41e6 rors r6, r4
-rors r7, r4                  // 41e7 rors r7, r4
-rors r0, r5                  // 41e8 rors r0, r5
-rors r1, r5                  // 41e9 rors r1, r5
-rors r2, r5                  // 41ea rors r2, r5
-rors r3, r5                  // 41eb rors r3, r5
-rors r4, r5                  // 41ec rors r4, r5
-rors r5, r5                  // 41ed rors r5, r5
-rors r6, r5                  // 41ee rors r6, r5
-rors r7, r5                  // 41ef rors r7, r5
-rors r0, r6                  // 41f0 rors r0, r6
-rors r1, r6                  // 41f1 rors r1, r6
-rors r2, r6                  // 41f2 rors r2, r6
-rors r3, r6                  // 41f3 rors r3, r6
-rors r4, r6                  // 41f4 rors r4, r6
-rors r5, r6                  // 41f5 rors r5, r6
-rors r6, r6                  // 41f6 rors r6, r6
-rors r7, r6                  // 41f7 rors r7, r6
-rors r0, r7                  // 41f8 rors r0, r7
-rors r1, r7                  // 41f9 rors r1, r7
-rors r2, r7                  // 41fa rors r2, r7
-rors r3, r7                  // 41fb rors r3, r7
-rors r4, r7                  // 41fc rors r4, r7
-rors r5, r7                  // 41fd rors r5, r7
-rors r6, r7                  // 41fe rors r6, r7
-rors r7, r7                  // 41ff rors r7, r7
-tst r0, r0                   // 4200 tst r0, r0
-tst r1, r0                   // 4201 tst r1, r0
-tst r2, r0                   // 4202 tst r2, r0
-tst r3, r0                   // 4203 tst r3, r0
-tst r4, r0                   // 4204 tst r4, r0
-tst r5, r0                   // 4205 tst r5, r0
-tst r6, r0                   // 4206 tst r6, r0
-tst r7, r0                   // 4207 tst r7, r0
-tst r0, r1                   // 4208 tst r0, r1
-tst r1, r1                   // 4209 tst r1, r1
-tst r2, r1                   // 420a tst r2, r1
-tst r3, r1                   // 420b tst r3, r1
-tst r4, r1                   // 420c tst r4, r1
-tst r5, r1                   // 420d tst r5, r1
-tst r6, r1                   // 420e tst r6, r1
-tst r7, r1                   // 420f tst r7, r1
-tst r0, r2                   // 4210 tst r0, r2
-tst r1, r2                   // 4211 tst r1, r2
-tst r2, r2                   // 4212 tst r2, r2
-tst r3, r2                   // 4213 tst r3, r2
-tst r4, r2                   // 4214 tst r4, r2
-tst r5, r2                   // 4215 tst r5, r2
-tst r6, r2                   // 4216 tst r6, r2
-tst r7, r2                   // 4217 tst r7, r2
-tst r0, r3                   // 4218 tst r0, r3
-tst r1, r3                   // 4219 tst r1, r3
-tst r2, r3                   // 421a tst r2, r3
-tst r3, r3                   // 421b tst r3, r3
-tst r4, r3                   // 421c tst r4, r3
-tst r5, r3                   // 421d tst r5, r3
-tst r6, r3                   // 421e tst r6, r3
-tst r7, r3                   // 421f tst r7, r3
-tst r0, r4                   // 4220 tst r0, r4
-tst r1, r4                   // 4221 tst r1, r4
-tst r2, r4                   // 4222 tst r2, r4
-tst r3, r4                   // 4223 tst r3, r4
-tst r4, r4                   // 4224 tst r4, r4
-tst r5, r4                   // 4225 tst r5, r4
-tst r6, r4                   // 4226 tst r6, r4
-tst r7, r4                   // 4227 tst r7, r4
-tst r0, r5                   // 4228 tst r0, r5
-tst r1, r5                   // 4229 tst r1, r5
-tst r2, r5                   // 422a tst r2, r5
-tst r3, r5                   // 422b tst r3, r5
-tst r4, r5                   // 422c tst r4, r5
-tst r5, r5                   // 422d tst r5, r5
-tst r6, r5                   // 422e tst r6, r5
-tst r7, r5                   // 422f tst r7, r5
-tst r0, r6                   // 4230 tst r0, r6
-tst r1, r6                   // 4231 tst r1, r6
-tst r2, r6                   // 4232 tst r2, r6
-tst r3, r6                   // 4233 tst r3, r6
-tst r4, r6                   // 4234 tst r4, r6
-tst r5, r6                   // 4235 tst r5, r6
-tst r6, r6                   // 4236 tst r6, r6
-tst r7, r6                   // 4237 tst r7, r6
-tst r0, r7                   // 4238 tst r0, r7
-tst r1, r7                   // 4239 tst r1, r7
-tst r2, r7                   // 423a tst r2, r7
-tst r3, r7                   // 423b tst r3, r7
-tst r4, r7                   // 423c tst r4, r7
-tst r5, r7                   // 423d tst r5, r7
-tst r6, r7                   // 423e tst r6, r7
-tst r7, r7                   // 423f tst r7, r7
-negs r0, r0                  // 4240 negs r0, r0
-negs r1, r0                  // 4241 negs r1, r0
-negs r2, r0                  // 4242 negs r2, r0
-negs r3, r0                  // 4243 negs r3, r0
-negs r4, r0                  // 4244 negs r4, r0
-negs r5, r0                  // 4245 negs r5, r0
-negs r6, r0                  // 4246 negs r6, r0
-negs r7, r0                  // 4247 negs r7, r0
-negs r0, r1                  // 4248 negs r0, r1
-negs r1, r1                  // 4249 negs r1, r1
-negs r2, r1                  // 424a negs r2, r1
-negs r3, r1                  // 424b negs r3, r1
-negs r4, r1                  // 424c negs r4, r1
-negs r5, r1                  // 424d negs r5, r1
-negs r6, r1                  // 424e negs r6, r1
-negs r7, r1                  // 424f negs r7, r1
-negs r0, r2                  // 4250 negs r0, r2
-negs r1, r2                  // 4251 negs r1, r2
-negs r2, r2                  // 4252 negs r2, r2
-negs r3, r2                  // 4253 negs r3, r2
-negs r4, r2                  // 4254 negs r4, r2
-negs r5, r2                  // 4255 negs r5, r2
-negs r6, r2                  // 4256 negs r6, r2
-negs r7, r2                  // 4257 negs r7, r2
-negs r0, r3                  // 4258 negs r0, r3
-negs r1, r3                  // 4259 negs r1, r3
-negs r2, r3                  // 425a negs r2, r3
-negs r3, r3                  // 425b negs r3, r3
-negs r4, r3                  // 425c negs r4, r3
-negs r5, r3                  // 425d negs r5, r3
-negs r6, r3                  // 425e negs r6, r3
-negs r7, r3                  // 425f negs r7, r3
-negs r0, r4                  // 4260 negs r0, r4
-negs r1, r4                  // 4261 negs r1, r4
-negs r2, r4                  // 4262 negs r2, r4
-negs r3, r4                  // 4263 negs r3, r4
-negs r4, r4                  // 4264 negs r4, r4
-negs r5, r4                  // 4265 negs r5, r4
-negs r6, r4                  // 4266 negs r6, r4
-negs r7, r4                  // 4267 negs r7, r4
-negs r0, r5                  // 4268 negs r0, r5
-negs r1, r5                  // 4269 negs r1, r5
-negs r2, r5                  // 426a negs r2, r5
-negs r3, r5                  // 426b negs r3, r5
-negs r4, r5                  // 426c negs r4, r5
-negs r5, r5                  // 426d negs r5, r5
-negs r6, r5                  // 426e negs r6, r5
-negs r7, r5                  // 426f negs r7, r5
-negs r0, r6                  // 4270 negs r0, r6
-negs r1, r6                  // 4271 negs r1, r6
-negs r2, r6                  // 4272 negs r2, r6
-negs r3, r6                  // 4273 negs r3, r6
-negs r4, r6                  // 4274 negs r4, r6
-negs r5, r6                  // 4275 negs r5, r6
-negs r6, r6                  // 4276 negs r6, r6
-negs r7, r6                  // 4277 negs r7, r6
-negs r0, r7                  // 4278 negs r0, r7
-negs r1, r7                  // 4279 negs r1, r7
-negs r2, r7                  // 427a negs r2, r7
-negs r3, r7                  // 427b negs r3, r7
-negs r4, r7                  // 427c negs r4, r7
-negs r5, r7                  // 427d negs r5, r7
-negs r6, r7                  // 427e negs r6, r7
-negs r7, r7                  // 427f negs r7, r7
-cmp r0, r0                   // 4280 cmp r0, r0
-cmp r1, r0                   // 4281 cmp r1, r0
-cmp r2, r0                   // 4282 cmp r2, r0
-cmp r3, r0                   // 4283 cmp r3, r0
-cmp r4, r0                   // 4284 cmp r4, r0
-cmp r5, r0                   // 4285 cmp r5, r0
-cmp r6, r0                   // 4286 cmp r6, r0
-cmp r7, r0                   // 4287 cmp r7, r0
-cmp r0, r1                   // 4288 cmp r0, r1
-cmp r1, r1                   // 4289 cmp r1, r1
-cmp r2, r1                   // 428a cmp r2, r1
-cmp r3, r1                   // 428b cmp r3, r1
-cmp r4, r1                   // 428c cmp r4, r1
-cmp r5, r1                   // 428d cmp r5, r1
-cmp r6, r1                   // 428e cmp r6, r1
-cmp r7, r1                   // 428f cmp r7, r1
-cmp r0, r2                   // 4290 cmp r0, r2
-cmp r1, r2                   // 4291 cmp r1, r2
-cmp r2, r2                   // 4292 cmp r2, r2
-cmp r3, r2                   // 4293 cmp r3, r2
-cmp r4, r2                   // 4294 cmp r4, r2
-cmp r5, r2                   // 4295 cmp r5, r2
-cmp r6, r2                   // 4296 cmp r6, r2
-cmp r7, r2                   // 4297 cmp r7, r2
-cmp r0, r3                   // 4298 cmp r0, r3
-cmp r1, r3                   // 4299 cmp r1, r3
-cmp r2, r3                   // 429a cmp r2, r3
-cmp r3, r3                   // 429b cmp r3, r3
-cmp r4, r3                   // 429c cmp r4, r3
-cmp r5, r3                   // 429d cmp r5, r3
-cmp r6, r3                   // 429e cmp r6, r3
-cmp r7, r3                   // 429f cmp r7, r3
-cmp r0, r4                   // 42a0 cmp r0, r4
-cmp r1, r4                   // 42a1 cmp r1, r4
-cmp r2, r4                   // 42a2 cmp r2, r4
-cmp r3, r4                   // 42a3 cmp r3, r4
-cmp r4, r4                   // 42a4 cmp r4, r4
-cmp r5, r4                   // 42a5 cmp r5, r4
-cmp r6, r4                   // 42a6 cmp r6, r4
-cmp r7, r4                   // 42a7 cmp r7, r4
-cmp r0, r5                   // 42a8 cmp r0, r5
-cmp r1, r5                   // 42a9 cmp r1, r5
-cmp r2, r5                   // 42aa cmp r2, r5
-cmp r3, r5                   // 42ab cmp r3, r5
-cmp r4, r5                   // 42ac cmp r4, r5
-cmp r5, r5                   // 42ad cmp r5, r5
-cmp r6, r5                   // 42ae cmp r6, r5
-cmp r7, r5                   // 42af cmp r7, r5
-cmp r0, r6                   // 42b0 cmp r0, r6
-cmp r1, r6                   // 42b1 cmp r1, r6
-cmp r2, r6                   // 42b2 cmp r2, r6
-cmp r3, r6                   // 42b3 cmp r3, r6
-cmp r4, r6                   // 42b4 cmp r4, r6
-cmp r5, r6                   // 42b5 cmp r5, r6
-cmp r6, r6                   // 42b6 cmp r6, r6
-cmp r7, r6                   // 42b7 cmp r7, r6
-cmp r0, r7                   // 42b8 cmp r0, r7
-cmp r1, r7                   // 42b9 cmp r1, r7
-cmp r2, r7                   // 42ba cmp r2, r7
-cmp r3, r7                   // 42bb cmp r3, r7
-cmp r4, r7                   // 42bc cmp r4, r7
-cmp r5, r7                   // 42bd cmp r5, r7
-cmp r6, r7                   // 42be cmp r6, r7
-cmp r7, r7                   // 42bf cmp r7, r7
-cmn r0, r0                   // 42c0 cmn r0, r0
-cmn r1, r0                   // 42c1 cmn r1, r0
-cmn r2, r0                   // 42c2 cmn r2, r0
-cmn r3, r0                   // 42c3 cmn r3, r0
-cmn r4, r0                   // 42c4 cmn r4, r0
-cmn r5, r0                   // 42c5 cmn r5, r0
-cmn r6, r0                   // 42c6 cmn r6, r0
-cmn r7, r0                   // 42c7 cmn r7, r0
-cmn r0, r1                   // 42c8 cmn r0, r1
-cmn r1, r1                   // 42c9 cmn r1, r1
-cmn r2, r1                   // 42ca cmn r2, r1
-cmn r3, r1                   // 42cb cmn r3, r1
-cmn r4, r1                   // 42cc cmn r4, r1
-cmn r5, r1                   // 42cd cmn r5, r1
-cmn r6, r1                   // 42ce cmn r6, r1
-cmn r7, r1                   // 42cf cmn r7, r1
-cmn r0, r2                   // 42d0 cmn r0, r2
-cmn r1, r2                   // 42d1 cmn r1, r2
-cmn r2, r2                   // 42d2 cmn r2, r2
-cmn r3, r2                   // 42d3 cmn r3, r2
-cmn r4, r2                   // 42d4 cmn r4, r2
-cmn r5, r2                   // 42d5 cmn r5, r2
-cmn r6, r2                   // 42d6 cmn r6, r2
-cmn r7, r2                   // 42d7 cmn r7, r2
-cmn r0, r3                   // 42d8 cmn r0, r3
-cmn r1, r3                   // 42d9 cmn r1, r3
-cmn r2, r3                   // 42da cmn r2, r3
-cmn r3, r3                   // 42db cmn r3, r3
-cmn r4, r3                   // 42dc cmn r4, r3
-cmn r5, r3                   // 42dd cmn r5, r3
-cmn r6, r3                   // 42de cmn r6, r3
-cmn r7, r3                   // 42df cmn r7, r3
-cmn r0, r4                   // 42e0 cmn r0, r4
-cmn r1, r4                   // 42e1 cmn r1, r4
-cmn r2, r4                   // 42e2 cmn r2, r4
-cmn r3, r4                   // 42e3 cmn r3, r4
-cmn r4, r4                   // 42e4 cmn r4, r4
-cmn r5, r4                   // 42e5 cmn r5, r4
-cmn r6, r4                   // 42e6 cmn r6, r4
-cmn r7, r4                   // 42e7 cmn r7, r4
-cmn r0, r5                   // 42e8 cmn r0, r5
-cmn r1, r5                   // 42e9 cmn r1, r5
-cmn r2, r5                   // 42ea cmn r2, r5
-cmn r3, r5                   // 42eb cmn r3, r5
-cmn r4, r5                   // 42ec cmn r4, r5
-cmn r5, r5                   // 42ed cmn r5, r5
-cmn r6, r5                   // 42ee cmn r6, r5
-cmn r7, r5                   // 42ef cmn r7, r5
-cmn r0, r6                   // 42f0 cmn r0, r6
-cmn r1, r6                   // 42f1 cmn r1, r6
-cmn r2, r6                   // 42f2 cmn r2, r6
-cmn r3, r6                   // 42f3 cmn r3, r6
-cmn r4, r6                   // 42f4 cmn r4, r6
-cmn r5, r6                   // 42f5 cmn r5, r6
-cmn r6, r6                   // 42f6 cmn r6, r6
-cmn r7, r6                   // 42f7 cmn r7, r6
-cmn r0, r7                   // 42f8 cmn r0, r7
-cmn r1, r7                   // 42f9 cmn r1, r7
-cmn r2, r7                   // 42fa cmn r2, r7
-cmn r3, r7                   // 42fb cmn r3, r7
-cmn r4, r7                   // 42fc cmn r4, r7
-cmn r5, r7                   // 42fd cmn r5, r7
-cmn r6, r7                   // 42fe cmn r6, r7
-cmn r7, r7                   // 42ff cmn r7, r7
-orrs r0, r0                  // 4300 orrs r0, r0
-orrs r1, r0                  // 4301 orrs r1, r0
-orrs r2, r0                  // 4302 orrs r2, r0
-orrs r3, r0                  // 4303 orrs r3, r0
-orrs r4, r0                  // 4304 orrs r4, r0
-orrs r5, r0                  // 4305 orrs r5, r0
-orrs r6, r0                  // 4306 orrs r6, r0
-orrs r7, r0                  // 4307 orrs r7, r0
-orrs r0, r1                  // 4308 orrs r0, r1
-orrs r1, r1                  // 4309 orrs r1, r1
-orrs r2, r1                  // 430a orrs r2, r1
-orrs r3, r1                  // 430b orrs r3, r1
-orrs r4, r1                  // 430c orrs r4, r1
-orrs r5, r1                  // 430d orrs r5, r1
-orrs r6, r1                  // 430e orrs r6, r1
-orrs r7, r1                  // 430f orrs r7, r1
-orrs r0, r2                  // 4310 orrs r0, r2
-orrs r1, r2                  // 4311 orrs r1, r2
-orrs r2, r2                  // 4312 orrs r2, r2
-orrs r3, r2                  // 4313 orrs r3, r2
-orrs r4, r2                  // 4314 orrs r4, r2
-orrs r5, r2                  // 4315 orrs r5, r2
-orrs r6, r2                  // 4316 orrs r6, r2
-orrs r7, r2                  // 4317 orrs r7, r2
-orrs r0, r3                  // 4318 orrs r0, r3
-orrs r1, r3                  // 4319 orrs r1, r3
-orrs r2, r3                  // 431a orrs r2, r3
-orrs r3, r3                  // 431b orrs r3, r3
-orrs r4, r3                  // 431c orrs r4, r3
-orrs r5, r3                  // 431d orrs r5, r3
-orrs r6, r3                  // 431e orrs r6, r3
-orrs r7, r3                  // 431f orrs r7, r3
-orrs r0, r4                  // 4320 orrs r0, r4
-orrs r1, r4                  // 4321 orrs r1, r4
-orrs r2, r4                  // 4322 orrs r2, r4
-orrs r3, r4                  // 4323 orrs r3, r4
-orrs r4, r4                  // 4324 orrs r4, r4
-orrs r5, r4                  // 4325 orrs r5, r4
-orrs r6, r4                  // 4326 orrs r6, r4
-orrs r7, r4                  // 4327 orrs r7, r4
-orrs r0, r5                  // 4328 orrs r0, r5
-orrs r1, r5                  // 4329 orrs r1, r5
-orrs r2, r5                  // 432a orrs r2, r5
-orrs r3, r5                  // 432b orrs r3, r5
-orrs r4, r5                  // 432c orrs r4, r5
-orrs r5, r5                  // 432d orrs r5, r5
-orrs r6, r5                  // 432e orrs r6, r5
-orrs r7, r5                  // 432f orrs r7, r5
-orrs r0, r6                  // 4330 orrs r0, r6
-orrs r1, r6                  // 4331 orrs r1, r6
-orrs r2, r6                  // 4332 orrs r2, r6
-orrs r3, r6                  // 4333 orrs r3, r6
-orrs r4, r6                  // 4334 orrs r4, r6
-orrs r5, r6                  // 4335 orrs r5, r6
-orrs r6, r6                  // 4336 orrs r6, r6
-orrs r7, r6                  // 4337 orrs r7, r6
-orrs r0, r7                  // 4338 orrs r0, r7
-orrs r1, r7                  // 4339 orrs r1, r7
-orrs r2, r7                  // 433a orrs r2, r7
-orrs r3, r7                  // 433b orrs r3, r7
-orrs r4, r7                  // 433c orrs r4, r7
-orrs r5, r7                  // 433d orrs r5, r7
-orrs r6, r7                  // 433e orrs r6, r7
-orrs r7, r7                  // 433f orrs r7, r7
-muls r0, r0                  // 4340 muls r0, r0
-muls r1, r0                  // 4341 muls r1, r0
-muls r2, r0                  // 4342 muls r2, r0
-muls r3, r0                  // 4343 muls r3, r0
-muls r4, r0                  // 4344 muls r4, r0
-muls r5, r0                  // 4345 muls r5, r0
-muls r6, r0                  // 4346 muls r6, r0
-muls r7, r0                  // 4347 muls r7, r0
-muls r0, r1                  // 4348 muls r0, r1
-muls r1, r1                  // 4349 muls r1, r1
-muls r2, r1                  // 434a muls r2, r1
-muls r3, r1                  // 434b muls r3, r1
-muls r4, r1                  // 434c muls r4, r1
-muls r5, r1                  // 434d muls r5, r1
-muls r6, r1                  // 434e muls r6, r1
-muls r7, r1                  // 434f muls r7, r1
-muls r0, r2                  // 4350 muls r0, r2
-muls r1, r2                  // 4351 muls r1, r2
-muls r2, r2                  // 4352 muls r2, r2
-muls r3, r2                  // 4353 muls r3, r2
-muls r4, r2                  // 4354 muls r4, r2
-muls r5, r2                  // 4355 muls r5, r2
-muls r6, r2                  // 4356 muls r6, r2
-muls r7, r2                  // 4357 muls r7, r2
-muls r0, r3                  // 4358 muls r0, r3
-muls r1, r3                  // 4359 muls r1, r3
-muls r2, r3                  // 435a muls r2, r3
-muls r3, r3                  // 435b muls r3, r3
-muls r4, r3                  // 435c muls r4, r3
-muls r5, r3                  // 435d muls r5, r3
-muls r6, r3                  // 435e muls r6, r3
-muls r7, r3                  // 435f muls r7, r3
-muls r0, r4                  // 4360 muls r0, r4
-muls r1, r4                  // 4361 muls r1, r4
-muls r2, r4                  // 4362 muls r2, r4
-muls r3, r4                  // 4363 muls r3, r4
-muls r4, r4                  // 4364 muls r4, r4
-muls r5, r4                  // 4365 muls r5, r4
-muls r6, r4                  // 4366 muls r6, r4
-muls r7, r4                  // 4367 muls r7, r4
-muls r0, r5                  // 4368 muls r0, r5
-muls r1, r5                  // 4369 muls r1, r5
-muls r2, r5                  // 436a muls r2, r5
-muls r3, r5                  // 436b muls r3, r5
-muls r4, r5                  // 436c muls r4, r5
-muls r5, r5                  // 436d muls r5, r5
-muls r6, r5                  // 436e muls r6, r5
-muls r7, r5                  // 436f muls r7, r5
-muls r0, r6                  // 4370 muls r0, r6
-muls r1, r6                  // 4371 muls r1, r6
-muls r2, r6                  // 4372 muls r2, r6
-muls r3, r6                  // 4373 muls r3, r6
-muls r4, r6                  // 4374 muls r4, r6
-muls r5, r6                  // 4375 muls r5, r6
-muls r6, r6                  // 4376 muls r6, r6
-muls r7, r6                  // 4377 muls r7, r6
-muls r0, r7                  // 4378 muls r0, r7
-muls r1, r7                  // 4379 muls r1, r7
-muls r2, r7                  // 437a muls r2, r7
-muls r3, r7                  // 437b muls r3, r7
-muls r4, r7                  // 437c muls r4, r7
-muls r5, r7                  // 437d muls r5, r7
-muls r6, r7                  // 437e muls r6, r7
-muls r7, r7                  // 437f muls r7, r7
-bics r0, r0                  // 4380 bics r0, r0
-bics r1, r0                  // 4381 bics r1, r0
-bics r2, r0                  // 4382 bics r2, r0
-bics r3, r0                  // 4383 bics r3, r0
-bics r4, r0                  // 4384 bics r4, r0
-bics r5, r0                  // 4385 bics r5, r0
-bics r6, r0                  // 4386 bics r6, r0
-bics r7, r0                  // 4387 bics r7, r0
-bics r0, r1                  // 4388 bics r0, r1
-bics r1, r1                  // 4389 bics r1, r1
-bics r2, r1                  // 438a bics r2, r1
-bics r3, r1                  // 438b bics r3, r1
-bics r4, r1                  // 438c bics r4, r1
-bics r5, r1                  // 438d bics r5, r1
-bics r6, r1                  // 438e bics r6, r1
-bics r7, r1                  // 438f bics r7, r1
-bics r0, r2                  // 4390 bics r0, r2
-bics r1, r2                  // 4391 bics r1, r2
-bics r2, r2                  // 4392 bics r2, r2
-bics r3, r2                  // 4393 bics r3, r2
-bics r4, r2                  // 4394 bics r4, r2
-bics r5, r2                  // 4395 bics r5, r2
-bics r6, r2                  // 4396 bics r6, r2
-bics r7, r2                  // 4397 bics r7, r2
-bics r0, r3                  // 4398 bics r0, r3
-bics r1, r3                  // 4399 bics r1, r3
-bics r2, r3                  // 439a bics r2, r3
-bics r3, r3                  // 439b bics r3, r3
-bics r4, r3                  // 439c bics r4, r3
-bics r5, r3                  // 439d bics r5, r3
-bics r6, r3                  // 439e bics r6, r3
-bics r7, r3                  // 439f bics r7, r3
-bics r0, r4                  // 43a0 bics r0, r4
-bics r1, r4                  // 43a1 bics r1, r4
-bics r2, r4                  // 43a2 bics r2, r4
-bics r3, r4                  // 43a3 bics r3, r4
-bics r4, r4                  // 43a4 bics r4, r4
-bics r5, r4                  // 43a5 bics r5, r4
-bics r6, r4                  // 43a6 bics r6, r4
-bics r7, r4                  // 43a7 bics r7, r4
-bics r0, r5                  // 43a8 bics r0, r5
-bics r1, r5                  // 43a9 bics r1, r5
-bics r2, r5                  // 43aa bics r2, r5
-bics r3, r5                  // 43ab bics r3, r5
-bics r4, r5                  // 43ac bics r4, r5
-bics r5, r5                  // 43ad bics r5, r5
-bics r6, r5                  // 43ae bics r6, r5
-bics r7, r5                  // 43af bics r7, r5
-bics r0, r6                  // 43b0 bics r0, r6
-bics r1, r6                  // 43b1 bics r1, r6
-bics r2, r6                  // 43b2 bics r2, r6
-bics r3, r6                  // 43b3 bics r3, r6
-bics r4, r6                  // 43b4 bics r4, r6
-bics r5, r6                  // 43b5 bics r5, r6
-bics r6, r6                  // 43b6 bics r6, r6
-bics r7, r6                  // 43b7 bics r7, r6
-bics r0, r7                  // 43b8 bics r0, r7
-bics r1, r7                  // 43b9 bics r1, r7
-bics r2, r7                  // 43ba bics r2, r7
-bics r3, r7                  // 43bb bics r3, r7
-bics r4, r7                  // 43bc bics r4, r7
-bics r5, r7                  // 43bd bics r5, r7
-bics r6, r7                  // 43be bics r6, r7
-bics r7, r7                  // 43bf bics r7, r7
-mvns r0, r0                  // 43c0 mvns r0, r0
-mvns r1, r0                  // 43c1 mvns r1, r0
-mvns r2, r0                  // 43c2 mvns r2, r0
-mvns r3, r0                  // 43c3 mvns r3, r0
-mvns r4, r0                  // 43c4 mvns r4, r0
-mvns r5, r0                  // 43c5 mvns r5, r0
-mvns r6, r0                  // 43c6 mvns r6, r0
-mvns r7, r0                  // 43c7 mvns r7, r0
-mvns r0, r1                  // 43c8 mvns r0, r1
-mvns r1, r1                  // 43c9 mvns r1, r1
-mvns r2, r1                  // 43ca mvns r2, r1
-mvns r3, r1                  // 43cb mvns r3, r1
-mvns r4, r1                  // 43cc mvns r4, r1
-mvns r5, r1                  // 43cd mvns r5, r1
-mvns r6, r1                  // 43ce mvns r6, r1
-mvns r7, r1                  // 43cf mvns r7, r1
-mvns r0, r2                  // 43d0 mvns r0, r2
-mvns r1, r2                  // 43d1 mvns r1, r2
-mvns r2, r2                  // 43d2 mvns r2, r2
-mvns r3, r2                  // 43d3 mvns r3, r2
-mvns r4, r2                  // 43d4 mvns r4, r2
-mvns r5, r2                  // 43d5 mvns r5, r2
-mvns r6, r2                  // 43d6 mvns r6, r2
-mvns r7, r2                  // 43d7 mvns r7, r2
-mvns r0, r3                  // 43d8 mvns r0, r3
-mvns r1, r3                  // 43d9 mvns r1, r3
-mvns r2, r3                  // 43da mvns r2, r3
-mvns r3, r3                  // 43db mvns r3, r3
-mvns r4, r3                  // 43dc mvns r4, r3
-mvns r5, r3                  // 43dd mvns r5, r3
-mvns r6, r3                  // 43de mvns r6, r3
-mvns r7, r3                  // 43df mvns r7, r3
-mvns r0, r4                  // 43e0 mvns r0, r4
-mvns r1, r4                  // 43e1 mvns r1, r4
-mvns r2, r4                  // 43e2 mvns r2, r4
-mvns r3, r4                  // 43e3 mvns r3, r4
-mvns r4, r4                  // 43e4 mvns r4, r4
-mvns r5, r4                  // 43e5 mvns r5, r4
-mvns r6, r4                  // 43e6 mvns r6, r4
-mvns r7, r4                  // 43e7 mvns r7, r4
-mvns r0, r5                  // 43e8 mvns r0, r5
-mvns r1, r5                  // 43e9 mvns r1, r5
-mvns r2, r5                  // 43ea mvns r2, r5
-mvns r3, r5                  // 43eb mvns r3, r5
-mvns r4, r5                  // 43ec mvns r4, r5
-mvns r5, r5                  // 43ed mvns r5, r5
-mvns r6, r5                  // 43ee mvns r6, r5
-mvns r7, r5                  // 43ef mvns r7, r5
-mvns r0, r6                  // 43f0 mvns r0, r6
-mvns r1, r6                  // 43f1 mvns r1, r6
-mvns r2, r6                  // 43f2 mvns r2, r6
-mvns r3, r6                  // 43f3 mvns r3, r6
-mvns r4, r6                  // 43f4 mvns r4, r6
-mvns r5, r6                  // 43f5 mvns r5, r6
-mvns r6, r6                  // 43f6 mvns r6, r6
-mvns r7, r6                  // 43f7 mvns r7, r6
-mvns r0, r7                  // 43f8 mvns r0, r7
-mvns r1, r7                  // 43f9 mvns r1, r7
-mvns r2, r7                  // 43fa mvns r2, r7
-mvns r3, r7                  // 43fb mvns r3, r7
-mvns r4, r7                  // 43fc mvns r4, r7
-mvns r5, r7                  // 43fd mvns r5, r7
-mvns r6, r7                  // 43fe mvns r6, r7
-mvns r7, r7                  // 43ff mvns r7, r7
-
 add r0, r0                   // 4400 add r0, r0
 add r1, r0                   // 4401 add r1, r0
 add r2, r0                   // 4402 add r2, r0
@@ -1775,6 +848,7 @@ add ip, pc                   // 44fc add ip, pc
 add sp, pc                   // 44fd add sp, pc
 add lr, pc                   // 44fe add lr, pc
 add pc, pc                   // 44ff add pc, pc
+
 cmp r0, r0                   // 4500 cmp r0, r0
 cmp r1, r0                   // 4501 cmp r1, r0
 cmp r2, r0                   // 4502 cmp r2, r0
@@ -1985,6 +1059,7 @@ cmp fp, lr                   // 45f3 cmp fp, lr
 cmp ip, lr                   // 45f4 cmp ip, lr
 cmp sp, lr                   // 45f5 cmp sp, lr
 cmp lr, lr                   // 45f6 cmp lr, lr
+
 mov r0, r0                   // 4600 mov r0, r0
 mov r1, r0                   // 4601 mov r1, r0
 mov r2, r0                   // 4602 mov r2, r0
