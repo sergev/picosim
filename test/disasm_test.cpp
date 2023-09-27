@@ -591,728 +591,338 @@ TEST(disasm, opcode16)
     test_disasm(0x43f9, "mvns r1, r7");
     test_disasm(0x43ff, "mvns r7, r7");
 
+    test_disasm(0x4400, "add r0, r0");
+    test_disasm(0x4401, "add r1, r0");
+    test_disasm(0x4407, "add r7, r0");
+    test_disasm(0x4408, "add r0, r1");
+    test_disasm(0x4409, "add r1, r1");
+    test_disasm(0x440f, "add r7, r1");
+    test_disasm(0x4438, "add r0, r7");
+    test_disasm(0x4439, "add r1, r7");
+    test_disasm(0x443f, "add r7, r7");
+    test_disasm(0x4440, "add r0, r8");
+    test_disasm(0x4441, "add r1, r8");
+    test_disasm(0x4447, "add r7, r8");
+    test_disasm(0x4448, "add r0, r9");
+    test_disasm(0x4449, "add r1, r9");
+    test_disasm(0x444f, "add r7, r9");
+    test_disasm(0x4450, "add r0, sl");
+    test_disasm(0x4451, "add r1, sl");
+    test_disasm(0x4457, "add r7, sl");
+    test_disasm(0x4458, "add r0, fp");
+    test_disasm(0x4459, "add r1, fp");
+    test_disasm(0x445f, "add r7, fp");
+    test_disasm(0x4460, "add r0, ip");
+    test_disasm(0x4461, "add r1, ip");
+    test_disasm(0x4467, "add r7, ip");
+    test_disasm(0x4468, "add r0, sp");
+    test_disasm(0x4469, "add r1, sp");
+    test_disasm(0x446f, "add r7, sp");
+    test_disasm(0x4470, "add r0, lr");
+    test_disasm(0x4471, "add r1, lr");
+    test_disasm(0x4477, "add r7, lr");
+    test_disasm(0x4478, "add r0, pc");
+    test_disasm(0x4479, "add r1, pc");
+    test_disasm(0x447f, "add r7, pc");
+    test_disasm(0x4480, "add r8, r0");
+    test_disasm(0x4481, "add r9, r0");
+    test_disasm(0x4482, "add sl, r0");
+    test_disasm(0x4483, "add fp, r0");
+    test_disasm(0x4484, "add ip, r0");
+    test_disasm(0x4485, "add sp, r0");
+    test_disasm(0x4486, "add lr, r0");
+    test_disasm(0x4487, "add pc, r0");
+    test_disasm(0x4488, "add r8, r1");
+    test_disasm(0x4489, "add r9, r1");
+    test_disasm(0x448a, "add sl, r1");
+    test_disasm(0x448b, "add fp, r1");
+    test_disasm(0x448c, "add ip, r1");
+    test_disasm(0x448d, "add sp, r1");
+    test_disasm(0x448e, "add lr, r1");
+    test_disasm(0x448f, "add pc, r1");
+    test_disasm(0x44b8, "add r8, r7");
+    test_disasm(0x44b9, "add r9, r7");
+    test_disasm(0x44ba, "add sl, r7");
+    test_disasm(0x44bb, "add fp, r7");
+    test_disasm(0x44bc, "add ip, r7");
+    test_disasm(0x44bd, "add sp, r7");
+    test_disasm(0x44be, "add lr, r7");
+    test_disasm(0x44bf, "add pc, r7");
+    test_disasm(0x44c0, "add r8, r8");
+    test_disasm(0x44c1, "add r9, r8");
+    test_disasm(0x44c2, "add sl, r8");
+    test_disasm(0x44c3, "add fp, r8");
+    test_disasm(0x44c4, "add ip, r8");
+    test_disasm(0x44c5, "add sp, r8");
+    test_disasm(0x44c6, "add lr, r8");
+    test_disasm(0x44c7, "add pc, r8");
+    test_disasm(0x44c8, "add r8, r9");
+    test_disasm(0x44c9, "add r9, r9");
+    test_disasm(0x44ca, "add sl, r9");
+    test_disasm(0x44cb, "add fp, r9");
+    test_disasm(0x44cc, "add ip, r9");
+    test_disasm(0x44cd, "add sp, r9");
+    test_disasm(0x44ce, "add lr, r9");
+    test_disasm(0x44cf, "add pc, r9");
+    test_disasm(0x44d0, "add r8, sl");
+    test_disasm(0x44d1, "add r9, sl");
+    test_disasm(0x44d2, "add sl, sl");
+    test_disasm(0x44d3, "add fp, sl");
+    test_disasm(0x44d4, "add ip, sl");
+    test_disasm(0x44d5, "add sp, sl");
+    test_disasm(0x44d6, "add lr, sl");
+    test_disasm(0x44d7, "add pc, sl");
+    test_disasm(0x44d8, "add r8, fp");
+    test_disasm(0x44d9, "add r9, fp");
+    test_disasm(0x44da, "add sl, fp");
+    test_disasm(0x44db, "add fp, fp");
+    test_disasm(0x44dc, "add ip, fp");
+    test_disasm(0x44dd, "add sp, fp");
+    test_disasm(0x44de, "add lr, fp");
+    test_disasm(0x44df, "add pc, fp");
+    test_disasm(0x44e0, "add r8, ip");
+    test_disasm(0x44e1, "add r9, ip");
+    test_disasm(0x44e2, "add sl, ip");
+    test_disasm(0x44e3, "add fp, ip");
+    test_disasm(0x44e4, "add ip, ip");
+    test_disasm(0x44e5, "add sp, ip");
+    test_disasm(0x44e6, "add lr, ip");
+    test_disasm(0x44e7, "add pc, ip");
+    test_disasm(0x44e8, "add r8, sp");
+    test_disasm(0x44e9, "add r9, sp");
+    test_disasm(0x44ea, "add sl, sp");
+    test_disasm(0x44eb, "add fp, sp");
+    test_disasm(0x44ec, "add ip, sp");
+    test_disasm(0x44ed, "add sp, sp");
+    test_disasm(0x44ee, "add lr, sp");
+    test_disasm(0x44ef, "add pc, sp");
+    test_disasm(0x44f0, "add r8, lr");
+    test_disasm(0x44f1, "add r9, lr");
+    test_disasm(0x44f2, "add sl, lr");
+    test_disasm(0x44f3, "add fp, lr");
+    test_disasm(0x44f4, "add ip, lr");
+    test_disasm(0x44f5, "add sp, lr");
+    test_disasm(0x44f6, "add lr, lr");
+    test_disasm(0x44f7, "add pc, lr");
+    test_disasm(0x44f8, "add r8, pc");
+    test_disasm(0x44f9, "add r9, pc");
+    test_disasm(0x44fa, "add sl, pc");
+    test_disasm(0x44fb, "add fp, pc");
+    test_disasm(0x44fc, "add ip, pc");
+    test_disasm(0x44fd, "add sp, pc");
+    test_disasm(0x44fe, "add lr, pc");
+    test_disasm(0x44ff, "add pc, pc");
+
+    test_disasm(0x4500, "cmp r0, r0");
+    test_disasm(0x4501, "cmp r1, r0");
+    test_disasm(0x4507, "cmp r7, r0");
+    test_disasm(0x4508, "cmp r0, r1");
+    test_disasm(0x4509, "cmp r1, r1");
+    test_disasm(0x450f, "cmp r7, r1");
+    test_disasm(0x4538, "cmp r0, r7");
+    test_disasm(0x4539, "cmp r1, r7");
+    test_disasm(0x453f, "cmp r7, r7");
+    test_disasm(0x4540, "cmp r0, r8");
+    test_disasm(0x4541, "cmp r1, r8");
+    test_disasm(0x4547, "cmp r7, r8");
+    test_disasm(0x4548, "cmp r0, r9");
+    test_disasm(0x4549, "cmp r1, r9");
+    test_disasm(0x454f, "cmp r7, r9");
+    test_disasm(0x4550, "cmp r0, sl");
+    test_disasm(0x4551, "cmp r1, sl");
+    test_disasm(0x4557, "cmp r7, sl");
+    test_disasm(0x4558, "cmp r0, fp");
+    test_disasm(0x4559, "cmp r1, fp");
+    test_disasm(0x455f, "cmp r7, fp");
+    test_disasm(0x4560, "cmp r0, ip");
+    test_disasm(0x4561, "cmp r1, ip");
+    test_disasm(0x4567, "cmp r7, ip");
+    test_disasm(0x4570, "cmp r0, lr");
+    test_disasm(0x4571, "cmp r1, lr");
+    test_disasm(0x4577, "cmp r7, lr");
+    test_disasm(0x4580, "cmp r8, r0");
+    test_disasm(0x4581, "cmp r9, r0");
+    test_disasm(0x4582, "cmp sl, r0");
+    test_disasm(0x4583, "cmp fp, r0");
+    test_disasm(0x4584, "cmp ip, r0");
+    test_disasm(0x4585, "cmp sp, r0");
+    test_disasm(0x4586, "cmp lr, r0");
+    test_disasm(0x4588, "cmp r8, r1");
+    test_disasm(0x4589, "cmp r9, r1");
+    test_disasm(0x458a, "cmp sl, r1");
+    test_disasm(0x458b, "cmp fp, r1");
+    test_disasm(0x458c, "cmp ip, r1");
+    test_disasm(0x458d, "cmp sp, r1");
+    test_disasm(0x458e, "cmp lr, r1");
+    test_disasm(0x45b8, "cmp r8, r7");
+    test_disasm(0x45b9, "cmp r9, r7");
+    test_disasm(0x45ba, "cmp sl, r7");
+    test_disasm(0x45bb, "cmp fp, r7");
+    test_disasm(0x45bc, "cmp ip, r7");
+    test_disasm(0x45bd, "cmp sp, r7");
+    test_disasm(0x45be, "cmp lr, r7");
+    test_disasm(0x45c0, "cmp r8, r8");
+    test_disasm(0x45c1, "cmp r9, r8");
+    test_disasm(0x45c2, "cmp sl, r8");
+    test_disasm(0x45c3, "cmp fp, r8");
+    test_disasm(0x45c4, "cmp ip, r8");
+    test_disasm(0x45c5, "cmp sp, r8");
+    test_disasm(0x45c6, "cmp lr, r8");
+    test_disasm(0x45c8, "cmp r8, r9");
+    test_disasm(0x45c9, "cmp r9, r9");
+    test_disasm(0x45ca, "cmp sl, r9");
+    test_disasm(0x45cb, "cmp fp, r9");
+    test_disasm(0x45cc, "cmp ip, r9");
+    test_disasm(0x45cd, "cmp sp, r9");
+    test_disasm(0x45ce, "cmp lr, r9");
+    test_disasm(0x45d0, "cmp r8, sl");
+    test_disasm(0x45d1, "cmp r9, sl");
+    test_disasm(0x45d2, "cmp sl, sl");
+    test_disasm(0x45d3, "cmp fp, sl");
+    test_disasm(0x45d4, "cmp ip, sl");
+    test_disasm(0x45d5, "cmp sp, sl");
+    test_disasm(0x45d6, "cmp lr, sl");
+    test_disasm(0x45d8, "cmp r8, fp");
+    test_disasm(0x45d9, "cmp r9, fp");
+    test_disasm(0x45da, "cmp sl, fp");
+    test_disasm(0x45db, "cmp fp, fp");
+    test_disasm(0x45dc, "cmp ip, fp");
+    test_disasm(0x45dd, "cmp sp, fp");
+    test_disasm(0x45de, "cmp lr, fp");
+    test_disasm(0x45e0, "cmp r8, ip");
+    test_disasm(0x45e1, "cmp r9, ip");
+    test_disasm(0x45e2, "cmp sl, ip");
+    test_disasm(0x45e3, "cmp fp, ip");
+    test_disasm(0x45e4, "cmp ip, ip");
+    test_disasm(0x45e5, "cmp sp, ip");
+    test_disasm(0x45e6, "cmp lr, ip");
+    test_disasm(0x45f0, "cmp r8, lr");
+    test_disasm(0x45f1, "cmp r9, lr");
+    test_disasm(0x45f2, "cmp sl, lr");
+    test_disasm(0x45f3, "cmp fp, lr");
+    test_disasm(0x45f4, "cmp ip, lr");
+    test_disasm(0x45f5, "cmp sp, lr");
+    test_disasm(0x45f6, "cmp lr, lr");
+
+    test_disasm(0x4600, "mov r0, r0");
+    test_disasm(0x4601, "mov r1, r0");
+    test_disasm(0x4607, "mov r7, r0");
+    test_disasm(0x4608, "mov r0, r1");
+    test_disasm(0x4609, "mov r1, r1");
+    test_disasm(0x460f, "mov r7, r1");
+    test_disasm(0x4638, "mov r0, r7");
+    test_disasm(0x4639, "mov r1, r7");
+    test_disasm(0x463f, "mov r7, r7");
+    test_disasm(0x4640, "mov r0, r8");
+    test_disasm(0x4641, "mov r1, r8");
+    test_disasm(0x4647, "mov r7, r8");
+    test_disasm(0x4648, "mov r0, r9");
+    test_disasm(0x4649, "mov r1, r9");
+    test_disasm(0x464f, "mov r7, r9");
+    test_disasm(0x4650, "mov r0, sl");
+    test_disasm(0x4651, "mov r1, sl");
+    test_disasm(0x4657, "mov r7, sl");
+    test_disasm(0x4658, "mov r0, fp");
+    test_disasm(0x4659, "mov r1, fp");
+    test_disasm(0x465f, "mov r7, fp");
+    test_disasm(0x4660, "mov r0, ip");
+    test_disasm(0x4661, "mov r1, ip");
+    test_disasm(0x4667, "mov r7, ip");
+    test_disasm(0x4668, "mov r0, sp");
+    test_disasm(0x4669, "mov r1, sp");
+    test_disasm(0x466f, "mov r7, sp");
+    test_disasm(0x4670, "mov r0, lr");
+    test_disasm(0x4671, "mov r1, lr");
+    test_disasm(0x4677, "mov r7, lr");
+    test_disasm(0x4678, "mov r0, pc");
+    test_disasm(0x4679, "mov r1, pc");
+    test_disasm(0x467f, "mov r7, pc");
+    test_disasm(0x4680, "mov r8, r0");
+    test_disasm(0x4681, "mov r9, r0");
+    test_disasm(0x4682, "mov sl, r0");
+    test_disasm(0x4683, "mov fp, r0");
+    test_disasm(0x4684, "mov ip, r0");
+    test_disasm(0x4685, "mov sp, r0");
+    test_disasm(0x4686, "mov lr, r0");
+    test_disasm(0x4687, "mov pc, r0");
+    test_disasm(0x4688, "mov r8, r1");
+    test_disasm(0x4689, "mov r9, r1");
+    test_disasm(0x468a, "mov sl, r1");
+    test_disasm(0x468b, "mov fp, r1");
+    test_disasm(0x468c, "mov ip, r1");
+    test_disasm(0x468d, "mov sp, r1");
+    test_disasm(0x468e, "mov lr, r1");
+    test_disasm(0x468f, "mov pc, r1");
+    test_disasm(0x46b8, "mov r8, r7");
+    test_disasm(0x46b9, "mov r9, r7");
+    test_disasm(0x46ba, "mov sl, r7");
+    test_disasm(0x46bb, "mov fp, r7");
+    test_disasm(0x46bc, "mov ip, r7");
+    test_disasm(0x46bd, "mov sp, r7");
+    test_disasm(0x46be, "mov lr, r7");
+    test_disasm(0x46bf, "mov pc, r7");
+    test_disasm(0x46c0, "nop");         // mov r8, r8
+    test_disasm(0x46c1, "mov r9, r8");
+    test_disasm(0x46c2, "mov sl, r8");
+    test_disasm(0x46c3, "mov fp, r8");
+    test_disasm(0x46c4, "mov ip, r8");
+    test_disasm(0x46c5, "mov sp, r8");
+    test_disasm(0x46c6, "mov lr, r8");
+    test_disasm(0x46c7, "mov pc, r8");
+    test_disasm(0x46c8, "mov r8, r9");
+    test_disasm(0x46c9, "mov r9, r9");
+    test_disasm(0x46ca, "mov sl, r9");
+    test_disasm(0x46cb, "mov fp, r9");
+    test_disasm(0x46cc, "mov ip, r9");
+    test_disasm(0x46cd, "mov sp, r9");
+    test_disasm(0x46ce, "mov lr, r9");
+    test_disasm(0x46cf, "mov pc, r9");
+    test_disasm(0x46d0, "mov r8, sl");
+    test_disasm(0x46d1, "mov r9, sl");
+    test_disasm(0x46d2, "mov sl, sl");
+    test_disasm(0x46d3, "mov fp, sl");
+    test_disasm(0x46d4, "mov ip, sl");
+    test_disasm(0x46d5, "mov sp, sl");
+    test_disasm(0x46d6, "mov lr, sl");
+    test_disasm(0x46d7, "mov pc, sl");
+    test_disasm(0x46d8, "mov r8, fp");
+    test_disasm(0x46d9, "mov r9, fp");
+    test_disasm(0x46da, "mov sl, fp");
+    test_disasm(0x46db, "mov fp, fp");
+    test_disasm(0x46dc, "mov ip, fp");
+    test_disasm(0x46dd, "mov sp, fp");
+    test_disasm(0x46de, "mov lr, fp");
+    test_disasm(0x46df, "mov pc, fp");
+    test_disasm(0x46e0, "mov r8, ip");
+    test_disasm(0x46e1, "mov r9, ip");
+    test_disasm(0x46e2, "mov sl, ip");
+    test_disasm(0x46e3, "mov fp, ip");
+    test_disasm(0x46e4, "mov ip, ip");
+    test_disasm(0x46e5, "mov sp, ip");
+    test_disasm(0x46e6, "mov lr, ip");
+    test_disasm(0x46e7, "mov pc, ip");
+    test_disasm(0x46e8, "mov r8, sp");
+    test_disasm(0x46e9, "mov r9, sp");
+    test_disasm(0x46ea, "mov sl, sp");
+    test_disasm(0x46eb, "mov fp, sp");
+    test_disasm(0x46ec, "mov ip, sp");
+    test_disasm(0x46ee, "mov lr, sp");
+    test_disasm(0x46f0, "mov r8, lr");
+    test_disasm(0x46f1, "mov r9, lr");
+    test_disasm(0x46f2, "mov sl, lr");
+    test_disasm(0x46f3, "mov fp, lr");
+    test_disasm(0x46f4, "mov ip, lr");
+    test_disasm(0x46f5, "mov sp, lr");
+    test_disasm(0x46f6, "mov lr, lr");
+    test_disasm(0x46f7, "mov pc, lr");
+    test_disasm(0x46f8, "mov r8, pc");
+    test_disasm(0x46f9, "mov r9, pc");
+    test_disasm(0x46fa, "mov sl, pc");
+    test_disasm(0x46fb, "mov fp, pc");
+    test_disasm(0x46fc, "mov ip, pc");
+    test_disasm(0x46fe, "mov lr, pc");
+
 #if 0
-add r0, r0                   // 4400 add r0, r0
-add r1, r0                   // 4401 add r1, r0
-add r2, r0                   // 4402 add r2, r0
-add r3, r0                   // 4403 add r3, r0
-add r4, r0                   // 4404 add r4, r0
-add r5, r0                   // 4405 add r5, r0
-add r6, r0                   // 4406 add r6, r0
-add r7, r0                   // 4407 add r7, r0
-add r0, r1                   // 4408 add r0, r1
-add r1, r1                   // 4409 add r1, r1
-add r2, r1                   // 440a add r2, r1
-add r3, r1                   // 440b add r3, r1
-add r4, r1                   // 440c add r4, r1
-add r5, r1                   // 440d add r5, r1
-add r6, r1                   // 440e add r6, r1
-add r7, r1                   // 440f add r7, r1
-add r0, r2                   // 4410 add r0, r2
-add r1, r2                   // 4411 add r1, r2
-add r2, r2                   // 4412 add r2, r2
-add r3, r2                   // 4413 add r3, r2
-add r4, r2                   // 4414 add r4, r2
-add r5, r2                   // 4415 add r5, r2
-add r6, r2                   // 4416 add r6, r2
-add r7, r2                   // 4417 add r7, r2
-add r0, r3                   // 4418 add r0, r3
-add r1, r3                   // 4419 add r1, r3
-add r2, r3                   // 441a add r2, r3
-add r3, r3                   // 441b add r3, r3
-add r4, r3                   // 441c add r4, r3
-add r5, r3                   // 441d add r5, r3
-add r6, r3                   // 441e add r6, r3
-add r7, r3                   // 441f add r7, r3
-add r0, r4                   // 4420 add r0, r4
-add r1, r4                   // 4421 add r1, r4
-add r2, r4                   // 4422 add r2, r4
-add r3, r4                   // 4423 add r3, r4
-add r4, r4                   // 4424 add r4, r4
-add r5, r4                   // 4425 add r5, r4
-add r6, r4                   // 4426 add r6, r4
-add r7, r4                   // 4427 add r7, r4
-add r0, r5                   // 4428 add r0, r5
-add r1, r5                   // 4429 add r1, r5
-add r2, r5                   // 442a add r2, r5
-add r3, r5                   // 442b add r3, r5
-add r4, r5                   // 442c add r4, r5
-add r5, r5                   // 442d add r5, r5
-add r6, r5                   // 442e add r6, r5
-add r7, r5                   // 442f add r7, r5
-add r0, r6                   // 4430 add r0, r6
-add r1, r6                   // 4431 add r1, r6
-add r2, r6                   // 4432 add r2, r6
-add r3, r6                   // 4433 add r3, r6
-add r4, r6                   // 4434 add r4, r6
-add r5, r6                   // 4435 add r5, r6
-add r6, r6                   // 4436 add r6, r6
-add r7, r6                   // 4437 add r7, r6
-add r0, r7                   // 4438 add r0, r7
-add r1, r7                   // 4439 add r1, r7
-add r2, r7                   // 443a add r2, r7
-add r3, r7                   // 443b add r3, r7
-add r4, r7                   // 443c add r4, r7
-add r5, r7                   // 443d add r5, r7
-add r6, r7                   // 443e add r6, r7
-add r7, r7                   // 443f add r7, r7
-add r0, r8                   // 4440 add r0, r8
-add r1, r8                   // 4441 add r1, r8
-add r2, r8                   // 4442 add r2, r8
-add r3, r8                   // 4443 add r3, r8
-add r4, r8                   // 4444 add r4, r8
-add r5, r8                   // 4445 add r5, r8
-add r6, r8                   // 4446 add r6, r8
-add r7, r8                   // 4447 add r7, r8
-add r0, r9                   // 4448 add r0, r9
-add r1, r9                   // 4449 add r1, r9
-add r2, r9                   // 444a add r2, r9
-add r3, r9                   // 444b add r3, r9
-add r4, r9                   // 444c add r4, r9
-add r5, r9                   // 444d add r5, r9
-add r6, r9                   // 444e add r6, r9
-add r7, r9                   // 444f add r7, r9
-add r0, sl                   // 4450 add r0, sl
-add r1, sl                   // 4451 add r1, sl
-add r2, sl                   // 4452 add r2, sl
-add r3, sl                   // 4453 add r3, sl
-add r4, sl                   // 4454 add r4, sl
-add r5, sl                   // 4455 add r5, sl
-add r6, sl                   // 4456 add r6, sl
-add r7, sl                   // 4457 add r7, sl
-add r0, fp                   // 4458 add r0, fp
-add r1, fp                   // 4459 add r1, fp
-add r2, fp                   // 445a add r2, fp
-add r3, fp                   // 445b add r3, fp
-add r4, fp                   // 445c add r4, fp
-add r5, fp                   // 445d add r5, fp
-add r6, fp                   // 445e add r6, fp
-add r7, fp                   // 445f add r7, fp
-add r0, ip                   // 4460 add r0, ip
-add r1, ip                   // 4461 add r1, ip
-add r2, ip                   // 4462 add r2, ip
-add r3, ip                   // 4463 add r3, ip
-add r4, ip                   // 4464 add r4, ip
-add r5, ip                   // 4465 add r5, ip
-add r6, ip                   // 4466 add r6, ip
-add r7, ip                   // 4467 add r7, ip
-add r0, sp                   // 4468 add r0, sp
-add r1, sp                   // 4469 add r1, sp
-add r2, sp                   // 446a add r2, sp
-add r3, sp                   // 446b add r3, sp
-add r4, sp                   // 446c add r4, sp
-add r5, sp                   // 446d add r5, sp
-add r6, sp                   // 446e add r6, sp
-add r7, sp                   // 446f add r7, sp
-add r0, lr                   // 4470 add r0, lr
-add r1, lr                   // 4471 add r1, lr
-add r2, lr                   // 4472 add r2, lr
-add r3, lr                   // 4473 add r3, lr
-add r4, lr                   // 4474 add r4, lr
-add r5, lr                   // 4475 add r5, lr
-add r6, lr                   // 4476 add r6, lr
-add r7, lr                   // 4477 add r7, lr
-add r0, pc                   // 4478 add r0, pc
-add r1, pc                   // 4479 add r1, pc
-add r2, pc                   // 447a add r2, pc
-add r3, pc                   // 447b add r3, pc
-add r4, pc                   // 447c add r4, pc
-add r5, pc                   // 447d add r5, pc
-add r6, pc                   // 447e add r6, pc
-add r7, pc                   // 447f add r7, pc
-add r8, r0                   // 4480 add r8, r0
-add r9, r0                   // 4481 add r9, r0
-add sl, r0                   // 4482 add sl, r0
-add fp, r0                   // 4483 add fp, r0
-add ip, r0                   // 4484 add ip, r0
-add sp, r0                   // 4485 add sp, r0
-add lr, r0                   // 4486 add lr, r0
-add pc, r0                   // 4487 add pc, r0
-add r8, r1                   // 4488 add r8, r1
-add r9, r1                   // 4489 add r9, r1
-add sl, r1                   // 448a add sl, r1
-add fp, r1                   // 448b add fp, r1
-add ip, r1                   // 448c add ip, r1
-add sp, r1                   // 448d add sp, r1
-add lr, r1                   // 448e add lr, r1
-add pc, r1                   // 448f add pc, r1
-add r8, r2                   // 4490 add r8, r2
-add r9, r2                   // 4491 add r9, r2
-add sl, r2                   // 4492 add sl, r2
-add fp, r2                   // 4493 add fp, r2
-add ip, r2                   // 4494 add ip, r2
-add sp, r2                   // 4495 add sp, r2
-add lr, r2                   // 4496 add lr, r2
-add pc, r2                   // 4497 add pc, r2
-add r8, r3                   // 4498 add r8, r3
-add r9, r3                   // 4499 add r9, r3
-add sl, r3                   // 449a add sl, r3
-add fp, r3                   // 449b add fp, r3
-add ip, r3                   // 449c add ip, r3
-add sp, r3                   // 449d add sp, r3
-add lr, r3                   // 449e add lr, r3
-add pc, r3                   // 449f add pc, r3
-add r8, r4                   // 44a0 add r8, r4
-add r9, r4                   // 44a1 add r9, r4
-add sl, r4                   // 44a2 add sl, r4
-add fp, r4                   // 44a3 add fp, r4
-add ip, r4                   // 44a4 add ip, r4
-add sp, r4                   // 44a5 add sp, r4
-add lr, r4                   // 44a6 add lr, r4
-add pc, r4                   // 44a7 add pc, r4
-add r8, r5                   // 44a8 add r8, r5
-add r9, r5                   // 44a9 add r9, r5
-add sl, r5                   // 44aa add sl, r5
-add fp, r5                   // 44ab add fp, r5
-add ip, r5                   // 44ac add ip, r5
-add sp, r5                   // 44ad add sp, r5
-add lr, r5                   // 44ae add lr, r5
-add pc, r5                   // 44af add pc, r5
-add r8, r6                   // 44b0 add r8, r6
-add r9, r6                   // 44b1 add r9, r6
-add sl, r6                   // 44b2 add sl, r6
-add fp, r6                   // 44b3 add fp, r6
-add ip, r6                   // 44b4 add ip, r6
-add sp, r6                   // 44b5 add sp, r6
-add lr, r6                   // 44b6 add lr, r6
-add pc, r6                   // 44b7 add pc, r6
-add r8, r7                   // 44b8 add r8, r7
-add r9, r7                   // 44b9 add r9, r7
-add sl, r7                   // 44ba add sl, r7
-add fp, r7                   // 44bb add fp, r7
-add ip, r7                   // 44bc add ip, r7
-add sp, r7                   // 44bd add sp, r7
-add lr, r7                   // 44be add lr, r7
-add pc, r7                   // 44bf add pc, r7
-add r8, r8                   // 44c0 add r8, r8
-add r9, r8                   // 44c1 add r9, r8
-add sl, r8                   // 44c2 add sl, r8
-add fp, r8                   // 44c3 add fp, r8
-add ip, r8                   // 44c4 add ip, r8
-add sp, r8                   // 44c5 add sp, r8
-add lr, r8                   // 44c6 add lr, r8
-add pc, r8                   // 44c7 add pc, r8
-add r8, r9                   // 44c8 add r8, r9
-add r9, r9                   // 44c9 add r9, r9
-add sl, r9                   // 44ca add sl, r9
-add fp, r9                   // 44cb add fp, r9
-add ip, r9                   // 44cc add ip, r9
-add sp, r9                   // 44cd add sp, r9
-add lr, r9                   // 44ce add lr, r9
-add pc, r9                   // 44cf add pc, r9
-add r8, sl                   // 44d0 add r8, sl
-add r9, sl                   // 44d1 add r9, sl
-add sl, sl                   // 44d2 add sl, sl
-add fp, sl                   // 44d3 add fp, sl
-add ip, sl                   // 44d4 add ip, sl
-add sp, sl                   // 44d5 add sp, sl
-add lr, sl                   // 44d6 add lr, sl
-add pc, sl                   // 44d7 add pc, sl
-add r8, fp                   // 44d8 add r8, fp
-add r9, fp                   // 44d9 add r9, fp
-add sl, fp                   // 44da add sl, fp
-add fp, fp                   // 44db add fp, fp
-add ip, fp                   // 44dc add ip, fp
-add sp, fp                   // 44dd add sp, fp
-add lr, fp                   // 44de add lr, fp
-add pc, fp                   // 44df add pc, fp
-add r8, ip                   // 44e0 add r8, ip
-add r9, ip                   // 44e1 add r9, ip
-add sl, ip                   // 44e2 add sl, ip
-add fp, ip                   // 44e3 add fp, ip
-add ip, ip                   // 44e4 add ip, ip
-add sp, ip                   // 44e5 add sp, ip
-add lr, ip                   // 44e6 add lr, ip
-add pc, ip                   // 44e7 add pc, ip
-add r8, sp                   // 44e8 add r8, sp
-add r9, sp                   // 44e9 add r9, sp
-add sl, sp                   // 44ea add sl, sp
-add fp, sp                   // 44eb add fp, sp
-add ip, sp                   // 44ec add ip, sp
-add sp, sp                   // 44ed add sp, sp
-add lr, sp                   // 44ee add lr, sp
-add pc, sp                   // 44ef add pc, sp
-add r8, lr                   // 44f0 add r8, lr
-add r9, lr                   // 44f1 add r9, lr
-add sl, lr                   // 44f2 add sl, lr
-add fp, lr                   // 44f3 add fp, lr
-add ip, lr                   // 44f4 add ip, lr
-add sp, lr                   // 44f5 add sp, lr
-add lr, lr                   // 44f6 add lr, lr
-add pc, lr                   // 44f7 add pc, lr
-add r8, pc                   // 44f8 add r8, pc
-add r9, pc                   // 44f9 add r9, pc
-add sl, pc                   // 44fa add sl, pc
-add fp, pc                   // 44fb add fp, pc
-add ip, pc                   // 44fc add ip, pc
-add sp, pc                   // 44fd add sp, pc
-add lr, pc                   // 44fe add lr, pc
-add pc, pc                   // 44ff add pc, pc
-
-cmp r0, r0                   // 4500 cmp r0, r0
-cmp r1, r0                   // 4501 cmp r1, r0
-cmp r2, r0                   // 4502 cmp r2, r0
-cmp r3, r0                   // 4503 cmp r3, r0
-cmp r4, r0                   // 4504 cmp r4, r0
-cmp r5, r0                   // 4505 cmp r5, r0
-cmp r6, r0                   // 4506 cmp r6, r0
-cmp r7, r0                   // 4507 cmp r7, r0
-cmp r0, r1                   // 4508 cmp r0, r1
-cmp r1, r1                   // 4509 cmp r1, r1
-cmp r2, r1                   // 450a cmp r2, r1
-cmp r3, r1                   // 450b cmp r3, r1
-cmp r4, r1                   // 450c cmp r4, r1
-cmp r5, r1                   // 450d cmp r5, r1
-cmp r6, r1                   // 450e cmp r6, r1
-cmp r7, r1                   // 450f cmp r7, r1
-cmp r0, r2                   // 4510 cmp r0, r2
-cmp r1, r2                   // 4511 cmp r1, r2
-cmp r2, r2                   // 4512 cmp r2, r2
-cmp r3, r2                   // 4513 cmp r3, r2
-cmp r4, r2                   // 4514 cmp r4, r2
-cmp r5, r2                   // 4515 cmp r5, r2
-cmp r6, r2                   // 4516 cmp r6, r2
-cmp r7, r2                   // 4517 cmp r7, r2
-cmp r0, r3                   // 4518 cmp r0, r3
-cmp r1, r3                   // 4519 cmp r1, r3
-cmp r2, r3                   // 451a cmp r2, r3
-cmp r3, r3                   // 451b cmp r3, r3
-cmp r4, r3                   // 451c cmp r4, r3
-cmp r5, r3                   // 451d cmp r5, r3
-cmp r6, r3                   // 451e cmp r6, r3
-cmp r7, r3                   // 451f cmp r7, r3
-cmp r0, r4                   // 4520 cmp r0, r4
-cmp r1, r4                   // 4521 cmp r1, r4
-cmp r2, r4                   // 4522 cmp r2, r4
-cmp r3, r4                   // 4523 cmp r3, r4
-cmp r4, r4                   // 4524 cmp r4, r4
-cmp r5, r4                   // 4525 cmp r5, r4
-cmp r6, r4                   // 4526 cmp r6, r4
-cmp r7, r4                   // 4527 cmp r7, r4
-cmp r0, r5                   // 4528 cmp r0, r5
-cmp r1, r5                   // 4529 cmp r1, r5
-cmp r2, r5                   // 452a cmp r2, r5
-cmp r3, r5                   // 452b cmp r3, r5
-cmp r4, r5                   // 452c cmp r4, r5
-cmp r5, r5                   // 452d cmp r5, r5
-cmp r6, r5                   // 452e cmp r6, r5
-cmp r7, r5                   // 452f cmp r7, r5
-cmp r0, r6                   // 4530 cmp r0, r6
-cmp r1, r6                   // 4531 cmp r1, r6
-cmp r2, r6                   // 4532 cmp r2, r6
-cmp r3, r6                   // 4533 cmp r3, r6
-cmp r4, r6                   // 4534 cmp r4, r6
-cmp r5, r6                   // 4535 cmp r5, r6
-cmp r6, r6                   // 4536 cmp r6, r6
-cmp r7, r6                   // 4537 cmp r7, r6
-cmp r0, r7                   // 4538 cmp r0, r7
-cmp r1, r7                   // 4539 cmp r1, r7
-cmp r2, r7                   // 453a cmp r2, r7
-cmp r3, r7                   // 453b cmp r3, r7
-cmp r4, r7                   // 453c cmp r4, r7
-cmp r5, r7                   // 453d cmp r5, r7
-cmp r6, r7                   // 453e cmp r6, r7
-cmp r7, r7                   // 453f cmp r7, r7
-cmp r0, r8                   // 4540 cmp r0, r8
-cmp r1, r8                   // 4541 cmp r1, r8
-cmp r2, r8                   // 4542 cmp r2, r8
-cmp r3, r8                   // 4543 cmp r3, r8
-cmp r4, r8                   // 4544 cmp r4, r8
-cmp r5, r8                   // 4545 cmp r5, r8
-cmp r6, r8                   // 4546 cmp r6, r8
-cmp r7, r8                   // 4547 cmp r7, r8
-cmp r0, r9                   // 4548 cmp r0, r9
-cmp r1, r9                   // 4549 cmp r1, r9
-cmp r2, r9                   // 454a cmp r2, r9
-cmp r3, r9                   // 454b cmp r3, r9
-cmp r4, r9                   // 454c cmp r4, r9
-cmp r5, r9                   // 454d cmp r5, r9
-cmp r6, r9                   // 454e cmp r6, r9
-cmp r7, r9                   // 454f cmp r7, r9
-cmp r0, sl                   // 4550 cmp r0, sl
-cmp r1, sl                   // 4551 cmp r1, sl
-cmp r2, sl                   // 4552 cmp r2, sl
-cmp r3, sl                   // 4553 cmp r3, sl
-cmp r4, sl                   // 4554 cmp r4, sl
-cmp r5, sl                   // 4555 cmp r5, sl
-cmp r6, sl                   // 4556 cmp r6, sl
-cmp r7, sl                   // 4557 cmp r7, sl
-cmp r0, fp                   // 4558 cmp r0, fp
-cmp r1, fp                   // 4559 cmp r1, fp
-cmp r2, fp                   // 455a cmp r2, fp
-cmp r3, fp                   // 455b cmp r3, fp
-cmp r4, fp                   // 455c cmp r4, fp
-cmp r5, fp                   // 455d cmp r5, fp
-cmp r6, fp                   // 455e cmp r6, fp
-cmp r7, fp                   // 455f cmp r7, fp
-cmp r0, ip                   // 4560 cmp r0, ip
-cmp r1, ip                   // 4561 cmp r1, ip
-cmp r2, ip                   // 4562 cmp r2, ip
-cmp r3, ip                   // 4563 cmp r3, ip
-cmp r4, ip                   // 4564 cmp r4, ip
-cmp r5, ip                   // 4565 cmp r5, ip
-cmp r6, ip                   // 4566 cmp r6, ip
-cmp r7, ip                   // 4567 cmp r7, ip
-cmp r0, lr                   // 4570 cmp r0, lr
-cmp r1, lr                   // 4571 cmp r1, lr
-cmp r2, lr                   // 4572 cmp r2, lr
-cmp r3, lr                   // 4573 cmp r3, lr
-cmp r4, lr                   // 4574 cmp r4, lr
-cmp r5, lr                   // 4575 cmp r5, lr
-cmp r6, lr                   // 4576 cmp r6, lr
-cmp r7, lr                   // 4577 cmp r7, lr
-cmp r8, r0                   // 4580 cmp r8, r0
-cmp r9, r0                   // 4581 cmp r9, r0
-cmp sl, r0                   // 4582 cmp sl, r0
-cmp fp, r0                   // 4583 cmp fp, r0
-cmp ip, r0                   // 4584 cmp ip, r0
-cmp sp, r0                   // 4585 cmp sp, r0
-cmp lr, r0                   // 4586 cmp lr, r0
-cmp r8, r1                   // 4588 cmp r8, r1
-cmp r9, r1                   // 4589 cmp r9, r1
-cmp sl, r1                   // 458a cmp sl, r1
-cmp fp, r1                   // 458b cmp fp, r1
-cmp ip, r1                   // 458c cmp ip, r1
-cmp sp, r1                   // 458d cmp sp, r1
-cmp lr, r1                   // 458e cmp lr, r1
-cmp r8, r2                   // 4590 cmp r8, r2
-cmp r9, r2                   // 4591 cmp r9, r2
-cmp sl, r2                   // 4592 cmp sl, r2
-cmp fp, r2                   // 4593 cmp fp, r2
-cmp ip, r2                   // 4594 cmp ip, r2
-cmp sp, r2                   // 4595 cmp sp, r2
-cmp lr, r2                   // 4596 cmp lr, r2
-cmp r8, r3                   // 4598 cmp r8, r3
-cmp r9, r3                   // 4599 cmp r9, r3
-cmp sl, r3                   // 459a cmp sl, r3
-cmp fp, r3                   // 459b cmp fp, r3
-cmp ip, r3                   // 459c cmp ip, r3
-cmp sp, r3                   // 459d cmp sp, r3
-cmp lr, r3                   // 459e cmp lr, r3
-cmp r8, r4                   // 45a0 cmp r8, r4
-cmp r9, r4                   // 45a1 cmp r9, r4
-cmp sl, r4                   // 45a2 cmp sl, r4
-cmp fp, r4                   // 45a3 cmp fp, r4
-cmp ip, r4                   // 45a4 cmp ip, r4
-cmp sp, r4                   // 45a5 cmp sp, r4
-cmp lr, r4                   // 45a6 cmp lr, r4
-cmp r8, r5                   // 45a8 cmp r8, r5
-cmp r9, r5                   // 45a9 cmp r9, r5
-cmp sl, r5                   // 45aa cmp sl, r5
-cmp fp, r5                   // 45ab cmp fp, r5
-cmp ip, r5                   // 45ac cmp ip, r5
-cmp sp, r5                   // 45ad cmp sp, r5
-cmp lr, r5                   // 45ae cmp lr, r5
-cmp r8, r6                   // 45b0 cmp r8, r6
-cmp r9, r6                   // 45b1 cmp r9, r6
-cmp sl, r6                   // 45b2 cmp sl, r6
-cmp fp, r6                   // 45b3 cmp fp, r6
-cmp ip, r6                   // 45b4 cmp ip, r6
-cmp sp, r6                   // 45b5 cmp sp, r6
-cmp lr, r6                   // 45b6 cmp lr, r6
-cmp r8, r7                   // 45b8 cmp r8, r7
-cmp r9, r7                   // 45b9 cmp r9, r7
-cmp sl, r7                   // 45ba cmp sl, r7
-cmp fp, r7                   // 45bb cmp fp, r7
-cmp ip, r7                   // 45bc cmp ip, r7
-cmp sp, r7                   // 45bd cmp sp, r7
-cmp lr, r7                   // 45be cmp lr, r7
-cmp r8, r8                   // 45c0 cmp r8, r8
-cmp r9, r8                   // 45c1 cmp r9, r8
-cmp sl, r8                   // 45c2 cmp sl, r8
-cmp fp, r8                   // 45c3 cmp fp, r8
-cmp ip, r8                   // 45c4 cmp ip, r8
-cmp sp, r8                   // 45c5 cmp sp, r8
-cmp lr, r8                   // 45c6 cmp lr, r8
-cmp r8, r9                   // 45c8 cmp r8, r9
-cmp r9, r9                   // 45c9 cmp r9, r9
-cmp sl, r9                   // 45ca cmp sl, r9
-cmp fp, r9                   // 45cb cmp fp, r9
-cmp ip, r9                   // 45cc cmp ip, r9
-cmp sp, r9                   // 45cd cmp sp, r9
-cmp lr, r9                   // 45ce cmp lr, r9
-cmp r8, sl                   // 45d0 cmp r8, sl
-cmp r9, sl                   // 45d1 cmp r9, sl
-cmp sl, sl                   // 45d2 cmp sl, sl
-cmp fp, sl                   // 45d3 cmp fp, sl
-cmp ip, sl                   // 45d4 cmp ip, sl
-cmp sp, sl                   // 45d5 cmp sp, sl
-cmp lr, sl                   // 45d6 cmp lr, sl
-cmp r8, fp                   // 45d8 cmp r8, fp
-cmp r9, fp                   // 45d9 cmp r9, fp
-cmp sl, fp                   // 45da cmp sl, fp
-cmp fp, fp                   // 45db cmp fp, fp
-cmp ip, fp                   // 45dc cmp ip, fp
-cmp sp, fp                   // 45dd cmp sp, fp
-cmp lr, fp                   // 45de cmp lr, fp
-cmp r8, ip                   // 45e0 cmp r8, ip
-cmp r9, ip                   // 45e1 cmp r9, ip
-cmp sl, ip                   // 45e2 cmp sl, ip
-cmp fp, ip                   // 45e3 cmp fp, ip
-cmp ip, ip                   // 45e4 cmp ip, ip
-cmp sp, ip                   // 45e5 cmp sp, ip
-cmp lr, ip                   // 45e6 cmp lr, ip
-cmp r8, lr                   // 45f0 cmp r8, lr
-cmp r9, lr                   // 45f1 cmp r9, lr
-cmp sl, lr                   // 45f2 cmp sl, lr
-cmp fp, lr                   // 45f3 cmp fp, lr
-cmp ip, lr                   // 45f4 cmp ip, lr
-cmp sp, lr                   // 45f5 cmp sp, lr
-cmp lr, lr                   // 45f6 cmp lr, lr
-
-mov r0, r0                   // 4600 mov r0, r0
-mov r1, r0                   // 4601 mov r1, r0
-mov r2, r0                   // 4602 mov r2, r0
-mov r3, r0                   // 4603 mov r3, r0
-mov r4, r0                   // 4604 mov r4, r0
-mov r5, r0                   // 4605 mov r5, r0
-mov r6, r0                   // 4606 mov r6, r0
-mov r7, r0                   // 4607 mov r7, r0
-mov r0, r1                   // 4608 mov r0, r1
-mov r1, r1                   // 4609 mov r1, r1
-mov r2, r1                   // 460a mov r2, r1
-mov r3, r1                   // 460b mov r3, r1
-mov r4, r1                   // 460c mov r4, r1
-mov r5, r1                   // 460d mov r5, r1
-mov r6, r1                   // 460e mov r6, r1
-mov r7, r1                   // 460f mov r7, r1
-mov r0, r2                   // 4610 mov r0, r2
-mov r1, r2                   // 4611 mov r1, r2
-mov r2, r2                   // 4612 mov r2, r2
-mov r3, r2                   // 4613 mov r3, r2
-mov r4, r2                   // 4614 mov r4, r2
-mov r5, r2                   // 4615 mov r5, r2
-mov r6, r2                   // 4616 mov r6, r2
-mov r7, r2                   // 4617 mov r7, r2
-mov r0, r3                   // 4618 mov r0, r3
-mov r1, r3                   // 4619 mov r1, r3
-mov r2, r3                   // 461a mov r2, r3
-mov r3, r3                   // 461b mov r3, r3
-mov r4, r3                   // 461c mov r4, r3
-mov r5, r3                   // 461d mov r5, r3
-mov r6, r3                   // 461e mov r6, r3
-mov r7, r3                   // 461f mov r7, r3
-mov r0, r4                   // 4620 mov r0, r4
-mov r1, r4                   // 4621 mov r1, r4
-mov r2, r4                   // 4622 mov r2, r4
-mov r3, r4                   // 4623 mov r3, r4
-mov r4, r4                   // 4624 mov r4, r4
-mov r5, r4                   // 4625 mov r5, r4
-mov r6, r4                   // 4626 mov r6, r4
-mov r7, r4                   // 4627 mov r7, r4
-mov r0, r5                   // 4628 mov r0, r5
-mov r1, r5                   // 4629 mov r1, r5
-mov r2, r5                   // 462a mov r2, r5
-mov r3, r5                   // 462b mov r3, r5
-mov r4, r5                   // 462c mov r4, r5
-mov r5, r5                   // 462d mov r5, r5
-mov r6, r5                   // 462e mov r6, r5
-mov r7, r5                   // 462f mov r7, r5
-mov r0, r6                   // 4630 mov r0, r6
-mov r1, r6                   // 4631 mov r1, r6
-mov r2, r6                   // 4632 mov r2, r6
-mov r3, r6                   // 4633 mov r3, r6
-mov r4, r6                   // 4634 mov r4, r6
-mov r5, r6                   // 4635 mov r5, r6
-mov r6, r6                   // 4636 mov r6, r6
-mov r7, r6                   // 4637 mov r7, r6
-mov r0, r7                   // 4638 mov r0, r7
-mov r1, r7                   // 4639 mov r1, r7
-mov r2, r7                   // 463a mov r2, r7
-mov r3, r7                   // 463b mov r3, r7
-mov r4, r7                   // 463c mov r4, r7
-mov r5, r7                   // 463d mov r5, r7
-mov r6, r7                   // 463e mov r6, r7
-mov r7, r7                   // 463f mov r7, r7
-mov r0, r8                   // 4640 mov r0, r8
-mov r1, r8                   // 4641 mov r1, r8
-mov r2, r8                   // 4642 mov r2, r8
-mov r3, r8                   // 4643 mov r3, r8
-mov r4, r8                   // 4644 mov r4, r8
-mov r5, r8                   // 4645 mov r5, r8
-mov r6, r8                   // 4646 mov r6, r8
-mov r7, r8                   // 4647 mov r7, r8
-mov r0, r9                   // 4648 mov r0, r9
-mov r1, r9                   // 4649 mov r1, r9
-mov r2, r9                   // 464a mov r2, r9
-mov r3, r9                   // 464b mov r3, r9
-mov r4, r9                   // 464c mov r4, r9
-mov r5, r9                   // 464d mov r5, r9
-mov r6, r9                   // 464e mov r6, r9
-mov r7, r9                   // 464f mov r7, r9
-mov r0, sl                   // 4650 mov r0, sl
-mov r1, sl                   // 4651 mov r1, sl
-mov r2, sl                   // 4652 mov r2, sl
-mov r3, sl                   // 4653 mov r3, sl
-mov r4, sl                   // 4654 mov r4, sl
-mov r5, sl                   // 4655 mov r5, sl
-mov r6, sl                   // 4656 mov r6, sl
-mov r7, sl                   // 4657 mov r7, sl
-mov r0, fp                   // 4658 mov r0, fp
-mov r1, fp                   // 4659 mov r1, fp
-mov r2, fp                   // 465a mov r2, fp
-mov r3, fp                   // 465b mov r3, fp
-mov r4, fp                   // 465c mov r4, fp
-mov r5, fp                   // 465d mov r5, fp
-mov r6, fp                   // 465e mov r6, fp
-mov r7, fp                   // 465f mov r7, fp
-mov r0, ip                   // 4660 mov r0, ip
-mov r1, ip                   // 4661 mov r1, ip
-mov r2, ip                   // 4662 mov r2, ip
-mov r3, ip                   // 4663 mov r3, ip
-mov r4, ip                   // 4664 mov r4, ip
-mov r5, ip                   // 4665 mov r5, ip
-mov r6, ip                   // 4666 mov r6, ip
-mov r7, ip                   // 4667 mov r7, ip
-mov r0, sp                   // 4668 mov r0, sp
-mov r1, sp                   // 4669 mov r1, sp
-mov r2, sp                   // 466a mov r2, sp
-mov r3, sp                   // 466b mov r3, sp
-mov r4, sp                   // 466c mov r4, sp
-mov r5, sp                   // 466d mov r5, sp
-mov r6, sp                   // 466e mov r6, sp
-mov r7, sp                   // 466f mov r7, sp
-mov r0, lr                   // 4670 mov r0, lr
-mov r1, lr                   // 4671 mov r1, lr
-mov r2, lr                   // 4672 mov r2, lr
-mov r3, lr                   // 4673 mov r3, lr
-mov r4, lr                   // 4674 mov r4, lr
-mov r5, lr                   // 4675 mov r5, lr
-mov r6, lr                   // 4676 mov r6, lr
-mov r7, lr                   // 4677 mov r7, lr
-mov r0, pc                   // 4678 mov r0, pc
-mov r1, pc                   // 4679 mov r1, pc
-mov r2, pc                   // 467a mov r2, pc
-mov r3, pc                   // 467b mov r3, pc
-mov r4, pc                   // 467c mov r4, pc
-mov r5, pc                   // 467d mov r5, pc
-mov r6, pc                   // 467e mov r6, pc
-mov r7, pc                   // 467f mov r7, pc
-mov r8, r0                   // 4680 mov r8, r0
-mov r9, r0                   // 4681 mov r9, r0
-mov sl, r0                   // 4682 mov sl, r0
-mov fp, r0                   // 4683 mov fp, r0
-mov ip, r0                   // 4684 mov ip, r0
-mov sp, r0                   // 4685 mov sp, r0
-mov lr, r0                   // 4686 mov lr, r0
-mov pc, r0                   // 4687 mov pc, r0
-mov r8, r1                   // 4688 mov r8, r1
-mov r9, r1                   // 4689 mov r9, r1
-mov sl, r1                   // 468a mov sl, r1
-mov fp, r1                   // 468b mov fp, r1
-mov ip, r1                   // 468c mov ip, r1
-mov sp, r1                   // 468d mov sp, r1
-mov lr, r1                   // 468e mov lr, r1
-mov pc, r1                   // 468f mov pc, r1
-mov r8, r2                   // 4690 mov r8, r2
-mov r9, r2                   // 4691 mov r9, r2
-mov sl, r2                   // 4692 mov sl, r2
-mov fp, r2                   // 4693 mov fp, r2
-mov ip, r2                   // 4694 mov ip, r2
-mov sp, r2                   // 4695 mov sp, r2
-mov lr, r2                   // 4696 mov lr, r2
-mov pc, r2                   // 4697 mov pc, r2
-mov r8, r3                   // 4698 mov r8, r3
-mov r9, r3                   // 4699 mov r9, r3
-mov sl, r3                   // 469a mov sl, r3
-mov fp, r3                   // 469b mov fp, r3
-mov ip, r3                   // 469c mov ip, r3
-mov sp, r3                   // 469d mov sp, r3
-mov lr, r3                   // 469e mov lr, r3
-mov pc, r3                   // 469f mov pc, r3
-mov r8, r4                   // 46a0 mov r8, r4
-mov r9, r4                   // 46a1 mov r9, r4
-mov sl, r4                   // 46a2 mov sl, r4
-mov fp, r4                   // 46a3 mov fp, r4
-mov ip, r4                   // 46a4 mov ip, r4
-mov sp, r4                   // 46a5 mov sp, r4
-mov lr, r4                   // 46a6 mov lr, r4
-mov pc, r4                   // 46a7 mov pc, r4
-mov r8, r5                   // 46a8 mov r8, r5
-mov r9, r5                   // 46a9 mov r9, r5
-mov sl, r5                   // 46aa mov sl, r5
-mov fp, r5                   // 46ab mov fp, r5
-mov ip, r5                   // 46ac mov ip, r5
-mov sp, r5                   // 46ad mov sp, r5
-mov lr, r5                   // 46ae mov lr, r5
-mov pc, r5                   // 46af mov pc, r5
-mov r8, r6                   // 46b0 mov r8, r6
-mov r9, r6                   // 46b1 mov r9, r6
-mov sl, r6                   // 46b2 mov sl, r6
-mov fp, r6                   // 46b3 mov fp, r6
-mov ip, r6                   // 46b4 mov ip, r6
-mov sp, r6                   // 46b5 mov sp, r6
-mov lr, r6                   // 46b6 mov lr, r6
-mov pc, r6                   // 46b7 mov pc, r6
-mov r8, r7                   // 46b8 mov r8, r7
-mov r9, r7                   // 46b9 mov r9, r7
-mov sl, r7                   // 46ba mov sl, r7
-mov fp, r7                   // 46bb mov fp, r7
-mov ip, r7                   // 46bc mov ip, r7
-mov sp, r7                   // 46bd mov sp, r7
-mov lr, r7                   // 46be mov lr, r7
-mov pc, r7                   // 46bf mov pc, r7
-nop                          // 46c0 nop   // (mov r8, r8)
-mov r9, r8                   // 46c1 mov r9, r8
-mov sl, r8                   // 46c2 mov sl, r8
-mov fp, r8                   // 46c3 mov fp, r8
-mov ip, r8                   // 46c4 mov ip, r8
-mov sp, r8                   // 46c5 mov sp, r8
-mov lr, r8                   // 46c6 mov lr, r8
-mov pc, r8                   // 46c7 mov pc, r8
-mov r8, r9                   // 46c8 mov r8, r9
-mov r9, r9                   // 46c9 mov r9, r9
-mov sl, r9                   // 46ca mov sl, r9
-mov fp, r9                   // 46cb mov fp, r9
-mov ip, r9                   // 46cc mov ip, r9
-mov sp, r9                   // 46cd mov sp, r9
-mov lr, r9                   // 46ce mov lr, r9
-mov pc, r9                   // 46cf mov pc, r9
-mov r8, sl                   // 46d0 mov r8, sl
-mov r9, sl                   // 46d1 mov r9, sl
-mov sl, sl                   // 46d2 mov sl, sl
-mov fp, sl                   // 46d3 mov fp, sl
-mov ip, sl                   // 46d4 mov ip, sl
-mov sp, sl                   // 46d5 mov sp, sl
-mov lr, sl                   // 46d6 mov lr, sl
-mov pc, sl                   // 46d7 mov pc, sl
-mov r8, fp                   // 46d8 mov r8, fp
-mov r9, fp                   // 46d9 mov r9, fp
-mov sl, fp                   // 46da mov sl, fp
-mov fp, fp                   // 46db mov fp, fp
-mov ip, fp                   // 46dc mov ip, fp
-mov sp, fp                   // 46dd mov sp, fp
-mov lr, fp                   // 46de mov lr, fp
-mov pc, fp                   // 46df mov pc, fp
-mov r8, ip                   // 46e0 mov r8, ip
-mov r9, ip                   // 46e1 mov r9, ip
-mov sl, ip                   // 46e2 mov sl, ip
-mov fp, ip                   // 46e3 mov fp, ip
-mov ip, ip                   // 46e4 mov ip, ip
-mov sp, ip                   // 46e5 mov sp, ip
-mov lr, ip                   // 46e6 mov lr, ip
-mov pc, ip                   // 46e7 mov pc, ip
-mov r8, sp                   // 46e8 mov r8, sp
-mov r9, sp                   // 46e9 mov r9, sp
-mov sl, sp                   // 46ea mov sl, sp
-mov fp, sp                   // 46eb mov fp, sp
-mov ip, sp                   // 46ec mov ip, sp
-mov lr, sp                   // 46ee mov lr, sp
-mov r8, lr                   // 46f0 mov r8, lr
-mov r9, lr                   // 46f1 mov r9, lr
-mov sl, lr                   // 46f2 mov sl, lr
-mov fp, lr                   // 46f3 mov fp, lr
-mov ip, lr                   // 46f4 mov ip, lr
-mov sp, lr                   // 46f5 mov sp, lr
-mov lr, lr                   // 46f6 mov lr, lr
-mov pc, lr                   // 46f7 mov pc, lr
-mov r8, pc                   // 46f8 mov r8, pc
-mov r9, pc                   // 46f9 mov r9, pc
-mov sl, pc                   // 46fa mov sl, pc
-mov fp, pc                   // 46fb mov fp, pc
-mov ip, pc                   // 46fc mov ip, pc
-mov lr, pc                   // 46fe mov lr, pc
-
 bx r0                        // 4700 bx r0
 bx r1                        // 4708 bx r1
 bx r2                        // 4710 bx r2

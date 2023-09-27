@@ -43,7 +43,7 @@ static const char *condition_strings[16] = {
 //
 static const char *reg_name[16] = {
     "r0", "r1", "r2", "r3", "r4", "r5",  "r6", "r7",
-    "r8", "r9", "sl", "fp", "ip", "r13", "lr", "r15",
+    "r8", "r9", "sl", "fp", "ip", "sp", "lr", "pc",
 };
 
 static int thumb_b_bl_blx(unsigned short opcode, unsigned address,
@@ -194,7 +194,6 @@ static int thumb_data_proc(unsigned short opcode, unsigned address,
 {
     unsigned char high_reg, op, Rm, Rd, H1, H2;
     const char *mnemonic = NULL;
-    int nop = 0;
 
     high_reg = (opcode & 0x0400) >> 10;
     op = (opcode & 0x03C0) >> 6;
@@ -211,15 +210,17 @@ static int thumb_data_proc(unsigned short opcode, unsigned address,
 
         switch (op) {
         case 0x0:
-            mnemonic = "ADD";
+            mnemonic = "add";
             break;
         case 0x1:
-            mnemonic = "CMP";
+            mnemonic = "cmp";
             break;
         case 0x2:
-            mnemonic = "MOV";
-            if (Rd == Rm)
-                nop = 1;
+            if (Rd == 8 && Rm == 8) {
+                strcpy(instruction->text, "nop");
+                return 0;
+            }
+            mnemonic = "mov";
             break;
         case 0x3:
             if ((opcode & 0x7) == 0x0) {
@@ -232,7 +233,6 @@ static int thumb_data_proc(unsigned short opcode, unsigned address,
                 snprintf(instruction->text, sizeof(instruction->text), "UNDEFINED INSTRUCTION");
             }
             return 0;
-            break;
         }
     } else {
         switch (op) {
@@ -287,12 +287,8 @@ static int thumb_data_proc(unsigned short opcode, unsigned address,
         }
     }
 
-    if (nop)
-        snprintf(instruction->text, sizeof(instruction->text), "NOP ; (%s %s, %s)", mnemonic,
-                 reg_name[Rd], reg_name[Rm]);
-    else
-        snprintf(instruction->text, sizeof(instruction->text), "%s %s, %s", mnemonic, reg_name[Rd],
-                 reg_name[Rm]);
+    snprintf(instruction->text, sizeof(instruction->text), "%s %s, %s", mnemonic, reg_name[Rd],
+             reg_name[Rm]);
 
     return 0;
 }
