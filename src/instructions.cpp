@@ -355,7 +355,8 @@ void Processor::thumb_arith_reg()
         terminate_simulation("ror"); // TODO
         break;
     case 0x8:
-        terminate_simulation("tst"); // TODO
+        // TST instruction.
+        set_nz_flags(get_reg(rd) & get_reg(rm));
         break;
     case 0x9:
         // NEG instruction.

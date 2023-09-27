@@ -111,13 +111,21 @@ public:
     }
 
     //
+    // Set N, Z flags based on value
+    //
+    void set_nz_flags(int32_t value)
+    {
+        xpsr.field.n = (value < 0);
+        xpsr.field.z = (value == 0);
+    }
+
+    //
     // Set value for a register, and N Z flags
     //
     void set_reg_nz(int reg_num, int32_t value)
     {
         set_reg(reg_num, value);
-        xpsr.field.n = (value < 0);
-        xpsr.field.z = (value == 0);
+        set_nz_flags(value);
     }
 
     /**

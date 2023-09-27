@@ -65,7 +65,7 @@ orr.S               orr r1, r2
 eor.S               eor r1, r2
 bic.S               bic r1, r2
 mvn.S               mvn r1, r2
-                    tst r1, r2
+tst.S               tst r1, r2
 
         (Shift operations)
                     asr r1, r2, #32
