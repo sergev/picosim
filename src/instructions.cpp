@@ -433,7 +433,8 @@ void Processor::thumb_load_store_reg()
 
     switch (opc) {
     case 0:
-        terminate_simulation("str"); // TODO
+        // STR instruction.
+        data_write32(address, get_reg(rd));
         break;
     case 1:
         terminate_simulation("strh"); // TODO
