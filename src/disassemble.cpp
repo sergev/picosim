@@ -105,10 +105,9 @@ static int thumb_add_sub(unsigned short opcode, unsigned address,
     const char *mnemonic;
 
     if (opc) {
-        mnemonic = "SUBS";
+        mnemonic = "subs";
     } else {
-        /* REVISIT:  if reg_imm == 0, display as "MOVS" */
-        mnemonic = "ADDS";
+        mnemonic = "adds";
     }
 
     if (reg_imm) {
@@ -138,22 +137,24 @@ static int thumb_shift_imm(unsigned short opcode, unsigned address,
                      reg_name[Rd], reg_name[Rm]);
             return 0;
         } else {
-            mnemonic = "LSLS";
+            mnemonic = "lsls";
         }
         break;
+
     case 1:
         if (imm == 0)
             imm = 32;
-        mnemonic = "LSRS";
+        mnemonic = "lsrs";
         break;
+
     case 2:
         if (imm == 0)
             imm = 32;
-        mnemonic = "ASRS";
+        mnemonic = "asrs";
         break;
     }
 
-    snprintf(instruction->text, sizeof(instruction->text), "%s %s, %s, #%#2.2x", mnemonic,
+    snprintf(instruction->text, sizeof(instruction->text), "%s %s, %s, #%u", mnemonic,
              reg_name[Rd], reg_name[Rm], imm);
 
     return 0;
