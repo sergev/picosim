@@ -63,7 +63,7 @@ static int thumb_b_bl_blx(unsigned short opcode, unsigned address,
     switch (opc) {
     /* unconditional branch */
     case 0:
-        mnemonic = "B";
+        mnemonic = "b.n";
         break;
     /* BLX suffix */
     case 1:
@@ -513,10 +513,10 @@ static int thumb_cond_branch(unsigned short opcode, unsigned address,
     unsigned target_address;
 
     if (cond == 0xf) {
-        snprintf(instruction->text, sizeof(instruction->text), "SVC %#2.2x", offset);
+        snprintf(instruction->text, sizeof(instruction->text), "svc %u", offset);
         return 0;
     } else if (cond == 0xe) {
-        snprintf(instruction->text, sizeof(instruction->text), "UNDEFINED INSTRUCTION");
+        snprintf(instruction->text, sizeof(instruction->text), "udf #%u", offset);
         return 0;
     }
 

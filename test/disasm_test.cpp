@@ -1675,19 +1675,17 @@ TEST(disasm, opcode16)
     test_disasm(0xdd01, "ble.n 0x1234567e");
     test_disasm(0xddff, "ble.n 0x1234567a");
 
-#if 0
-udf #0                       // de00 udf #0
-udf #1                       // de01 udf #1
-udf #255                     // deff udf #255 // 0xff
+    test_disasm(0xde00, "udf #0");
+    test_disasm(0xde01, "udf #1");
+    test_disasm(0xdeff, "udf #255");
 
-svc 0                        // df00 svc 0
-svc 1                        // df01 svc 1
-svc 255                      // dfff svc 255 // 0xff
+    test_disasm(0xdf00, "svc 0");
+    test_disasm(0xdf01, "svc 1");
+    test_disasm(0xdfff, "svc 255");
 
-b.n 0x0001c004               // e000 b.n 0x0001c004
-b.n 0x0001c008               // e001 b.n 0x0001c008
-b.n 0x0001d000               // e7ff b.n 0x0001d000
-#endif
+    test_disasm(0xe000, "b.n 0x1234567c");
+    test_disasm(0xe001, "b.n 0x1234567e");
+    test_disasm(0xe7ff, "b.n 0x1234567a");
 }
 
 #include "gtest_main.cpp"
