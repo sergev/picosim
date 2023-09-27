@@ -75,7 +75,7 @@ tst.S               tst r1, r2
         Shift operations
 
 asr_imm.S           asr r1, r2, #32
-                    asr r1, r2
+asr_reg.S           asr r1, r2
                     lsl r1, r2, #31
                     lsl r1, r2
                     lsr r1, r2, #32

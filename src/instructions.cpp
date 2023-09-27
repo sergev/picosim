@@ -299,9 +299,7 @@ void Processor::thumb_shift_imm()
             imm = 32;
         }
         set_reg_nz(rd, value >> imm);
-        if (imm > 0) {
-            xpsr.field.c = value >> (imm - 1);
-        }
+        xpsr.field.c = value >> (imm - 1);
         break;
     }
 }
@@ -375,9 +373,19 @@ void Processor::thumb_arith_reg()
     case 0x3:
         terminate_simulation("lsr"); // TODO
         break;
-    case 0x4:
-        terminate_simulation("asr"); // TODO
+    case 0x4: {
+        // ASR instruction.
+        int64_t value  = get_reg(rd);
+        unsigned shift = get_reg(rm) & 0xff;
+        if (shift > 0) {
+            if (shift > 32) {
+                shift = 32;
+            }
+            xpsr.field.c = value >> (shift - 1);
+        }
+        set_reg_nz(rd, value >> shift);
         break;
+    }
     case 0x5:
         // ADC instruction.
         set_reg(rd, add_with_carry(get_reg(rd), get_reg(rm), xpsr.field.c));
