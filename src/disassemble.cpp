@@ -23,119 +23,70 @@
 //
 #include "disassemble.h"
 
-#include <stdio.h>
-#include <string.h>
-
-struct arm_instruction {
-    char text[128];
-};
-
-//
-// Textual represenation of the condition field.
-// ALways (default) is ommitted (empty string).
-//
-static const char *condition_strings[16] = {
-    "eq", "ne", "cs", "cc", "mi", "pl", "vs", "vc", "hi", "ls", "ge", "lt", "gt", "le", "", "nv",
-};
+#include <iomanip>
+#include <sstream>
 
 //
 // Register names
 //
 static const char *reg_name[16] = {
-    "r0", "r1", "r2", "r3", "r4", "r5",  "r6", "r7",
-    "r8", "r9", "sl", "fp", "ip", "sp", "lr", "pc",
+    "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8", "r9", "sl", "fp", "ip", "sp", "lr", "pc",
 };
 
-static int thumb_b_bl_blx(unsigned short opcode, unsigned address,
-                          struct arm_instruction *instruction)
+static std::string thumb_b_bl_blx(unsigned short opcode, unsigned address)
 {
     unsigned offset = opcode & 0x7ff;
     unsigned opc = (opcode >> 11) & 0x3;
-    unsigned target_address;
-    const char *mnemonic = NULL;
+    std::ostringstream text;
 
-    /* sign extend 11-bit offset */
-    if (((opc == 0) || (opc == 2)) && (offset & 0x00000400))
+    if (opc != 0) {
+        // Unknown instruction.
+        return "";
+    }
+
+    // Sign extend 11-bit offset.
+    if (offset & 0x00000400)
         offset = 0xfffff800 | offset;
 
-    target_address = address + 4 + (offset << 1);
+    address += 4 + (offset << 1);
 
-    switch (opc) {
-    /* unconditional branch */
-    case 0:
-        mnemonic = "b.n";
-        break;
-    /* BLX suffix */
-    case 1:
-        mnemonic = "BLX";
-        target_address &= 0xfffffffc;
-        break;
-    /* BL/BLX prefix */
-    case 2:
-        mnemonic = "prefix";
-        target_address = offset << 12;
-        break;
-    /* BL suffix */
-    case 3:
-        mnemonic = "BL";
-        break;
-    }
-
-    /* TODO: deal correctly with dual opcode (prefixed) BL/BLX;
-     * these are effectively 32-bit instructions even in Thumb1.  For
-     * disassembly, it's simplest to always use the Thumb2 decoder.
-     *
-     * But some cores will evidently handle them as two instructions,
-     * where exceptions may occur between the two.  The ETMv3.2+ ID
-     * register has a bit which exposes this behavior.
-     */
-    snprintf(instruction->text, sizeof(instruction->text), "%s %#8.8x", mnemonic, target_address);
-
-    return 0;
+    text << "b.n 0x" << std::hex << std::setfill('0') << std::setw(8) << address;
+    return text.str();
 }
 
-static int thumb_add_sub(unsigned short opcode, unsigned address,
-                         struct arm_instruction *instruction)
+static std::string thumb_add_sub(unsigned short opcode)
 {
-    unsigned char Rd = (opcode >> 0) & 0x7;
-    unsigned char Rn = (opcode >> 3) & 0x7;
-    unsigned char Rm_imm = (opcode >> 6) & 0x7;
+    unsigned Rd = (opcode >> 0) & 0x7;
+    unsigned Rn = (opcode >> 3) & 0x7;
+    unsigned Rm_imm = (opcode >> 6) & 0x7;
     unsigned opc = opcode & (1 << 9);
     unsigned reg_imm = opcode & (1 << 10);
-    const char *mnemonic;
+    const char *mnemonic = opc ? "subs" : "adds";
+    std::ostringstream text;
 
-    if (opc) {
-        mnemonic = "subs";
-    } else {
-        mnemonic = "adds";
-    }
-
+    text << mnemonic << ' ' << reg_name[Rd] << ", " << reg_name[Rn];
     if (reg_imm) {
-        snprintf(instruction->text, sizeof(instruction->text), "%s %s, %s, #%d", mnemonic,
-                 reg_name[Rd], reg_name[Rn], Rm_imm);
+        text << ", #" << Rm_imm;
     } else {
-        snprintf(instruction->text, sizeof(instruction->text), "%s %s, %s, %s", mnemonic,
-                 reg_name[Rd], reg_name[Rn], reg_name[Rm_imm]);
+        text << ", " << reg_name[Rm_imm];
     }
-
-    return 0;
+    return text.str();
 }
 
-static int thumb_shift_imm(unsigned short opcode, unsigned address,
-                           struct arm_instruction *instruction)
+static std::string thumb_shift_imm(unsigned short opcode)
 {
-    unsigned char Rd = (opcode >> 0) & 0x7;
-    unsigned char Rm = (opcode >> 3) & 0x7;
-    unsigned char imm = (opcode >> 6) & 0x1f;
-    unsigned char opc = (opcode >> 11) & 0x3;
+    unsigned Rd = (opcode >> 0) & 0x7;
+    unsigned Rm = (opcode >> 3) & 0x7;
+    unsigned imm = (opcode >> 6) & 0x1f;
+    unsigned opc = (opcode >> 11) & 0x3;
     const char *mnemonic = NULL;
+    std::ostringstream text;
 
     switch (opc) {
     case 0:
         if (imm == 0) {
-            snprintf(instruction->text, sizeof(instruction->text), "movs %s, %s",
-                     reg_name[Rd], reg_name[Rm]);
-            return 0;
+            text << "movs " << reg_name[Rd] << ", " << reg_name[Rm];
+            return text.str();
         } else {
             mnemonic = "lsls";
         }
@@ -154,19 +105,17 @@ static int thumb_shift_imm(unsigned short opcode, unsigned address,
         break;
     }
 
-    snprintf(instruction->text, sizeof(instruction->text), "%s %s, %s, #%u", mnemonic,
-             reg_name[Rd], reg_name[Rm], imm);
-
-    return 0;
+    text << mnemonic << ' ' << reg_name[Rd] << ", " << reg_name[Rm] << ", #" << imm;
+    return text.str();
 }
 
-static int thumb_data_proc_imm(unsigned short opcode, unsigned address,
-                               struct arm_instruction *instruction)
+static std::string thumb_data_proc_imm(unsigned short opcode)
 {
-    unsigned char imm = opcode & 0xff;
-    unsigned char Rd = (opcode >> 8) & 0x7;
+    unsigned imm = opcode & 0xff;
+    unsigned Rd = (opcode >> 8) & 0x7;
     unsigned opc = (opcode >> 11) & 0x3;
     const char *mnemonic = NULL;
+    std::ostringstream text;
 
     switch (opc) {
     case 0:
@@ -183,25 +132,20 @@ static int thumb_data_proc_imm(unsigned short opcode, unsigned address,
         break;
     }
 
-    snprintf(instruction->text, sizeof(instruction->text), "%s %s, #%u", mnemonic, reg_name[Rd],
-             imm);
-
-    return 0;
+    text << mnemonic << ' ' << reg_name[Rd] << ", #" << imm;
+    return text.str();
 }
 
-static int thumb_data_proc(unsigned short opcode, unsigned address,
-                           struct arm_instruction *instruction)
+static std::string thumb_data_proc(unsigned short opcode)
 {
-    unsigned char high_reg, op, Rm, Rd, H1, H2;
+    unsigned high_reg = (opcode & 0x0400) >> 10;
+    unsigned op = (opcode & 0x03C0) >> 6;
+    unsigned Rd = (opcode & 0x0007);
+    unsigned Rm = (opcode & 0x0038) >> 3;
+    unsigned H1 = (opcode & 0x0080) >> 7;
+    unsigned H2 = (opcode & 0x0040) >> 6;
     const char *mnemonic = NULL;
-
-    high_reg = (opcode & 0x0400) >> 10;
-    op = (opcode & 0x03C0) >> 6;
-
-    Rd = (opcode & 0x0007);
-    Rm = (opcode & 0x0038) >> 3;
-    H1 = (opcode & 0x0080) >> 7;
-    H2 = (opcode & 0x0040) >> 6;
+    std::ostringstream text;
 
     if (high_reg) {
         Rd |= H1 << 3;
@@ -217,22 +161,22 @@ static int thumb_data_proc(unsigned short opcode, unsigned address,
             break;
         case 0x2:
             if (Rd == 8 && Rm == 8) {
-                strcpy(instruction->text, "nop");
-                return 0;
+                return "nop";
             }
             mnemonic = "mov";
             break;
         case 0x3:
             if ((opcode & 0x7) == 0x0) {
                 if (H1) {
-                    snprintf(instruction->text, sizeof(instruction->text), "BLX %s", reg_name[Rm]);
+                    // BLX is not supported.
+                    return "";
                 } else {
-                    snprintf(instruction->text, sizeof(instruction->text), "bx %s", reg_name[Rm]);
+                    text << "bx " << reg_name[Rm];
+                    return text.str();
                 }
-            } else {
-                snprintf(instruction->text, sizeof(instruction->text), "UNDEFINED INSTRUCTION");
             }
-            return 0;
+            // Undefined instruction.
+            return "";
         }
     } else {
         switch (op) {
@@ -287,42 +231,37 @@ static int thumb_data_proc(unsigned short opcode, unsigned address,
         }
     }
 
-    snprintf(instruction->text, sizeof(instruction->text), "%s %s, %s", mnemonic, reg_name[Rd],
-             reg_name[Rm]);
-
-    return 0;
+    text << mnemonic << ' ' << reg_name[Rd] << ", " << reg_name[Rm];
+    return text.str();
 }
 
-
-static int thumb_load_literal(unsigned short opcode, unsigned address,
-                              struct arm_instruction *instruction)
+static std::string thumb_load_literal(unsigned short opcode)
 {
-    unsigned immediate;
-    unsigned char Rd = (opcode >> 8) & 0x7;
+    unsigned immediate = opcode & 0xff;
+    unsigned Rd = (opcode >> 8) & 0x7;
+    std::ostringstream text;
 
-    immediate = opcode & 0x000000ff;
     immediate *= 4;
 
-    snprintf(instruction->text, sizeof(instruction->text), "ldr %s, [pc, #%u]",
-             reg_name[Rd], immediate);
+    text << "ldr " << reg_name[Rd] << ", [pc, #" << immediate << ']';
 
 #if 0
     // TODO: show address = thumb_alignpc4(address) + immediate.
     // PC-relative data addressing is word-aligned even with Thumb.
     address = (address + 4) & ~3;
-    sprintf(..., "%#8.8x", address + immediate);
+    text << std::hex << (address + immediate);
 #endif
-    return 0;
+    return text.str();
 }
 
-static int thumb_load_store_reg(unsigned short opcode, unsigned address,
-                                struct arm_instruction *instruction)
+static std::string thumb_load_store_reg(unsigned short opcode)
 {
-    unsigned char Rd = (opcode >> 0) & 0x7;
-    unsigned char Rn = (opcode >> 3) & 0x7;
-    unsigned char Rm = (opcode >> 6) & 0x7;
-    unsigned char opc = (opcode >> 9) & 0x7;
+    unsigned Rd = (opcode >> 0) & 0x7;
+    unsigned Rn = (opcode >> 3) & 0x7;
+    unsigned Rm = (opcode >> 6) & 0x7;
+    unsigned opc = (opcode >> 9) & 0x7;
     const char *mnemonic = NULL;
+    std::ostringstream text;
 
     switch (opc) {
     case 0:
@@ -351,313 +290,209 @@ static int thumb_load_store_reg(unsigned short opcode, unsigned address,
         break;
     }
 
-    snprintf(instruction->text, sizeof(instruction->text), "%s %s, [%s, %s]", mnemonic,
-             reg_name[Rd], reg_name[Rn], reg_name[Rm]);
-
-    return 0;
+    text << mnemonic << ' ' << reg_name[Rd] << ", [" << reg_name[Rn] << ", " << reg_name[Rm] << "]";
+    return text.str();
 }
 
-static int thumb_load_store_imm(unsigned short opcode, unsigned address,
-                                struct arm_instruction *instruction)
+static std::string thumb_load_store_imm(unsigned short opcode)
 {
     unsigned offset = (opcode >> 6) & 0x1f;
-    unsigned char Rd = (opcode >> 0) & 0x7;
-    unsigned char Rn = (opcode >> 3) & 0x7;
+    unsigned Rd = (opcode >> 0) & 0x7;
+    unsigned Rn = (opcode >> 3) & 0x7;
     unsigned L = opcode & (1 << 11);
     unsigned B = opcode & (1 << 12);
     const char *mnemonic;
-    unsigned shift;
+    std::ostringstream text;
 
     if ((opcode & 0xF000) == 0x8000) {
         mnemonic = L ? "ldrh" : "strh";
-        shift = 1;
+        offset <<= 1;
     } else if (B) {
         mnemonic = L ? "ldrb" : "strb";
-        shift = 0;
     } else {
         mnemonic = L ? "ldr" : "str";
-        shift = 2;
+        offset <<= 2;
     }
 
-    snprintf(instruction->text, sizeof(instruction->text), "%s %s, [%s, #%u]", mnemonic,
-             reg_name[Rd], reg_name[Rn], offset << shift);
-
-    return 0;
+    text << mnemonic << ' ' << reg_name[Rd] << ", [" << reg_name[Rn] << ", #" << offset << ']';
+    return text.str();
 }
 
-static int thumb_load_store_stack(unsigned short opcode, unsigned address,
-                                  struct arm_instruction *instruction)
+static std::string thumb_load_store_stack(unsigned short opcode)
 {
     unsigned offset = opcode & 0xff;
-    unsigned char Rd = (opcode >> 8) & 0x7;
+    unsigned Rd = (opcode >> 8) & 0x7;
     unsigned L = opcode & (1 << 11);
-    const char *mnemonic;
+    const char *mnemonic = L ? "ldr" : "str";
+    std::ostringstream text;
 
-    if (L) {
-        mnemonic = "ldr";
-    } else {
-        mnemonic = "str";
-    }
-
-    snprintf(instruction->text, sizeof(instruction->text), "%s %s, [%s, #%u]", mnemonic,
-             reg_name[Rd], reg_name[13], offset * 4);
-
-    return 0;
+    offset *= 4;
+    text << mnemonic << ' ' << reg_name[Rd] << ", [" << reg_name[13] << ", #" << offset << ']';
+    return text.str();
 }
 
-static int thumb_add_sp_pc(unsigned short opcode, unsigned address,
-                           struct arm_instruction *instruction)
+static std::string thumb_add_sp_pc(unsigned short opcode)
 {
     unsigned imm = opcode & 0xff;
-    unsigned char Rd = (opcode >> 8) & 0x7;
+    unsigned Rd = (opcode >> 8) & 0x7;
     unsigned SP = opcode & (1 << 11);
-    const char *src_name;
+    const char *src_name = SP ? reg_name[13] : reg_name[15];
+    std::ostringstream text;
 
-    if (SP) {
-        src_name = reg_name[13];
-    } else {
-        src_name = reg_name[15];
-    }
-
-    snprintf(instruction->text, sizeof(instruction->text), "add %s, %s, #%u", reg_name[Rd],
-             src_name, imm * 4);
-
-    return 0;
+    imm *= 4;
+    text << "add " << reg_name[Rd] << ", " << src_name << ", #" << imm;
+    return text.str();
 }
 
-static int thumb_adjust_stack(unsigned short opcode, unsigned address,
-                              struct arm_instruction *instruction)
+static std::string thumb_adjust_stack(unsigned short opcode)
 {
     unsigned imm = opcode & 0x7f;
-    unsigned char opc = opcode & (1 << 7);
-    const char *mnemonic;
+    unsigned opc = opcode & (1 << 7);
+    const char *mnemonic = opc ? "sub" : "add";
+    std::ostringstream text;
 
-    if (opc) {
-        mnemonic = "sub";
-    } else {
-        mnemonic = "add";
-    }
-
-    snprintf(instruction->text, sizeof(instruction->text), "%s %s, #%u", mnemonic, reg_name[13], imm * 4);
-
-    return 0;
+    imm *= 4;
+    text << mnemonic << ' ' << reg_name[13] << ", #" << imm;
+    return text.str();
 }
 
-static int thumb_breakpoint(unsigned short opcode, unsigned address,
-                            struct arm_instruction *instruction)
+static std::string thumb_breakpoint(unsigned short opcode)
 {
     unsigned imm = opcode & 0xff;
+    std::ostringstream text;
 
-    snprintf(instruction->text, sizeof(instruction->text), "bkpt 0x%04x", imm);
-
-    return 0;
+    text << "bkpt 0x" << std::hex << std::setfill('0') << std::setw(4) << imm;
+    return text.str();
 }
 
-static int thumb_load_store_multiple(unsigned short opcode, unsigned address,
-                                     struct arm_instruction *instruction)
+static std::string thumb_load_store_multiple(unsigned short opcode)
 {
     unsigned reg_list = opcode & 0xff;
     unsigned L = opcode & (1 << 11);
     unsigned R = opcode & (1 << 8);
-    unsigned char Rn = (opcode >> 8) & 7;
-    char list[40];
-    char *list_p;
-    const char *mnemonic;
-    char ptr_name[7] = "";
-    int i;
+    unsigned Rn = (opcode >> 8) & 7;
+    std::ostringstream text;
 
-    if ((opcode & 0xf000) == 0xc000) { /* generic load/store multiple */
+    if ((opcode & 0xf000) == 0xc000) {
+        //
+        // Generic load/store multiple.
+        //
         const char *wback = "!";
 
         if (L) {
-            mnemonic = "ldmia";
+            text << "ldmia ";
             if (opcode & (1 << Rn))
                 wback = "";
         } else {
-            mnemonic = "stmia";
+            text << "stmia ";
         }
-        snprintf(ptr_name, sizeof ptr_name, "%s%s, ", reg_name[Rn], wback);
-    } else {     /* push/pop */
-        Rn = 13; /* SP */
+        text << reg_name[Rn] << wback << ", ";
+    } else {
+        //
+        // Push/pop.
+        //
+        Rn = 13; // SP
         if (L) {
-            mnemonic = "pop";
+            text << "pop ";
             if (R)
-                reg_list |= (1 << 15) /*PC*/;
+                reg_list |= (1 << 15); // PC
         } else {
-            mnemonic = "push";
+            text << "push ";
             if (R)
-                reg_list |= (1 << 14) /*LR*/;
+                reg_list |= (1 << 14); // LR
         }
     }
 
-    list_p = list;
-    for (i = 0; i <= 15; i++) {
-        if (reg_list & (1 << i))
-            list_p += snprintf(list_p, (list + 40 - list_p), "%s, ", reg_name[i]);
+    text << '{';
+
+    bool cont_flag = false;
+    for (int i = 0; i <= 15; i++) {
+        if (reg_list & (1 << i)) {
+            if (cont_flag) {
+                text << ", ";
+            }
+            text << reg_name[i];
+            cont_flag = true;
+        }
     }
-    if (list_p > list)
-        list_p[-2] = '\0';
-    else /* invalid op : no registers */
-        list[0] = '\0';
 
-    snprintf(instruction->text, sizeof(instruction->text), "%s %s{%s}", mnemonic, ptr_name, list);
-
-    return 0;
+    text << '}';
+    return text.str();
 }
 
-static int thumb_cond_branch(unsigned short opcode, unsigned address,
-                             struct arm_instruction *instruction)
+static std::string thumb_cond_branch(unsigned short opcode, unsigned address)
 {
     unsigned offset = opcode & 0xff;
-    unsigned char cond = (opcode >> 8) & 0xf;
-    unsigned target_address;
+    unsigned cond = (opcode >> 8) & 0xf;
+    std::ostringstream text;
+    static const char *suffix[16] = {
+        "eq", "ne", "cs", "cc", "mi", "pl", "vs", "vc",
+        "hi", "ls", "ge", "lt", "gt", "le", "",   "nv",
+    };
 
     if (cond == 0xf) {
-        snprintf(instruction->text, sizeof(instruction->text), "svc %u", offset);
-        return 0;
+        text << "svc " << offset;
     } else if (cond == 0xe) {
-        snprintf(instruction->text, sizeof(instruction->text), "udf #%u", offset);
-        return 0;
+        text << "udf #" << offset;
+    } else {
+        // Sign extend 8-bit offset.
+        if (offset & 0x00000080)
+            offset = 0xffffff00 | offset;
+
+        address += 4 + (offset << 1);
+
+        text << 'b' << suffix[cond] << ".n 0x" << std::hex << std::setfill('0') << std::setw(8)
+             << address;
     }
-
-    /* sign extend 8-bit offset */
-    if (offset & 0x00000080)
-        offset = 0xffffff00 | offset;
-
-    target_address = address + 4 + (offset << 1);
-
-    snprintf(instruction->text, sizeof(instruction->text), "b%s.n %#8.8x", condition_strings[cond],
-             target_address);
-
-    return 0;
+    return text.str();
 }
 
-static int thumb_cb(unsigned short opcode, unsigned address, struct arm_instruction *instruction)
+static std::string thumb_extend(unsigned short opcode)
 {
-    unsigned offset;
+    unsigned rd = opcode & 0x7;
+    unsigned rs = (opcode >> 3) & 0x7;
+    char suffix = (opcode & 0x0040) ? 'b' : 'h';
+    char prefix = (opcode & 0x0080) ? 'u' : 's';
+    std::ostringstream text;
 
-    /* added in Thumb2 */
-    offset = (opcode >> 3) & 0x1f;
-    offset |= (opcode & 0x0200) >> 4;
-
-    snprintf(instruction->text, sizeof(instruction->text), "CB%sZ %s, %#8.8x",
-             (opcode & 0x0800) ? "N" : "", reg_name[opcode & 0x7], address + 4 + (offset << 1));
-
-    return 0;
+    text << prefix << "xt" << suffix << ' ' << reg_name[rd] << ", " << reg_name[rs];
+    return text.str();
 }
 
-static int thumb_extend(unsigned short opcode, unsigned address,
-                        struct arm_instruction *instruction)
+static std::string thumb_byterev(unsigned short opcode)
 {
-    /* added in ARMv6 */
-    snprintf(instruction->text, sizeof(instruction->text), "%cxt%c %s, r%d",
-             (opcode & 0x0080) ? 'u' : 's', (opcode & 0x0040) ? 'b' : 'h', reg_name[opcode & 0x7],
-             (opcode >> 3) & 0x7);
+    unsigned rd = opcode & 0x7;
+    unsigned rs = (opcode >> 3) & 0x7;
+    std::ostringstream text;
 
-    return 0;
-}
-
-static int thumb_cps(unsigned short opcode, unsigned address, struct arm_instruction *instruction)
-{
-    /* added in ARMv6 */
-    if ((opcode & 0x0ff0) == 0x0650)
-        snprintf(instruction->text, sizeof(instruction->text), "SETEND %s",
-                 (opcode & 0x80) ? "BE" : "LE");
-    else /* ASSUME (opcode & 0x0fe0) == 0x0660 */
-        snprintf(instruction->text, sizeof(instruction->text), "CPSI%c %s%s%s",
-                 (opcode & 0x0010) ? 'D' : 'E', (opcode & 0x0004) ? "A" : "",
-                 (opcode & 0x0002) ? "I" : "", (opcode & 0x0001) ? "F" : "");
-
-    return 0;
-}
-
-static int thumb_byterev(unsigned short opcode, unsigned address,
-                         struct arm_instruction *instruction)
-{
-    const char *suffix;
-
-    /* added in ARMv6 */
     switch ((opcode >> 6) & 3) {
     case 0:
-        suffix = "";
+        text << "rev ";
         break;
     case 1:
-        suffix = "16";
-        break;
-    default:
-        suffix = "sh";
-        break;
-    }
-    snprintf(instruction->text, sizeof(instruction->text), "rev%s %s, %s", suffix,
-             reg_name[opcode & 0x7], reg_name[(opcode >> 3) & 0x7]);
-
-    return 0;
-}
-
-static int thumb_hint(unsigned short opcode, unsigned address, struct arm_instruction *instruction)
-{
-    const char *hint;
-
-    switch ((opcode >> 4) & 0x0f) {
-    case 0:
-        hint = "NOP";
-        break;
-    case 1:
-        hint = "YIELD";
-        break;
-    case 2:
-        hint = "WFE";
+        text << "rev16 ";
         break;
     case 3:
-        hint = "WFI";
-        break;
-    case 4:
-        hint = "SEV";
+        text << "revsh ";
         break;
     default:
-        hint = "HINT (UNRECOGNIZED)";
-        break;
+        // Undefined instruction.
+        return "";
     }
-
-    snprintf(instruction->text, sizeof(instruction->text), "%s", hint);
-
-    return 0;
-}
-
-static int thumb_ifthen(unsigned short opcode, unsigned address,
-                        struct arm_instruction *instruction)
-{
-    unsigned cond = (opcode >> 4) & 0x0f;
-    const char *x = "", *y = "", *z = "";
-
-    if (opcode & 0x01)
-        z = (opcode & 0x02) ? "T" : "E";
-    if (opcode & 0x03)
-        y = (opcode & 0x04) ? "T" : "E";
-    if (opcode & 0x07)
-        x = (opcode & 0x08) ? "T" : "E";
-
-    snprintf(instruction->text, sizeof(instruction->text), "IT%s%s%s %s", x, y, z,
-             condition_strings[cond]);
-
-    /* NOTE:  strictly speaking, the next 1-4 instructions should
-     * now be displayed with the relevant conditional suffix...
-     */
-
-    return 0;
+    text << reg_name[rd] << ", " << reg_name[rs];
+    return text.str();
 }
 
 static std::string long_b_bl(unsigned opcode, unsigned address)
 {
-    struct arm_instruction instruction {};
-    unsigned offset;
+    unsigned offset = opcode & 0x7ff;
     unsigned b21 = 1 << 21;
     unsigned b22 = 1 << 22;
+    std::ostringstream text;
 
-    /* instead of combining two smaller 16-bit branch instructions,
-     * Thumb2 uses only one larger 32-bit instruction.
-     */
-    offset = opcode & 0x7ff;
+    // Instead of combining two smaller 16-bit branch instructions,
+    // Thumb2 uses only one larger 32-bit instruction.
+    //
     offset |= (opcode & 0x03ff0000) >> 5;
     if (opcode & (1 << 26)) {
         offset |= 0xff << 23;
@@ -677,131 +512,104 @@ static std::string long_b_bl(unsigned opcode, unsigned address)
     address += 4;
     address += offset << 1;
 
-    snprintf(instruction.text, sizeof(instruction.text), "%s %#8.8x",
-             (opcode & (1 << 14)) ? "bl" : "B.W", address);
-    return instruction.text;
+    if (!(opcode & (1 << 14))) {
+        // B.W is not supported.
+        return "";
+    }
+    text << "bl 0x" << std::hex << std::setfill('0') << std::setw(8) << address;
+    return text.str();
 }
 
 static const char *special_name(int number)
 {
-    const char *special = "(RESERVED)";
-
     switch (number) {
     case 0:
-        special = "APSR";
-        break;
+        return "APSR";
     case 1:
-        special = "IAPSR";
-        break;
+        return "IAPSR";
     case 2:
-        special = "EAPSR";
-        break;
+        return "EAPSR";
     case 3:
-        special = "PSR";
-        break;
+        return "PSR";
     case 5:
-        special = "IPSR";
-        break;
+        return "IPSR";
     case 6:
-        special = "EPSR";
-        break;
+        return "EPSR";
     case 7:
-        special = "IEPSR";
-        break;
+        return "IEPSR";
     case 8:
-        special = "MSP";
-        break;
+        return "MSP";
     case 9:
-        special = "PSP";
-        break;
+        return "PSP";
     case 10:
-        special = "MSPLIM";
-        break;
+        return "MSPLIM";
     case 11:
-        special = "PSPLIM";
-        break;
+        return "PSPLIM";
     case 16:
-        special = "PRIMASK";
-        break;
+        return "PRIMASK";
     case 17:
-        special = "BASEPRI";
-        break;
+        return "BASEPRI";
     case 18:
-        special = "BASEPRI_MAX";
-        break;
+        return "BASEPRI_MAX";
     case 19:
-        special = "FAULTMASK";
-        break;
+        return "FAULTMASK";
     case 20:
-        special = "CONTROL";
-        break;
+        return "CONTROL";
     case 0x88:
-        special = "MSP_NS";
-        break;
+        return "MSP_NS";
     case 0x89:
-        special = "PSP_NS";
-        break;
+        return "PSP_NS";
     case 0x8a:
-        special = "MSPLIM_NS";
-        break;
+        return "MSPLIM_NS";
     case 0x8b:
-        special = "PSPLIM_NS";
-        break;
+        return "PSPLIM_NS";
     case 0x90:
-        special = "PRIMASK_NS";
-        break;
+        return "PRIMASK_NS";
     case 0x91:
-        special = "BASEPRI_NS";
-        break;
+        return "BASEPRI_NS";
     case 0x93:
-        special = "FAULTMASK_NS";
-        break;
+        return "FAULTMASK_NS";
     case 0x94:
-        special = "CONTROL_NS";
-        break;
+        return "CONTROL_NS";
     case 0x98:
-        special = "SP_NS";
-        break;
+        return "SP_NS";
     }
-    return special;
+    return "(RESERVED)";
 }
 
-static std::string long_misc(unsigned opcode, unsigned address)
+static std::string long_misc(unsigned opcode)
 {
-    struct arm_instruction instruction {};
     unsigned option = opcode & 0x0f;
-    const char *mnemonic;
+    std::ostringstream text;
 
     switch ((opcode >> 4) & 0x0f) {
     case 4:
-        mnemonic = "dsb";
+        text << "dsb";
         break;
     case 5:
-        mnemonic = "dmb";
+        text << "dmb";
         break;
     case 6:
-        mnemonic = "isb";
+        text << "isb";
         break;
     default:
         return "";
     }
 
-    if (option)
-        snprintf(instruction.text, sizeof(instruction.text), "%s #%u", mnemonic, option);
-    else
-        strcpy(instruction.text, mnemonic);
-
-    return instruction.text;
+    if (option) {
+        text << " #" << option;
+    }
+    return text.str();
 }
 
 //
-// ARMv7-M: A5.3.4 Branches and miscellaneous control
+// Branches and miscellaneous control
 //
 static std::string long_b_misc(unsigned opcode, unsigned address)
 {
-    struct arm_instruction instruction {};
+    std::ostringstream text;
 
-    /* permanently undefined */
+    // Permanently undefined.
     if ((opcode & 0x07f07000) == 0x07f02000) {
         return "";
     }
@@ -823,16 +631,14 @@ static std::string long_b_misc(unsigned opcode, unsigned address)
     switch ((opcode >> 20) & 0x7f) {
     case 0x38:
     case 0x39:
-        snprintf(instruction.text, sizeof(instruction.text), "msr %s, %s",
-                 special_name(opcode & 0xff), reg_name[(opcode >> 16) & 0x0f]);
-        return instruction.text;
+        text << "msr " << special_name(opcode & 0xff) << ", " << reg_name[(opcode >> 16) & 0x0f];
+        return text.str();
     case 0x3b:
-        return long_misc(opcode, address);
+        return long_misc(opcode);
     case 0x3e:
     case 0x3f:
-        snprintf(instruction.text, sizeof(instruction.text), "mrs %s, %s",
-                 reg_name[(opcode >> 8) & 0x0f], special_name(opcode & 0xff));
-        return instruction.text;
+        text << "mrs " << reg_name[(opcode >> 8) & 0x0f] << ", " << special_name(opcode & 0xff);
+        return text.str();
     }
 
     return "";
@@ -879,117 +685,94 @@ std::string arm_disassemble(unsigned opcode, unsigned address)
     // Disassemble 16-bit Thumb1 instruction.
     //
     opcode >>= 16;
-    struct arm_instruction instruction {};
 
     if ((opcode & 0xe000) == 0x0000) {
-        /* add/substract register or immediate */
-        if ((opcode & 0x1800) == 0x1800)
-            thumb_add_sub(opcode, address, &instruction);
-        /* shift by immediate */
-        else
-            thumb_shift_imm(opcode, address, &instruction);
+        if ((opcode & 0x1800) == 0x1800) {
+            // Add/substract register or immediate.
+            return thumb_add_sub(opcode);
+        } else {
+            // Shift by immediate.
+            return thumb_shift_imm(opcode);
+        }
     }
 
-    /* Add/substract/compare/move immediate */
+    // Add/substract/compare/move immediate.
     else if ((opcode & 0xe000) == 0x2000) {
-        thumb_data_proc_imm(opcode, address, &instruction);
+        return thumb_data_proc_imm(opcode);
     }
 
-    /* Data processing instructions */
+    // Data processing instructions.
     else if ((opcode & 0xf800) == 0x4000) {
-        thumb_data_proc(opcode, address, &instruction);
+        return thumb_data_proc(opcode);
     }
 
-    /* Load from literal pool */
+    // Load from literal pool.
     else if ((opcode & 0xf800) == 0x4800) {
-        thumb_load_literal(opcode, address, &instruction);
+        return thumb_load_literal(opcode);
     }
 
-    /* Load/Store register offset */
+    // Load/Store register offset.
     else if ((opcode & 0xf000) == 0x5000) {
-        thumb_load_store_reg(opcode, address, &instruction);
+        return thumb_load_store_reg(opcode);
     }
 
-    /* Load/Store immediate offset */
+    // Load/Store immediate offset.
     else if (((opcode & 0xe000) == 0x6000) || ((opcode & 0xf000) == 0x8000)) {
-        thumb_load_store_imm(opcode, address, &instruction);
+        return thumb_load_store_imm(opcode);
     }
 
-    /* Load/Store from/to stack */
+    // Load/Store from/to stack.
     else if ((opcode & 0xf000) == 0x9000) {
-        thumb_load_store_stack(opcode, address, &instruction);
+        return thumb_load_store_stack(opcode);
     }
 
-    /* Add to SP/PC */
+    // Add to SP/PC.
     else if ((opcode & 0xf000) == 0xa000) {
-        thumb_add_sp_pc(opcode, address, &instruction);
+        return thumb_add_sp_pc(opcode);
     }
 
-    /* Misc */
+    // Misc.
     else if ((opcode & 0xf000) == 0xb000) {
         switch ((opcode >> 8) & 0x0f) {
         case 0x0:
-            thumb_adjust_stack(opcode, address, &instruction);
-            break;
-        case 0x1:
-        case 0x3:
-        case 0x9:
-        case 0xb:
-            thumb_cb(opcode, address, &instruction);
-            break;
+            return thumb_adjust_stack(opcode);
         case 0x2:
-            thumb_extend(opcode, address, &instruction);
-            break;
+            return thumb_extend(opcode);
         case 0x4:
         case 0x5:
         case 0xc:
         case 0xd:
-            thumb_load_store_multiple(opcode, address, &instruction);
-            break;
-        case 0x6:
-            thumb_cps(opcode, address, &instruction);
-            break;
+            return thumb_load_store_multiple(opcode);
         case 0xa:
-            if ((opcode & 0x00c0) != 0x0080)
-                thumb_byterev(opcode, address, &instruction);
-            break;
+            return thumb_byterev(opcode);
         case 0xe:
-            thumb_breakpoint(opcode, address, &instruction);
-            break;
-        case 0xf:
-            if (opcode & 0x000f)
-                thumb_ifthen(opcode, address, &instruction);
-            else
-                thumb_hint(opcode, address, &instruction);
-            break;
+            return thumb_breakpoint(opcode);
         default:
             // Undefined instruction.
             return "";
         }
     }
 
-    /* Load/Store multiple */
+    // Load/Store multiple.
     else if ((opcode & 0xf000) == 0xc000) {
-        thumb_load_store_multiple(opcode, address, &instruction);
+        return thumb_load_store_multiple(opcode);
     }
 
-    /* Conditional branch + SWI */
+    // Conditional branch + SWI.
     else if ((opcode & 0xf000) == 0xd000) {
-        thumb_cond_branch(opcode, address, &instruction);
+        return thumb_cond_branch(opcode, address);
     }
 
     else if ((opcode & 0xe000) == 0xe000) {
-        /* Undefined instructions */
         if ((opcode & 0xf801) == 0xe801) {
             // Undefined instruction.
             return "";
         } else {
-            /* Branch to offset */
-            thumb_b_bl_blx(opcode, address, &instruction);
+            // Branch to offset.
+            return thumb_b_bl_blx(opcode, address);
         }
-    } else {
-        // Thumb: should never reach this point.
-        return "";
     }
-    return instruction.text;
+
+    // Thumb: should never reach this point.
+    return "";
 }
