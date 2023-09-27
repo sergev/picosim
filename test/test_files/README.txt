@@ -48,7 +48,7 @@ add_sp_imm.S        add r1, sp, #1020
                     add sp, #508
                     adcs r1, r2
 sub_reg_reg.S       sub r1, r2, r3
-                    sub r1, r2, #7
+sub_reg_imm.S       sub r1, r2, #7
                     subs r1, #255
                     sub sp, #508
                     sbcs r1, r2
