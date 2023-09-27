@@ -136,10 +136,10 @@ void Processor::raise_exception(uint32_t cause, uint32_t mtval)
 
 void Processor::terminate_simulation(const std::string &reason) const
 {
-    std::cout << std::endl
-              << reason << std::endl;
-
-    Log::out() << reason << std::endl;
+    if (!reason.empty()) {
+        std::cout << std::endl << reason << std::endl;
+        Log::out() << reason << std::endl;
+    }
 
     sc_core::sc_stop();
     sc_core::wait(sc_core::SC_ZERO_TIME);
@@ -262,6 +262,10 @@ void Processor::cpu_step()
 
     instructions_executed++;
     set_pc(next_pc);
+
+    if (linux_mode && app_finished) {
+        terminate_simulation("");
+    }
 }
 
 void Processor::cpu_thread()
@@ -361,7 +365,7 @@ void Processor::data_write(uint32_t addr, uint32_t data, int size)
 uint32_t Processor::get_sysreg(int sysm)
 {
     switch (sysm) {
-    //TODO
+    //TODO: read sysreg
     default:
         Log::err() << "Read unknown sysreg 0x" << std::hex << std::setw(3) << std::setfill('0') << sysm << std::endl;
         SC_REPORT_ERROR("SYSREG", "Read");
@@ -394,6 +398,6 @@ void Processor::set_sysreg(int sysm, uint32_t value)
         // Exception on write.
         raise_exception(Exception::HardFault, opcode);
         return;
-    //TODO
+    //TODO: write sysreg
     }
 }

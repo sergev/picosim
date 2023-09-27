@@ -89,8 +89,16 @@ void Processor::process_opcode16()
         break;
 
     case 0xd0: case 0xd1: case 0xd2: case 0xd3: case 0xd4: case 0xd5: case 0xd6: case 0xd7:
-    case 0xd8: case 0xd9: case 0xda: case 0xdb: case 0xdc: case 0xdd: case 0xde: case 0xdf:
+    case 0xd8: case 0xd9: case 0xda: case 0xdb: case 0xdc: case 0xdd:
         thumb_cond_branch();
+        break;
+
+    case 0xde:
+        thumb_udf();
+        break;
+
+    case 0xdf:
+        thumb_svc();
         break;
 
     case 0xe0: case 0xe1: case 0xe2: case 0xe3: case 0xe4: case 0xe5: case 0xe6: case 0xe7:
@@ -112,10 +120,8 @@ void Processor::process_opcode32()
 {
     if ((opcode & 0xf800d000) == 0xf000d000) {
         thumb_branch_link();
-
     } else if ((opcode & 0xffffffc0) == 0xf3bf8f40) {
         thumb_barrier();
-
     } else if ((opcode & 0xff90f060) == 0xf3808000) {
         thumb_sysreg();
     } else {
@@ -141,108 +147,159 @@ void Processor::thumb_arith_imm()
         set_reg(rd, imm);
         break;
     case 1:
-        terminate_simulation("cmp");
+        terminate_simulation("cmp"); // TODO
         break;
     case 2:
-        terminate_simulation("adds");
+        terminate_simulation("adds"); // TODO
         break;
     case 3:
-        terminate_simulation("subs");
+        terminate_simulation("subs"); // TODO
         break;
+    }
+}
+
+//
+// svc 255
+//
+void Processor::thumb_svc()
+{
+    unsigned offset = opcode & 0xff;
+
+    if (offset == 0 && linux_mode) {
+        // Interpret Linux syscalls.
+        linux_syscall(get_reg(7));
+    } else {
+        terminate_simulation("Unsupported SVC instruction");
+    }
+}
+
+//
+// Interpret Linux syscalls.
+//
+void Processor::linux_syscall(int op)
+{
+    switch (get_reg(7)) {
+    case 1:
+        // Syscall exit(status).
+        app_finished = true;
+        break;
+
+    case 4: {
+        // Syscall write(fd, buf, count).
+#if 0
+        unsigned fd = get_reg(0);
+        unsigned buf = get_reg(1);
+        unsigned len = get_reg(2);
+
+        // Make sure arguments are reasonable.
+        // TODO: get direct SRAM ptr.
+        if (fd == 1 && buf >= ADDR_SRAM_START && (buf+len) <= ADDR_SRAM_LAST) {
+            write(1, buf + sram_ptr, len);
+        }
+#endif
+        break;
+    }
+    default:
+        terminate_simulation("Unsupported syscall");
     }
 }
 
 void Processor::thumb_shift_imm()
 {
-    terminate_simulation(__func__);
+    terminate_simulation(__func__); // TODO
 }
 
 void Processor::thumb_add_sub()
 {
-    terminate_simulation(__func__);
+    terminate_simulation(__func__); // TODO
 }
 
 void Processor::thumb_arith_reg()
 {
-    terminate_simulation(__func__);
+    terminate_simulation(__func__); // TODO
 }
 
 void Processor::thumb_load_literal()
 {
-    terminate_simulation(__func__);
+    terminate_simulation(__func__); // TODO
 }
 
 void Processor::thumb_load_store_reg()
 {
-    terminate_simulation(__func__);
+    terminate_simulation(__func__); // TODO
 }
 
 void Processor::thumb_load_store_imm()
 {
-    terminate_simulation(__func__);
+    terminate_simulation(__func__); // TODO
 }
 
 void Processor::thumb_load_store_stack()
 {
-    terminate_simulation(__func__);
+    terminate_simulation(__func__); // TODO
 }
 
 void Processor::thumb_add_sp_pc()
 {
-    terminate_simulation(__func__);
+    terminate_simulation(__func__); // TODO
 }
 
 void Processor::thumb_adjust_stack()
 {
-    terminate_simulation(__func__);
+    terminate_simulation(__func__); // TODO
 }
 
 void Processor::thumb_extend()
 {
-    terminate_simulation(__func__);
+    terminate_simulation(__func__); // TODO
 }
 
 void Processor::thumb_byterev()
 {
-    terminate_simulation(__func__);
+    terminate_simulation(__func__); // TODO
 }
 
 void Processor::thumb_breakpoint()
 {
-    terminate_simulation(__func__);
+    terminate_simulation(__func__); // TODO
 }
 
 void Processor::thumb_hint()
 {
-    terminate_simulation(__func__);
+    terminate_simulation(__func__); // TODO
 }
 
 void Processor::thumb_load_store_multiple()
 {
-    terminate_simulation(__func__);
+    terminate_simulation(__func__); // TODO
 }
 
 void Processor::thumb_cond_branch()
 {
-    terminate_simulation(__func__);
+    terminate_simulation(__func__); // TODO
 }
 
 void Processor::thumb_branch()
 {
-    terminate_simulation(__func__);
+    terminate_simulation(__func__); // TODO
 }
 
 void Processor::thumb_branch_link()
 {
-    terminate_simulation(__func__);
+    terminate_simulation(__func__); // TODO
 }
 
 void Processor::thumb_barrier()
 {
-    terminate_simulation(__func__);
+    terminate_simulation(__func__); // TODO
 }
 
 void Processor::thumb_sysreg()
 {
-    terminate_simulation(__func__);
+    terminate_simulation(__func__); // TODO
+}
+
+void Processor::thumb_udf()
+{
+    terminate_simulation(__func__); // TODO
 }

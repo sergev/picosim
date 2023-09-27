@@ -68,6 +68,11 @@ public:
     void raise_exception(uint32_t cause, uint32_t inst);
     void terminate_simulation(const std::string &reason) const;
 
+    //
+    // Allow Linux syscalls.
+    //
+    void set_linux_mode(bool on) { linux_mode = on; }
+
     /**
      * @brief Get statistics counters.
      */
@@ -221,7 +226,9 @@ private:
         ExternalInterrupt = 16,
     };
 
-    uint64_t instructions_executed{};
+    bool linux_mode{};                // Interpret Linux syscalls
+    bool app_finished{};              // Set by exit() syscall.
+    uint64_t instructions_executed{}; // Count instructions
 
     uint32_t opcode{};  // Current instruction, 16-bit or 32-bit
     uint32_t next_pc{}; // Set PC to this value after current instruction
@@ -291,6 +298,9 @@ private:
     void thumb_branch_link();
     void thumb_barrier();
     void thumb_sysreg();
+    void thumb_udf();
+    void thumb_svc();
+    void linux_syscall(int op);
 };
 
 #endif
