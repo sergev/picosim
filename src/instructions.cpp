@@ -7,6 +7,7 @@
 void Processor::process_opcode16()
 {
     switch (opcode >> 8) {
+    // clang-format off
     case 0x00: case 0x01: case 0x02: case 0x03: case 0x04: case 0x05: case 0x06: case 0x07:
     case 0x08: case 0x09: case 0x0a: case 0x0b: case 0x0c: case 0x0d: case 0x0e: case 0x0f:
     case 0x10: case 0x11: case 0x12: case 0x13: case 0x14: case 0x15: case 0x16: case 0x17:
@@ -108,6 +109,7 @@ void Processor::process_opcode16()
         thumb_branch();
         break;
 
+    // clang-format on
     default:
         terminate_simulation("Invalid instruction");
     }
@@ -138,13 +140,15 @@ void Processor::process_opcode32()
 void Processor::thumb_arith_imm()
 {
     unsigned imm = opcode & 0xff;
-    unsigned rd = (opcode >> 8) & 0x7;
+    unsigned rd  = (opcode >> 8) & 0x7;
     unsigned opc = (opcode >> 11) & 0x3;
 
     switch (opc) {
     case 0:
         // movs r1, #255
         set_reg(rd, imm);
+        xpsr.field.n = 0; // bit 31 of result
+        xpsr.field.z = (imm == 0);
         break;
     case 1:
         terminate_simulation("cmp"); // TODO
@@ -221,7 +225,12 @@ void Processor::thumb_arith_reg()
 
 void Processor::thumb_load_literal()
 {
-    terminate_simulation(__func__); // TODO
+    unsigned immediate = opcode & 0xff;
+    unsigned rd        = (opcode >> 8) & 0x7;
+    unsigned address   = ((register_bank.getPC() + 4) & ~3) + (immediate << 2);
+    unsigned word      = data_read32(address);
+
+    set_reg(rd, word);
 }
 
 void Processor::thumb_load_store_reg()
@@ -274,6 +283,26 @@ void Processor::thumb_load_store_multiple()
     terminate_simulation(__func__); // TODO
 }
 
+//
+// Condition codes
+//
+// cond Mnemonic   Meaning                         Condition flags
+// ---------------------------------------------------------------
+// 0000 EQ         Equal                           Z==1
+// 0001 NE         Not equal                       Z==0
+// 0010 CS         Carry set                       C==1
+// 0011 CC         Carry clear                     C==0
+// 0100 MI         Minus, negative                 N==1
+// 0101 PL         Plus, positive or zero          N==0
+// 0110 VS         Overflow                        V==1
+// 0111 VC         No overflow                     V==0
+// 1000 HI         Unsigned higher                 C==1 and Z==0
+// 1001 LS         Unsigned lower or same          C==0 or Z==1
+// 1010 GE         Signed greater than or equal    N==V
+// 1011 LT         Signed less than                N!=V
+// 1100 GT         Signed greater than             Z==0 and N==V
+// 1101 LE         Signed less than or equal       Z==1 or N!=V
+//
 void Processor::thumb_cond_branch()
 {
     terminate_simulation(__func__); // TODO

@@ -5,11 +5,12 @@
  \date August 2018
  */
 // SPDX-License-Identifier: GPL-3.0-or-later
-#include <algorithm>
 #include "phys_memory.h"
 
+#include <algorithm>
+
 Memory::Memory(sc_core::sc_module_name const &name, unsigned kbytes)
-    : sc_module(name), socket("socket"), size_bytes(1024*kbytes)
+    : sc_module(name), socket("socket"), size_bytes(1024 * kbytes)
 {
     // Register callbacks for incoming interface method calls
     socket.register_b_transport(this, &Memory::b_transport);
@@ -18,7 +19,7 @@ Memory::Memory(sc_core::sc_module_name const &name, unsigned kbytes)
 
     // Use calloc() to allocate zer-initialized memory efficiently,
     // using OS-specific mechanisms.
-    mem = (uint8_t*) calloc(size_bytes, 1);
+    mem = (uint8_t *)calloc(size_bytes, 1);
     if (mem == nullptr) {
         SC_REPORT_ERROR(name, "Cannot allocate memory");
         return;
@@ -33,10 +34,10 @@ Memory::~Memory()
 void Memory::b_transport(tlm::tlm_generic_payload &trans, sc_core::sc_time &delay)
 {
     tlm::tlm_command cmd = trans.get_command();
-    sc_dt::uint64 addr = trans.get_address();
-    unsigned char *ptr = trans.get_data_ptr();
-    unsigned int len = trans.get_data_length();
-    bool is_fetch = trans.get_gp_option() == tlm::TLM_MIN_PAYLOAD;
+    sc_dt::uint64 addr   = trans.get_address();
+    unsigned char *ptr   = trans.get_data_ptr();
+    unsigned int len     = trans.get_data_length();
+    bool is_fetch        = trans.get_gp_option() == tlm::TLM_MIN_PAYLOAD;
 
     if (addr >= size_bytes) {
         trans.set_response_status(tlm::TLM_ADDRESS_ERROR_RESPONSE);
@@ -51,17 +52,17 @@ void Memory::b_transport(tlm::tlm_generic_payload &trans, sc_core::sc_time &dela
 
         if (!is_fetch && Log::is_verbose()) {
             auto &out = Log::out();
-            out << std::hex << std::setw(8) << std::setfill('0')
-                << "          Load " << basename() << " [" << addr << "] = ";
+            out << std::hex << std::setw(8) << std::setfill('0') << "          Load " << basename()
+                << " [" << addr << "] = ";
             switch (len) {
             case 1:
-                out << std::setw(2) << *(uint8_t*)ptr;
+                out << std::setw(2) << *(uint8_t *)ptr;
                 break;
             case 2:
-                out << std::setw(4) << *(uint16_t*)ptr;
+                out << std::setw(4) << *(uint16_t *)ptr;
                 break;
             case 4:
-                out << std::setw(8) << *(uint32_t*)ptr;
+                out << std::setw(8) << *(uint32_t *)ptr;
                 break;
             default:
                 out << std::dec << len << " bytes";
@@ -75,17 +76,17 @@ void Memory::b_transport(tlm::tlm_generic_payload &trans, sc_core::sc_time &dela
         //
         if (Log::is_verbose()) {
             auto &out = Log::out();
-            out << std::hex << std::setw(8) << std::setfill('0')
-                << "          Store " << basename() << " [" << addr << "] = ";
+            out << std::hex << std::setw(8) << std::setfill('0') << "          Store " << basename()
+                << " [" << addr << "] = ";
             switch (len) {
             case 1:
-                out << std::setw(2) << *(uint8_t*)ptr;
+                out << std::setw(2) << *(uint8_t *)ptr;
                 break;
             case 2:
-                out << std::setw(4) << *(uint16_t*)ptr;
+                out << std::setw(4) << *(uint16_t *)ptr;
                 break;
             case 4:
-                out << std::setw(8) << *(uint32_t*)ptr;
+                out << std::setw(8) << *(uint32_t *)ptr;
                 break;
             default:
                 out << std::dec << len << " bytes";
@@ -95,7 +96,8 @@ void Memory::b_transport(tlm::tlm_generic_payload &trans, sc_core::sc_time &dela
         }
 
         if (is_read_only) {
-            Log::err() << basename() << ": Write to read-only memory at 0x" << std::hex << addr << std::endl;
+            Log::err() << basename() << ": Write to read-only memory at 0x" << std::hex << addr
+                       << std::endl;
             SC_REPORT_ERROR(basename(), "Write to read-only memory");
             // TODO: take EXCEPTION_CAUSE_STORE_ACCESS_FAULT
         }
@@ -106,7 +108,7 @@ void Memory::b_transport(tlm::tlm_generic_payload &trans, sc_core::sc_time &dela
     delay += LATENCY;
 
     // TODO: Set DMI hint to indicated that DMI is supported
-    //trans.set_dmi_allowed(true);
+    // trans.set_dmi_allowed(true);
 
     // Obliged to set response status to indicate successful completion
     trans.set_response_status(tlm::TLM_OK_RESPONSE);
@@ -116,13 +118,13 @@ bool Memory::get_direct_mem_ptr(tlm::tlm_generic_payload &trans, tlm::tlm_dmi &d
 {
     (void)trans;
 
-    //TODO: enable direct mem ptr later
+    // TODO: enable direct mem ptr later
     if (true) {
         return false;
     }
 
     // Permit read and write access
-    if (! is_read_only) {
+    if (!is_read_only) {
         dmi_data.allow_read_write();
     }
 
@@ -139,9 +141,9 @@ bool Memory::get_direct_mem_ptr(tlm::tlm_generic_payload &trans, tlm::tlm_dmi &d
 unsigned int Memory::transport_dbg(tlm::tlm_generic_payload &trans)
 {
     tlm::tlm_command cmd = trans.get_command();
-    unsigned addr = trans.get_address();
-    unsigned len = trans.get_data_length();
-    unsigned char *ptr = trans.get_data_ptr();
+    unsigned addr        = trans.get_address();
+    unsigned len         = trans.get_data_length();
+    unsigned char *ptr   = trans.get_data_ptr();
 #if 0
     if (Log::is_verbose()) {
         Log::out() << "--- " << basename()

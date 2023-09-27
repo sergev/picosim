@@ -3,6 +3,7 @@ OBJDUMP         = arm-none-eabi-objdump
 CFLAGS          = -O -Wall -Werror
 LDFLAGS         = -nostdlib -static
 PROG            = movs_imm.elf \
+                  ldr_pc.elf \
                   write.elf \
                   hello.elf
 

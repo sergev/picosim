@@ -7,7 +7,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "debug.h"
-#include "simulator.h"
 
 #include <netinet/in.h>
 #include <sys/socket.h>
@@ -17,11 +16,13 @@
 #include <cstring>
 #include <iomanip>
 
+#include "simulator.h"
+
 constexpr char nibble_to_hex[16] = { '0', '1', '2', '3', '4', '5', '6', '7',
                                      '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
 Debug::Debug(Simulator &s, Processor &p, bool debug_enable)
-  : sc_module(sc_core::sc_module_name("Debug")), sim(s), cpu(p)
+    : sc_module(sc_core::sc_module_name("Debug")), sim(s), cpu(p)
 {
     if (debug_enable) {
         SC_THREAD(gdb_thread);
@@ -51,7 +52,7 @@ std::string Debug::receive_packet()
         return std::string("+");
     } else {
         char *start = strchr(iobuf, '$');
-        char *end = strchr(iobuf, '#');
+        char *end   = strchr(iobuf, '#');
 
         std::string message(start + 1, end - (start + 1));
 
@@ -73,15 +74,15 @@ void Debug::gdb_thread()
     setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
 
     sockaddr_in addr;
-    addr.sin_family = AF_INET;
+    addr.sin_family      = AF_INET;
     addr.sin_addr.s_addr = INADDR_ANY;
-    addr.sin_port = htons(1234);
+    addr.sin_port        = htons(1234);
 
     bind(sock, (struct sockaddr *)&addr, sizeof(addr));
     listen(sock, 1);
 
     socklen_t len = sizeof(addr);
-    conn = accept(sock, (struct sockaddr *)&addr, &len);
+    conn          = accept(sock, (struct sockaddr *)&addr, &len);
 
     std::cout << "Handle_GDB_Loop" << std::endl;
 
@@ -141,13 +142,13 @@ void Debug::gdb_thread()
         } else if (starts_with(msg, "P")) {
             char *pEnd;
             long reg = strtol(msg.c_str() + 1, &pEnd, 16);
-            int val = strtol(pEnd + 1, 0, 16);
+            int val  = strtol(pEnd + 1, 0, 16);
             cpu.set_reg(reg + 1, val);
             send_packet(conn, "OK");
         } else if (starts_with(msg, "m")) {
             char *pEnd;
             long addr = strtol(msg.c_str() + 1, &pEnd, 16);
-            int len = strtol(pEnd + 1, &pEnd, 16);
+            int len   = strtol(pEnd + 1, &pEnd, 16);
             uint8_t buf[len];
 
             sim.debug_read(buf, addr, len);
@@ -173,10 +174,10 @@ void Debug::gdb_thread()
             send_packet(conn, "vCont;cs");
         } else if (msg == "c") {
             bool breakpoint_hit = false;
-            bool bkpt = false;
+            bool bkpt           = false;
             do {
                 cpu.cpu_step();
-                bkpt = false; // TODO
+                bkpt               = false; // TODO
                 uint32_t currentPC = cpu.get_pc();
 
                 auto search = breakpoints.find(currentPC);
@@ -192,7 +193,7 @@ void Debug::gdb_thread()
             cpu.cpu_step();
 
             uint32_t currentPC = cpu.get_pc();
-            auto search = breakpoints.find(currentPC);
+            auto search        = breakpoints.find(currentPC);
             if (search != breakpoints.end()) {
                 breakpoint = true;
             } else {
@@ -250,7 +251,7 @@ std::string Debug::compute_checksum_string(const std::string &msg)
     }
     sum = sum % 256;
 
-    char low = nibble_to_hex[sum & 0xf];
+    char low  = nibble_to_hex[sum & 0xf];
     char high = nibble_to_hex[(sum & (0xf << 4)) >> 4];
 
     return { high, low };

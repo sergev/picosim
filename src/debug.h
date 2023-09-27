@@ -10,6 +10,7 @@
 #define INC_DEBUG_H_
 
 #include <unordered_set>
+
 #include "systemc"
 #include "tlm.h"
 #include "tlm_utils/simple_initiator_socket.h"

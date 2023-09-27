@@ -1,7 +1,7 @@
 #include "util.h"
 
 //
-// Make sure the SystemC library links correctly.
+// Check MOVS instruction with immediate.
 //
 TEST(opcode, movs_imm)
 {

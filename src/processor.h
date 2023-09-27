@@ -10,6 +10,7 @@
 #define CPU_BASE_H
 
 #include <unordered_map>
+
 #include "log.h"
 #include "memory.h"
 #include "registers.h"
@@ -165,29 +166,23 @@ private:
     Mode mode{ Mode::THREAD_MODE };
 
     //
-    // APSR - Application Program Status Register
-    // IPSR - Interrupt Program Status Register
-    // EPSR - Execution Program Status Register
+    // XPSR - combined Program Status Register
     //
-    // 31_30_29_28_______24___________9____5_4_3_2_1_0
-    //  n  z  c  v        t           a    -exception-
-    // ---APSR----       -----EPSR-----    ---IPSR----
+    // 31_30_29_28_________________________5_4_3_2_1_0
+    //  n  z  c  v                          exception
+    // ---APSR----                         ---IPSR----
     //
     union {
         uint32_t u32;
         struct {
-            unsigned exception : 6;  // Exception number of the currently-executing exception
-            unsigned _unused1  : 3;
-            unsigned a         : 1;  // Alignment flag of SP for exception handler
-            unsigned _unused2  : 14;
-            unsigned t         : 1;  // Thumb mode, always 1
-            unsigned _unused3  : 3;
-            unsigned v         : 1;  // Overflow condition code
-            unsigned c         : 1;  // Carry condition code
-            unsigned z         : 1;  // Zero condition code
-            unsigned n         : 1;  // Negative condition code
+            unsigned exception : 6; // Exception number being serviced
+            unsigned _unused : 22;  // Zeroes
+            unsigned v : 1;         // Overflow condition code
+            unsigned c : 1;         // Carry condition code
+            unsigned z : 1;         // Zero condition code
+            unsigned n : 1;         // Negative condition code
         } field;
-    } psr;
+    } xpsr;
 
     //
     // PRIMASK register.
@@ -211,18 +206,18 @@ private:
     union {
         uint32_t u32;
         struct {
-            unsigned npriv : 1; // 1 = Thread mode has unprivileged access
+            unsigned npriv : 1; // 1 = Thread mode has no privilege
             unsigned spsel : 1; // Select stack: 0 = use SP_main, 1 = use SP_process
         } field;
     } control;
 
     enum Exception {
-        Reset = 1,
-        NMI = 2,
-        HardFault = 3,
-        SVCall = 11,
-        PendSV = 14,
-        SysTick = 15,
+        Reset             = 1,
+        NMI               = 2,
+        HardFault         = 3,
+        SVCall            = 11,
+        PendSV            = 14,
+        SysTick           = 15,
         ExternalInterrupt = 16,
     };
 

@@ -20,22 +20,22 @@
 //
 // Address Map from RP2040 Datasheet, page 24.
 //
-#define ADDR_ROM_START      0x00000000  // ROM_BASE
-#define ADDR_ROM_LAST       0x00003fff  // 16 kbytes
+#define ADDR_ROM_START 0x00000000 // ROM_BASE
+#define ADDR_ROM_LAST  0x00003fff // 16 kbytes
 
-#define ADDR_FLASH_START    0x10000000  // XIP_BASE
-#define ADDR_FLASH_LAST     0x101fffff  // 2 Mbytes
+#define ADDR_FLASH_START 0x10000000 // XIP_BASE
+#define ADDR_FLASH_LAST  0x101fffff // 2 Mbytes
 
 #if 1
-#define ADDR_SRAM_START     0x00008000  // skip 32 kbytes - newlib binary
-#define ADDR_SRAM_LAST      0x0007ffff  // 512 kbytes
+#define ADDR_SRAM_START 0x00008000 // skip 32 kbytes - newlib binary
+#define ADDR_SRAM_LAST  0x0007ffff // 512 kbytes
 #else
-#define ADDR_SRAM_START     0x20000000  // SRAM_BASE
-#define ADDR_SRAM_LAST      0x20041fff  // 256 + 8 kbytes
+#define ADDR_SRAM_START 0x20000000 // SRAM_BASE
+#define ADDR_SRAM_LAST  0x20041fff // 256 + 8 kbytes
 #endif
 
-#define ADDR_PERIPH_START   0x40000000  // SYSINFO_BASE
-#define ADDR_PERIPH_LAST    0x4007ffff  // 512 kbytes
+#define ADDR_PERIPH_START 0x40000000 // SYSINFO_BASE
+#define ADDR_PERIPH_LAST  0x4007ffff // 512 kbytes
 
 class Bus_Controller : public sc_core::sc_module {
 public:
@@ -50,7 +50,7 @@ public:
     tlm_utils::simple_initiator_socket<Bus_Controller> flash_socket{ "flash" };
     tlm_utils::simple_initiator_socket<Bus_Controller> sram_socket{ "sram" };
     tlm_utils::simple_initiator_socket<Bus_Controller> periph_socket{ "periph" };
-    tlm_utils::simple_initiator_socket<Bus_Controller> timer_socket{ "timer" }; //TODO: remove
+    tlm_utils::simple_initiator_socket<Bus_Controller> timer_socket{ "timer" }; // TODO: remove
 
     // Constructor.
     explicit Bus_Controller(sc_core::sc_module_name name);
@@ -64,7 +64,6 @@ private:
 
     // Process debug requests.
     unsigned transport_dbg(tlm::tlm_generic_payload &trans);
-
 };
 
 #endif

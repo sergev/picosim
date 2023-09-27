@@ -26,9 +26,10 @@
  * arising out of or in connection with the use or performance of
  * this software.
  */
-#include <string>
-#include <termios.h>
 #include <sys/select.h>
+#include <termios.h>
+
+#include <string>
 
 class Vtty {
     // 4 Kb should be enough for a keyboard buffer
@@ -36,9 +37,9 @@ class Vtty {
 
     // VTTY connection states (for TCP)
     enum class Tcp_State {
-        INVALID,     // connection is not working
-        WAITING,     // waiting for incoming connection
-        RUNNING,     // character reading/writing ok
+        INVALID, // connection is not working
+        WAITING, // waiting for incoming connection
+        RUNNING, // character reading/writing ok
     };
 
     // VTTY input states

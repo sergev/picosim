@@ -10,6 +10,7 @@
 **.trace
 **.cpp-
 **.h-
+**.ts-
 
 build
 test/build

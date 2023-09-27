@@ -9,13 +9,13 @@
 #ifndef SIMULATOR_H
 #define SIMULATOR_H
 
-#include "systemc"
-#include "phys_memory.h"
-#include "processor.h"
 #include "bus_controller.h"
-#include "timer.h"
 #include "debug.h"
 #include "peripherals.h"
+#include "phys_memory.h"
+#include "processor.h"
+#include "systemc"
+#include "timer.h"
 
 /**
  * @class Simulator

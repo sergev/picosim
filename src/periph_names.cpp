@@ -1,5 +1,5 @@
 #include "peripherals.h"
-//#include "esp32c3/soc.h"
+// #include "esp32c3/soc.h"
 
 static const std::map<unsigned, const std::string> periph_reg_name = {
     //

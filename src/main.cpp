@@ -5,8 +5,10 @@
  \date September 2018
  */
 #include <unistd.h>
+
 #include <chrono>
 #include <csignal>
+
 #include "simulator.h"
 
 static const std::string version = "0.1"; // TODO
@@ -102,8 +104,8 @@ static void print_stats(std::ostream &out, double sec, uint64_t ncycles, uint64_
     out << "      Simulated: " << instr_count << " instructions" << std::endl;
     if (sec > 0) {
         auto khz = int(std::round(ncycles / sec / 1000));
-        out << "Simulation rate: " << khz << " kHz, "
-            << instr_per_sec << " instructions/sec" << std::endl;
+        out << "Simulation rate: " << khz << " kHz, " << instr_per_sec << " instructions/sec"
+            << std::endl;
     }
 }
 
@@ -130,8 +132,8 @@ int sc_main(int argc, char *argv[])
     auto end = std::chrono::steady_clock::now();
 
     std::chrono::duration<double> elapsed_seconds = end - start;
-    uint64_t ncycles = sc_core::sc_time_stamp().value();
-    uint64_t instr_count = sim.get_instructions_executed();
+    uint64_t ncycles                              = sc_core::sc_time_stamp().value();
+    uint64_t instr_count                          = sim.get_instructions_executed();
 
     std::cout << "----- Stop -----" << std::endl;
     print_stats(std::cout, elapsed_seconds.count(), ncycles, instr_count);

@@ -1,8 +1,8 @@
-#include <algorithm>
-
 #include "peripherals.h"
-//#include "esp32c3/soc.h"
-//#include "esp32c3/uart_reg.h"
+
+#include <algorithm>
+// #include "esp32c3/soc.h"
+// #include "esp32c3/uart_reg.h"
 
 Peripherals::Peripherals(sc_core::sc_module_name const &name, unsigned kbytes)
     : sc_module(name), size_bytes(1024 * kbytes)
@@ -27,10 +27,10 @@ Peripherals::~Peripherals()
 void Peripherals::b_transport(tlm::tlm_generic_payload &trans, sc_core::sc_time &delay)
 {
     tlm::tlm_command cmd = trans.get_command();
-    sc_dt::uint64 addr = trans.get_address();
-    unsigned char *ptr = trans.get_data_ptr();
-    unsigned int len = trans.get_data_length();
-    unsigned val = 0;
+    sc_dt::uint64 addr   = trans.get_address();
+    unsigned char *ptr   = trans.get_data_ptr();
+    unsigned int len     = trans.get_data_length();
+    unsigned val         = 0;
 
     // Only byte, word and half word sizes are allowed.
     if (len != 1 && len != 2 && len != 4) {
@@ -95,7 +95,7 @@ void Peripherals::b_transport(tlm::tlm_generic_payload &trans, sc_core::sc_time 
 //
 unsigned Peripherals::periph_read(unsigned addr)
 {
-    auto shadow = (uint32_t*) &mem[addr];
+    auto shadow = (uint32_t *)&mem[addr];
 
     return *shadow;
 }
@@ -106,7 +106,7 @@ unsigned Peripherals::periph_read(unsigned addr)
 //
 void Peripherals::periph_write(unsigned addr, unsigned val)
 {
-    auto shadow = (uint32_t*) &mem[addr];
+    auto shadow = (uint32_t *)&mem[addr];
 #if 0
     //TODO: peripheral registers
     switch (addr + SOC_PERIPHERAL_LOW) {

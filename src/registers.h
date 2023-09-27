@@ -38,12 +38,12 @@ public:
         R13,
         R14,
         R15,
-        SL = R10,   // Stack Limit
-        FP = R11,   // Frame Pointer
-        IP = R12,   // Intra-Procedure scratch register
-        SP = R13,   // Main Stack Pointer
-        LR = R14,   // Link Register
-        PC = R15,   // Program Counter
+        SL = R10, // Stack Limit
+        FP = R11, // Frame Pointer
+        IP = R12, // Intra-Procedure scratch register
+        SP = R13, // Main Stack Pointer
+        LR = R14, // Link Register
+        PC = R15, // Program Counter
     };
 
     /**
@@ -75,10 +75,7 @@ public:
     /**
      * Increments PC couunter to next address
      */
-    void incPC(unsigned increment)
-    {
-        register_bank[15] += increment;
-    }
+    void incPC(unsigned increment) { register_bank[15] += increment; }
 
     /**
      * Dump register data to console

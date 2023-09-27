@@ -6,37 +6,31 @@
  */
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include "processor.h"
+
 #include "disassemble.h"
 
 //
 // Special register field encoding
 //
 enum {
-    SYSM_APSR = 0,      // The flags from previous instructions
-    SYSM_IAPSR = 1,     // A composite of IPSR and APSR
-    SYSM_EAPSR = 2,     // A composite of EPSR and APSR
-    SYSM_XPSR = 3,      // A composite of all three PSR registers
-    SYSM_IPSR = 5,      // The Interrupt status register
-    SYSM_EPSR = 6,      // The execution status register
-    SYSM_IEPSR = 7,     // A composite of IPSR and EPSR
-    SYSM_MSP = 8,       // The Main Stack pointer
-    SYSM_PSP = 9,       // The Process Stack pointer
-    SYSM_PRIMASK = 16,  // Register to mask out configurable exceptions
-    SYSM_CONTROL = 20,  // Stack select, Thread mode privilege
+    SYSM_APSR    = 0,  // The flags from previous instructions
+    SYSM_IAPSR   = 1,  // A composite of IPSR and APSR
+    SYSM_EAPSR   = 2,  // A composite of EPSR and APSR
+    SYSM_XPSR    = 3,  // A composite of all three PSR registers
+    SYSM_IPSR    = 5,  // The Interrupt status register
+    SYSM_EPSR    = 6,  // The execution status register
+    SYSM_IEPSR   = 7,  // A composite of IPSR and EPSR
+    SYSM_MSP     = 8,  // The Main Stack pointer
+    SYSM_PSP     = 9,  // The Process Stack pointer
+    SYSM_PRIMASK = 16, // Register to mask out configurable exceptions
+    SYSM_CONTROL = 20, // Stack select, Thread mode privilege
 };
 
 static const std::map<int, const std::string> sysm_name = {
-    { SYSM_APSR,         "apsr" },
-    { SYSM_IAPSR,        "iapsr" },
-    { SYSM_EAPSR,        "eapsr" },
-    { SYSM_XPSR,         "xpsr" },
-    { SYSM_IPSR,         "ipsr" },
-    { SYSM_EPSR,         "epsr" },
-    { SYSM_IEPSR,        "iepsr" },
-    { SYSM_MSP,          "msp" },
-    { SYSM_PSP,          "psp" },
-    { SYSM_PRIMASK,      "primask" },
-    { SYSM_CONTROL,      "control" },
+    { SYSM_APSR, "apsr" },       { SYSM_IAPSR, "iapsr" },     { SYSM_EAPSR, "eapsr" },
+    { SYSM_XPSR, "xpsr" },       { SYSM_IPSR, "ipsr" },       { SYSM_EPSR, "epsr" },
+    { SYSM_IEPSR, "iepsr" },     { SYSM_MSP, "msp" },         { SYSM_PSP, "psp" },
+    { SYSM_PRIMASK, "primask" }, { SYSM_CONTROL, "control" },
 };
 
 Processor::Processor(sc_core::sc_module_name const name, bool debug)
@@ -56,82 +50,81 @@ Processor::Processor(sc_core::sc_module_name const name, bool debug)
     //
     // Initial values.
     //
-    psr.u32 = 0;
+    xpsr.u32    = 0;
     primask.u32 = 0;
     control.u32 = 0;
-    psr.field.t = 1;
 }
 
 void Processor::raise_exception(uint32_t cause, uint32_t mtval)
 {
     if (Log::is_verbose()) {
         const char *name = "Unknown Exception";
-        //switch (cause & MCAUSE_EXCEPTION_CODE) {
-        //case EXCEPTION_CAUSE_INSTRUCTION_ACCESS:
-        //    name = "Instruction Access Fault";
-        //    break;
-        //case EXCEPTION_CAUSE_ILLEGAL_INSTRUCTION:
-        //    name = "Illegal Instruction";
-        //    break;
-        //case EXCEPTION_CAUSE_BREAKPOINT:
-        //    name = "Breakpoint";
-        //    break;
-        //case EXCEPTION_CAUSE_LOAD_MISALIGN:
-        //    name = "Load Misalign";
-        //    break;
-        //case EXCEPTION_CAUSE_LOAD_ACCESS_FAULT:
-        //    name = "Load Access Fault";
-        //    break;
-        //case EXCEPTION_CAUSE_STORE_MISALIGN:
-        //    name = "Store Misalign";
-        //    break;
-        //case EXCEPTION_CAUSE_STORE_ACCESS_FAULT:
-        //    name = "Store Access Fault";
-        //    break;
-        //case EXCEPTION_CAUSE_ECALL_U:
-        //    name = "Syscall";
-        //    break;
-        //case EXCEPTION_CAUSE_ECALL_M:
-        //    name = "Syscall from Machine mode";
-        //    break;
-        //}
+        // switch (cause & MCAUSE_EXCEPTION_CODE) {
+        // case EXCEPTION_CAUSE_INSTRUCTION_ACCESS:
+        //     name = "Instruction Access Fault";
+        //     break;
+        // case EXCEPTION_CAUSE_ILLEGAL_INSTRUCTION:
+        //     name = "Illegal Instruction";
+        //     break;
+        // case EXCEPTION_CAUSE_BREAKPOINT:
+        //     name = "Breakpoint";
+        //     break;
+        // case EXCEPTION_CAUSE_LOAD_MISALIGN:
+        //     name = "Load Misalign";
+        //     break;
+        // case EXCEPTION_CAUSE_LOAD_ACCESS_FAULT:
+        //     name = "Load Access Fault";
+        //     break;
+        // case EXCEPTION_CAUSE_STORE_MISALIGN:
+        //     name = "Store Misalign";
+        //     break;
+        // case EXCEPTION_CAUSE_STORE_ACCESS_FAULT:
+        //     name = "Store Access Fault";
+        //     break;
+        // case EXCEPTION_CAUSE_ECALL_U:
+        //     name = "Syscall";
+        //     break;
+        // case EXCEPTION_CAUSE_ECALL_M:
+        //     name = "Syscall from Machine mode";
+        //     break;
+        // }
         Log::out() << "-------- " << name << std::endl;
     }
 
     // Save info about the trap.
-    //set_csr(CSR_MEPC, get_pc());
-    //set_csr(CSR_MTVAL, mtval);
-    //set_csr(CSR_MCAUSE, cause);
+    // set_csr(CSR_MEPC, get_pc());
+    // set_csr(CSR_MTVAL, mtval);
+    // set_csr(CSR_MCAUSE, cause);
 
     //
     // Update mstatus: disable interrupts.
     //
-    //uint32_t old_status = get_csr(CSR_MSTATUS);
-    //uint32_t new_status = old_status & MSTATUS_TW;
+    // uint32_t old_status = get_csr(CSR_MSTATUS);
+    // uint32_t new_status = old_status & MSTATUS_TW;
 
     // Copy MIE to MPIE.
-    //if (old_status & MSTATUS_MIE)
+    // if (old_status & MSTATUS_MIE)
     //    new_status |= MSTATUS_MPIE;
 
     // Set previous privilege mode.
-    //new_status |= get_priv() << MSTATUS_MPP_shift;
+    // new_status |= get_priv() << MSTATUS_MPP_shift;
 
-    //set_csr(CSR_MSTATUS, new_status);
+    // set_csr(CSR_MSTATUS, new_status);
 
     // Jump to the trap vector.
-    //uint32_t mtvec = get_csr(CSR_MTVEC);
+    // uint32_t mtvec = get_csr(CSR_MTVEC);
     uint32_t new_pc = 0 /*mtvec & ~1*/;
-    //if ((cause & MCAUSE_INTERRUPT_FLAG) && (mtvec & 1)) {
-    //    // Interrupt in vector mode.
-    //    new_pc += (cause & MCAUSE_EXCEPTION_CODE) * 4;
-    //}
-    //set_pc(new_pc);
+    // if ((cause & MCAUSE_INTERRUPT_FLAG) && (mtvec & 1)) {
+    //     // Interrupt in vector mode.
+    //     new_pc += (cause & MCAUSE_EXCEPTION_CODE) * 4;
+    // }
+    // set_pc(new_pc);
     if (Log::is_verbose()) {
         Log::out() << "-------- Vector 0x" << std::hex << new_pc << std::endl;
     }
 
     // Switch to Machine mode.
-    //set_priv(MSTATUS_MPP_MACHINE);
+    // set_priv(MSTATUS_MPP_MACHINE);
 }
 
 void Processor::terminate_simulation(const std::string &reason) const
@@ -147,21 +140,21 @@ void Processor::terminate_simulation(const std::string &reason) const
 
 bool Processor::cpu_process_interrupt()
 {
-    //uint32_t csr_temp;
+    // uint32_t csr_temp;
     bool ret_value = false;
 
     if (interrupt) {
-        //csr_temp = get_csr(CSR_MSTATUS);
-        //if ((csr_temp & MSTATUS_MIE) == 0) {
-        //    Log::err() << "interrupt delayed" << std::endl;
-        //    return ret_value;
-        //}
+        // csr_temp = get_csr(CSR_MSTATUS);
+        // if ((csr_temp & MSTATUS_MIE) == 0) {
+        //     Log::err() << "interrupt delayed" << std::endl;
+        //     return ret_value;
+        // }
     } else {
         if (!irq_already_down) {
-            //TODO: deactivate interrupt
-            //csr_temp = get_csr(CSR_MIP);
-            //csr_temp &= ~MIP_MEIP;
-            //set_csr(CSR_MIP, csr_temp);
+            // TODO: deactivate interrupt
+            // csr_temp = get_csr(CSR_MIP);
+            // csr_temp &= ~MIP_MEIP;
+            // set_csr(CSR_MIP, csr_temp);
             irq_already_down = true;
         }
     }
@@ -208,7 +201,7 @@ uint16_t Processor::fetch16(unsigned address)
             dmi_ptr_valid = instr_bus->get_direct_mem_ptr(trans, dmi_data);
             if (dmi_ptr_valid) {
                 // std::cout << "Get DMI_PTR " << std::endl;
-                dmi_ptr = dmi_data.get_dmi_ptr();
+                dmi_ptr          = dmi_data.get_dmi_ptr();
                 dmi_read_latency = dmi_data.get_read_latency();
             }
         }
@@ -225,8 +218,8 @@ void Processor::cpu_step()
 {
     // Fetch instruction.
     // Assume 16-bit opcode.
-    unsigned pc = register_bank.getPC();
-    opcode = fetch16(pc);
+    unsigned pc           = register_bank.getPC();
+    opcode                = fetch16(pc);
     unsigned pc_increment = arm_opcode_length(opcode);
     if (pc_increment == 4) {
         // Extend to 32-bit opcode.
@@ -298,7 +291,7 @@ void Processor::invalidate_direct_mem_ptr(sc_dt::uint64 start, sc_dt::uint64 end
 
 void Processor::set_mode(Mode m)
 {
-    //TODO: update CPU state when changing modes.
+    // TODO: update CPU state when changing modes.
     mode = m;
 }
 
@@ -327,7 +320,8 @@ uint32_t Processor::data_read(uint32_t addr, int size)
     wait(delay);
 
     if (trans.is_response_error()) {
-        Log::err() << "Load error at 0x" << std::hex << std::setw(8) << std::setfill('0') << addr << std::endl;
+        Log::err() << "Load error at 0x" << std::hex << std::setw(8) << std::setfill('0') << addr
+                   << std::endl;
         SC_REPORT_ERROR("Memory", "Read");
     }
     return data;
@@ -365,9 +359,10 @@ void Processor::data_write(uint32_t addr, uint32_t data, int size)
 uint32_t Processor::get_sysreg(int sysm)
 {
     switch (sysm) {
-    //TODO: read sysreg
+    // TODO: read sysreg
     default:
-        Log::err() << "Read unknown sysreg 0x" << std::hex << std::setw(3) << std::setfill('0') << sysm << std::endl;
+        Log::err() << "Read unknown sysreg 0x" << std::hex << std::setw(3) << std::setfill('0')
+                   << sysm << std::endl;
         SC_REPORT_ERROR("SYSREG", "Read");
         return 0;
     }
@@ -382,8 +377,8 @@ void Processor::update_sysreg(uint32_t &reg, uint32_t value, uint32_t mask, cons
 
     if (Log::is_verbose()) {
         auto &out = Log::out();
-        out << "          " << name << " = " << std::hex << std::setw(8)
-            << std::setfill('0') << value << std::endl;
+        out << "          " << name << " = " << std::hex << std::setw(8) << std::setfill('0')
+            << value << std::endl;
     }
 }
 
@@ -398,6 +393,6 @@ void Processor::set_sysreg(int sysm, uint32_t value)
         // Exception on write.
         raise_exception(Exception::HardFault, opcode);
         return;
-    //TODO: write sysreg
+        // TODO: write sysreg
     }
 }

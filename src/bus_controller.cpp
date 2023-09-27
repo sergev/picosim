@@ -31,11 +31,12 @@ Bus_Controller::Bus_Controller(sc_core::sc_module_name const name) : sc_module(n
 void Bus_Controller::b_transport_instr(tlm::tlm_generic_payload &trans, sc_core::sc_time &delay)
 {
     tlm::tlm_command cmd = trans.get_command();
-    uint32_t addr = trans.get_address();
+    uint32_t addr        = trans.get_address();
 
     if (cmd != tlm::TLM_READ_COMMAND) {
         // Write requests should not happen with fetch.
-        Log::err() << "Fetch write at 0x" << std::hex << std::setw(8) << std::setfill('0') << addr << std::endl;
+        Log::err() << "Fetch write at 0x" << std::hex << std::setw(8) << std::setfill('0') << addr
+                   << std::endl;
         SC_REPORT_ERROR("Fetch", "Write");
     }
     trans.set_gp_option(tlm::TLM_MIN_PAYLOAD); // Flag of fetch request

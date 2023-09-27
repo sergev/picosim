@@ -48,13 +48,13 @@ void Log::set_verbose(const std::string &fname)
     if (m_stream.is_open()) {
         m_stream.close();
         if (filename.empty()) {
-            //std::cout << "Log disabled" << std::endl;
+            // std::cout << "Log disabled" << std::endl;
         }
     }
 
     if (!filename.empty()) {
         m_stream.open(filename);
-        //std::cout << "Log redirected to " << filename << std::endl;
+        // std::cout << "Log redirected to " << filename << std::endl;
     }
 }
 

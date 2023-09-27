@@ -1,15 +1,13 @@
 #include "simulator.h"
 
 Simulator::Simulator(const sc_core::sc_module_name &name, bool debug_enable)
-  : sc_module(name),
-    cpu("Processor", debug_enable),
-    bus("BusCtrl"),
-    rom("ROM", 16),             // Internal ROM - 16 kbytes
-    flash("Flash", 2048),       // Flash memory - 2048 kbytes
-    sram("SRAM", 256+8),        // Internal SRAM - 256+8 kbytes
-    periph("Peripherals", 512), // Peripherals - 512 kbytes
-    timer("Timer"),             // TODO: move to peripherals
-    debug(*this, cpu, debug_enable)
+    : sc_module(name), cpu("Processor", debug_enable), bus("BusCtrl"),
+      rom("ROM", 16),             // Internal ROM - 16 kbytes
+      flash("Flash", 2048),       // Flash memory - 2048 kbytes
+      sram("SRAM", 256 + 8),      // Internal SRAM - 256+8 kbytes
+      periph("Peripherals", 512), // Peripherals - 512 kbytes
+      timer("Timer"),             // TODO: move to peripherals
+      debug(*this, cpu, debug_enable)
 {
     // Connect CPU to the bus controller.
     cpu.instr_bus.bind(bus.cpu_instr_socket);
@@ -71,7 +69,7 @@ uint32_t Simulator::debug_load(uint32_t addr, unsigned nbytes)
     uint32_t val{};
 
     assert(nbytes <= sizeof(val));
-    trans.set_data_ptr((uint8_t*) &val);
+    trans.set_data_ptr((uint8_t *)&val);
     trans.set_command(tlm::TLM_READ_COMMAND);
     trans.set_address(addr);
     trans.set_data_length(nbytes);
@@ -87,7 +85,7 @@ void Simulator::debug_store(uint32_t addr, uint32_t val, unsigned nbytes)
     tlm::tlm_generic_payload trans{};
 
     assert(nbytes <= sizeof(val));
-    trans.set_data_ptr((uint8_t*) &val);
+    trans.set_data_ptr((uint8_t *)&val);
     trans.set_command(tlm::TLM_WRITE_COMMAND);
     trans.set_address(addr);
     trans.set_data_length(nbytes);
