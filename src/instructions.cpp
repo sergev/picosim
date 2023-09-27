@@ -135,6 +135,22 @@ void Processor::process_opcode16()
 }
 
 //
+// Return true when int32 value is negative.
+//
+static bool is_negative(int32_t value)
+{
+    return (value < 0);
+}
+
+//
+// Return true when int32 value is zero.
+//
+static bool is_zero(int32_t value)
+{
+    return (value == 0);
+}
+
+//
 // Execute 32-bit instruction.
 //
 void Processor::process_opcode32()
@@ -167,7 +183,7 @@ void Processor::thumb_arith_imm()
         // movs r1, #255
         set_reg(rd, imm);
         xpsr.field.n = 0; // bit 31 of result
-        xpsr.field.z = (imm == 0);
+        xpsr.field.z = is_zero(imm);
         break;
     case 1:
         // CMP instruction.
@@ -290,8 +306,8 @@ int32_t Processor::add_with_carry(int32_t x, int32_t y, bool carry_in)
     int64_t  signed_sum   = (int64_t)x + (int64_t)y + carry_in;
     int32_t  result       = (int32_t)unsigned_sum;
 
-    xpsr.field.n = (result >> 31);                     // bit 31 of result
-    xpsr.field.z = (result == 0);                      // all bits are zero?
+    xpsr.field.n = is_negative(result);
+    xpsr.field.z = is_zero(result);
     xpsr.field.c = ((uint32_t)result != unsigned_sum); // carry out
     xpsr.field.v = ((int32_t)result != signed_sum);    // overflow
 
@@ -328,9 +344,14 @@ void Processor::thumb_arith_reg()
     unsigned rm = (opcode >> 3) & 7;
 
     switch (op) {
-    case 0x0:
-        terminate_simulation("and"); // TODO
+    case 0x0: {
+        // AND instruction.
+        int32_t result = get_reg(rd) & get_reg(rm);
+        set_reg(rd, result);
+        xpsr.field.n = is_negative(result);
+        xpsr.field.z = is_zero(result);
         break;
+    }
     case 0x1:
         terminate_simulation("eor"); // TODO
         break;
@@ -376,8 +397,8 @@ void Processor::thumb_arith_reg()
         // MUL instruction.
         int32_t result = get_reg(rd) * get_reg(rm);
         set_reg(rd, result);
-        xpsr.field.n = (result >> 31); // bit 31 of result
-        xpsr.field.z = (result == 0);  // all bits are zero?
+        xpsr.field.n = is_negative(result);
+        xpsr.field.z = is_zero(result);
         break;
     }
     case 0xE:

@@ -60,7 +60,7 @@ cmp_hireg.S         cmp r11, r12
 cmn.S               cmn r1, r2
 
         (Logic operations)
-                    and r1, r2
+and.S               and r1, r2
                     orr r1, r2
                     eor r1, r2
                     bic r1, r2
