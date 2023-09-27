@@ -26,13 +26,6 @@ enum {
     SYSM_CONTROL = 20, // Stack select, Thread mode privilege
 };
 
-static const std::map<int, const std::string> sysm_name = {
-    { SYSM_APSR, "apsr" },       { SYSM_IAPSR, "iapsr" },     { SYSM_EAPSR, "eapsr" },
-    { SYSM_XPSR, "xpsr" },       { SYSM_IPSR, "ipsr" },       { SYSM_EPSR, "epsr" },
-    { SYSM_IEPSR, "iepsr" },     { SYSM_MSP, "msp" },         { SYSM_PSP, "psp" },
-    { SYSM_PRIMASK, "primask" }, { SYSM_CONTROL, "control" },
-};
-
 Processor::Processor(sc_core::sc_module_name const name, bool debug)
     : sc_module(name), instr_bus("instr_bus")
 {
@@ -356,10 +349,39 @@ void Processor::data_write(uint32_t addr, uint32_t data, int size)
     }
 }
 
-uint32_t Processor::get_sysreg(int sysm)
+uint32_t Processor::get_sysreg(unsigned sysm)
 {
     switch (sysm) {
-    // TODO: read sysreg
+    case SYSM_APSR:  // Application status register
+    case SYSM_EAPSR: // A composite of EPSR and APSR
+    case SYSM_IAPSR: // A composite of IPSR and APSR
+    case SYSM_XPSR:  // A composite of all three PSR registers
+        return xpsr.u32;
+
+    case SYSM_IPSR:  // Interrupt status register
+    case SYSM_IEPSR: // A composite of IPSR and EPSR
+        return xpsr.u32 & 0x3f;
+
+    case SYSM_EPSR:
+        // Execution status register: always zero.
+        return 0;
+
+    case SYSM_MSP:
+        // The Main Stack pointer
+        return register_bank.getMSP();
+
+    case SYSM_PSP:
+        // The Process Stack pointer
+        return register_bank.getPSP();
+
+    case SYSM_PRIMASK:
+        // Register to mask out configurable exceptions
+        return primask.u32;
+
+    case SYSM_CONTROL:
+        // Stack select, Thread mode privilege
+        return control.u32;
+
     default:
         Log::err() << "Read unknown sysreg 0x" << std::hex << std::setw(3) << std::setfill('0')
                    << sysm << std::endl;
@@ -369,30 +391,64 @@ uint32_t Processor::get_sysreg(int sysm)
 }
 
 //
-// Update system register unconditionally, and print.
-//
-void Processor::update_sysreg(uint32_t &reg, uint32_t value, uint32_t mask, const std::string &name)
-{
-    reg = (reg & ~mask) | (value & mask);
-
-    if (Log::is_verbose()) {
-        auto &out = Log::out();
-        out << "          " << name << " = " << std::hex << std::setw(8) << std::setfill('0')
-            << value << std::endl;
-    }
-}
-
-//
 // Set value of CSR register.
 // Only writable bits are modified.
 //
-void Processor::set_sysreg(int sysm, uint32_t value)
+void Processor::set_sysreg(unsigned sysm, uint32_t value)
 {
     switch (sysm) {
+    case SYSM_APSR:  // Application status register
+    case SYSM_EAPSR: // A composite of EPSR and APSR
+    case SYSM_IAPSR: // A composite of IPSR and APSR
+    case SYSM_XPSR:  // A composite of all three PSR registers
+        xpsr.field.n = value >> 31;
+        xpsr.field.z = value >> 30;
+        xpsr.field.c = value >> 29;
+        xpsr.field.v = value >> 28;
+        if (Log::is_verbose()) {
+            Log::out() << "          xpsr = " << std::hex << std::setw(8)
+                       << std::setfill('0') << xpsr.u32 << std::endl;
+        }
+        return;
+
+    case SYSM_IPSR:  // Interrupt status register
+    case SYSM_IEPSR: // A composite of IPSR and EPSR
+    case SYSM_EPSR: // Execution status register: always zero
+        // Write ignored.
+        return;
+
+    case SYSM_MSP:
+        // The Main Stack pointer
+        register_bank.setMSP(value & ~3);
+        return;
+
+    case SYSM_PSP:
+        // The Process Stack pointer
+        register_bank.setPSP(value & ~3);
+        return;
+
+    case SYSM_PRIMASK:
+        // Register to mask out configurable exceptions
+        primask.field.pm = value;
+        if (Log::is_verbose()) {
+            Log::out() << "          primask = " << std::hex << std::setw(8)
+                       << std::setfill('0') << primask.u32 << std::endl;
+        }
+        return;
+
+    case SYSM_CONTROL:
+        // Stack select, Thread mode privilege
+        control.field.npriv = value;
+        control.field.spsel = value >> 1;
+        if (Log::is_verbose()) {
+            Log::out() << "          control = " << std::hex << std::setw(8)
+                       << std::setfill('0') << control.u32 << std::endl;
+        }
+        return;
+
     default:
         // Exception on write.
         raise_exception(Exception::HardFault, opcode);
         return;
-        // TODO: write sysreg
     }
 }

@@ -9,7 +9,7 @@
 #include "registers.h"
 
 static const char *reg_name[32] = {
-    "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8", "r9", "sl", "fp", "ip", "sp", "lr", "pc",
+    "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8", "r9", "sl", "fp", "ip", "msp", "lr", "pc",
 };
 
 static void dump_reg(const std::string &str, uint32_t val)
@@ -83,7 +83,12 @@ int32_t Registers::getValue(int reg_num)
     }
 }
 
-void Registers::setPC(uint32_t new_pc)
+void Registers::setPSP(uint32_t value)
 {
-    register_bank[15] = new_pc;
+    register_psp = value;
+
+    if (Log::is_verbose()) {
+        Log::out() << "          psp = " << std::hex << std::setw(8)
+                   << std::setfill('0') << value << std::endl;
+    }
 }

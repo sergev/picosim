@@ -10,16 +10,16 @@ _start:
 
         ldr r7, =0xffffffff
         msr APSR, r7
-        mrs r0, APSR        // expect 2000_0000
+        mrs r0, APSR        // expect f000_0000
 
         msr IAPSR, r7
-        mrs r1, IAPSR       // expect 2000_0000
+        mrs r1, IAPSR       // expect f000_0000
 
         msr EAPSR, r7
-        mrs r2, EAPSR       // expect 2000_0000
+        mrs r2, EAPSR       // expect f000_0000
 
         msr XPSR, r7
-        mrs r3, XPSR        // expect 2000_0000
+        mrs r3, XPSR        // expect f000_0000
 
         msr IPSR, r7
         mrs r4, IPSR        // expect 0000_0000

@@ -208,6 +208,42 @@ void Processor::linux_syscall(int op)
     }
 }
 
+//
+// ldr r1, [pc, #1020]
+//
+void Processor::thumb_load_literal()
+{
+    unsigned immediate = opcode & 0xff;
+    unsigned rd        = (opcode >> 8) & 0x7;
+    unsigned address   = ((register_bank.getPC() + 4) & ~3) + (immediate << 2);
+    unsigned word      = data_read32(address);
+
+    set_reg(rd, word);
+}
+
+//
+// msr APSR, r1
+// mrs r1, PRIMASK
+//
+void Processor::thumb_sysreg()
+{
+    unsigned sysreg = opcode & 0xff;
+    unsigned rn     = (opcode >> 16) & 0x0f;
+    unsigned rd     = (opcode >> 8) & 0x0f;
+
+    switch ((opcode >> 20) & 0x6) {
+    case 0x0:
+        // msr APSR, r1
+        set_sysreg(sysreg, get_reg(rn));
+        return;
+    case 0x6:
+        // mrs r1, PRIMASK
+        set_reg(rd, get_sysreg(sysreg));
+        return;
+    }
+    terminate_simulation("Invalid instruction");
+}
+
 void Processor::thumb_shift_imm()
 {
     terminate_simulation(__func__); // TODO
@@ -221,16 +257,6 @@ void Processor::thumb_add_sub()
 void Processor::thumb_arith_reg()
 {
     terminate_simulation(__func__); // TODO
-}
-
-void Processor::thumb_load_literal()
-{
-    unsigned immediate = opcode & 0xff;
-    unsigned rd        = (opcode >> 8) & 0x7;
-    unsigned address   = ((register_bank.getPC() + 4) & ~3) + (immediate << 2);
-    unsigned word      = data_read32(address);
-
-    set_reg(rd, word);
 }
 
 void Processor::thumb_load_store_reg()
@@ -319,11 +345,6 @@ void Processor::thumb_branch_link()
 }
 
 void Processor::thumb_barrier()
-{
-    terminate_simulation(__func__); // TODO
-}
-
-void Processor::thumb_sysreg()
 {
     terminate_simulation(__func__); // TODO
 }

@@ -31,10 +31,10 @@ TEST(opcode, mrs_msr_psr)
     show_trace();
 
     EXPECT_EQ(sim.get_instructions_executed(), 17);
-    EXPECT_EQ(sim.get_reg(0), 0x2000'0000);
-    EXPECT_EQ(sim.get_reg(1), 0x2000'0000);
-    EXPECT_EQ(sim.get_reg(2), 0x2000'0000);
-    EXPECT_EQ(sim.get_reg(3), 0x2000'0000);
+    EXPECT_EQ(sim.get_reg(0), 0xf000'0000);
+    EXPECT_EQ(sim.get_reg(1), 0xf000'0000);
+    EXPECT_EQ(sim.get_reg(2), 0xf000'0000);
+    EXPECT_EQ(sim.get_reg(3), 0xf000'0000);
     EXPECT_EQ(sim.get_reg(4), 0x0000'0000);
     EXPECT_EQ(sim.get_reg(5), 0x0000'0000);
     EXPECT_EQ(sim.get_reg(6), 0x0000'0000);

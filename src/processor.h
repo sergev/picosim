@@ -84,14 +84,26 @@ public:
      * @param  reg_num register number
      * @return         register value
      */
-    int32_t get_reg(int reg_num) { return register_bank.getValue(reg_num); }
+    int32_t get_reg(int reg_num)
+    {
+        if (reg_num == Registers::SP && control.field.spsel)
+            return register_bank.getPSP();
+        else
+            return register_bank.getValue(reg_num);
+    }
 
     /**
      * Set value for a register
      * @param reg_num register number
      * @param value   register value
      */
-    void set_reg(int reg_num, int32_t value) { register_bank.setValue(reg_num, value); }
+    void set_reg(int reg_num, int32_t value)
+    {
+        if (reg_num == Registers::SP && control.field.spsel)
+            return register_bank.setPSP(value);
+        else
+            register_bank.setValue(reg_num, value);
+    }
 
     /**
      * Returns PC value
@@ -113,12 +125,12 @@ public:
     //
     // Get system register.
     //
-    uint32_t get_sysreg(int sysm);
+    uint32_t get_sysreg(unsigned sysm);
 
     //
     // Set system register.
     //
-    void set_sysreg(int sysm, uint32_t value);
+    void set_sysreg(unsigned sysm, uint32_t value);
 
     //
     // CPU runs in either Thread mode or in Handler mode.
@@ -264,11 +276,6 @@ private:
      * @param end memory address region end
      */
     void invalidate_direct_mem_ptr(sc_dt::uint64 start, sc_dt::uint64 end);
-
-    //
-    // Update system register unconditionally, and print.
-    //
-    void update_sysreg(uint32_t &reg, uint32_t value, uint32_t mask, const std::string &name);
 
     //
     // Instructions.

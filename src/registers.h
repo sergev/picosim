@@ -46,51 +46,31 @@ public:
         PC = R15, // Program Counter
     };
 
-    /**
-     * Set value for a register
-     * @param reg_num register number
-     * @param value   register value
-     */
+    // Get/set register value.
+    int32_t getValue(int reg_num);
     void setValue(int reg_num, int32_t value);
 
-    /**
-     * Returns register value
-     * @param  reg_num register number
-     * @return         register value
-     */
-    int32_t getValue(int reg_num);
+    // Get/set PC value.
+    uint32_t getPC() const { return register_bank[PC]; }
+    void setPC(uint32_t new_val) { register_bank[PC] = new_val; }
 
-    /**
-     * Returns PC value
-     * @return PC value
-     */
-    uint32_t getPC() const { return register_bank[15]; }
+    // Increment PC counter to next address.
+    void incPC(unsigned increment) { register_bank[PC] += increment; }
 
-    /**
-     * Sets arbitraty value to PC
-     * @param new_pc new address to PC
-     */
-    void setPC(uint32_t new_pc);
+    // Get/set Main/Program Stack Pointer value.
+    uint32_t getMSP() const { return register_bank[SP]; }
+    uint32_t getPSP() const { return register_psp; }
+    void setMSP(uint32_t new_val) { setValue(SP, new_val); }
+    void setPSP(uint32_t new_val);
 
-    /**
-     * Increments PC couunter to next address
-     */
-    void incPC(unsigned increment) { register_bank[15] += increment; }
-
-    /**
-     * Dump register data to console
-     */
+    // Dump register data to console.
     void dump();
 
 private:
-    /**
-     * bank of registers (32 regs of 32bits each)
-     */
+    // bank of registers (16 regs of 32bits each).
     std::array<int32_t, 16> register_bank{};
 
-    /**
-     * Program stack pointer (32 bits width)
-     */
+    // Program stack pointer (32 bits width).
     uint32_t register_psp{};
 };
 

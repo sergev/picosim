@@ -540,7 +540,7 @@ static std::string thumb_hint(unsigned opcode)
     }
 }
 
-static std::string long_branch_link(unsigned opcode, unsigned address)
+static std::string thumb_branch_link(unsigned opcode, unsigned address)
 {
     unsigned offset = opcode & 0x7ff;
     unsigned b21    = 1 << 21;
@@ -627,7 +627,7 @@ static const char *special_name(int number)
     return "(RESERVED)";
 }
 
-static std::string long_barrier(unsigned opcode)
+static std::string thumb_barrier(unsigned opcode)
 {
     unsigned option = opcode & 0x0f;
     std::ostringstream text;
@@ -652,7 +652,7 @@ static std::string long_barrier(unsigned opcode)
     return text.str();
 }
 
-static std::string long_sysreg(unsigned opcode)
+static std::string thumb_sysreg(unsigned opcode)
 {
     std::ostringstream text;
 
@@ -673,13 +673,13 @@ static std::string long_sysreg(unsigned opcode)
 static std::string disassemble_32bit(unsigned opcode, unsigned address)
 {
     if ((opcode & 0xf800d000) == 0xf000d000)
-        return long_branch_link(opcode, address);
+        return thumb_branch_link(opcode, address);
 
     if ((opcode & 0xffffffc0) == 0xf3bf8f40)
-        return long_barrier(opcode);
+        return thumb_barrier(opcode);
 
     if ((opcode & 0xff90f060) == 0xf3808000)
-        return long_sysreg(opcode);
+        return thumb_sysreg(opcode);
 
     return UNKNOWN;
 }
