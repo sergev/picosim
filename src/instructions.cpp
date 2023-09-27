@@ -425,9 +425,19 @@ void Processor::thumb_arith_reg()
         // SBC instruction.
         set_reg(rd, add_with_carry(get_reg(rd), ~get_reg(rm), xpsr.field.c));
         break;
-    case 0x7:
-        terminate_simulation("ror"); // TODO
+    case 0x7: {
+        // ROR instruction.
+        uint64_t value = (uint32_t) get_reg(rd);
+        unsigned shift = get_reg(rm) & 0xff;
+        if (shift > 0) {
+            shift &= 0x1f;
+            value |= value << 32;
+            value >>= shift;
+            xpsr.field.c = value >> 31;
+        }
+        set_reg_nz(rd, value);
         break;
+    }
     case 0x8:
         // TST instruction.
         set_nz_flags(get_reg(rd) & get_reg(rm));
