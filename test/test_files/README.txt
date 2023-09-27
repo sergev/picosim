@@ -62,7 +62,7 @@ cmn.S               cmn r1, r2
         (Logic operations)
 and.S               and r1, r2
 orr.S               orr r1, r2
-                    eor r1, r2
+eor.S               eor r1, r2
                     bic r1, r2
                     mvn r1, r2
                     tst r1, r2

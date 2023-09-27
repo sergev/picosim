@@ -352,9 +352,14 @@ void Processor::thumb_arith_reg()
         xpsr.field.z = is_zero(result);
         break;
     }
-    case 0x1:
-        terminate_simulation("eor"); // TODO
+    case 0x1: {
+        // EOR instruction.
+        int32_t result = get_reg(rd) ^ get_reg(rm);
+        set_reg(rd, result);
+        xpsr.field.n = is_negative(result);
+        xpsr.field.z = is_zero(result);
         break;
+    }
     case 0x2:
         terminate_simulation("lsl"); // TODO
         break;
