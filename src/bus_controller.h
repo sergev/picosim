@@ -18,50 +18,24 @@
 #include "tlm_utils/simple_target_socket.h"
 
 //
-// According to the technical reference manual, ESP32-C3 microcontroller
-// has the following memory regions:
+// Address Map from RP2040 Datasheet, page 24.
 //
-// Memory Region        Access          Address Range           Kbytes
-// -----------------------------------------------------------------------
-// Internal ROM 0       Fetch/Read      4000_0000 - 4003_FFFF   256
-// Internal ROM 1       Read only       3FF0_0000 - 3FF1_FFFF   128
-//   (mapped twice)     Fetch/Read      4004_0000 - 4005_FFFF   (same)
-// Internal SRAM 1      Read/Write      3FC8_0000 - 3FCD_FFFF   384
-//   (mapped twice)     Fetch/Read      4038_0000 - 403D_FFFF   (same)
-// Flash memory data    Read only       3C00_0000 - 3C7F_FFFF   8192
-// Flash memory code    Fetch/Read      4200_0000 - 427F_FFFF   8192
-// RTC FAST Memory      Read/Write      5000_0000 - 5000_1FFF   8
-// Peripherals          Read/Write      6000_0000 - 600D_0FFF   836
-//
-// There is also Internal SRAM 0, but it is typically used as I cache,
-// invisible to the software, so we don't have to simulate it.
-//
-#define ADDR_DATA_FLASH_START   0x3c000000  // 8 Mbytes
-#define ADDR_DATA_FLASH_LAST    0x3c7fffff
+#define ADDR_ROM_START      0x00000000  // ROM_BASE
+#define ADDR_ROM_LAST       0x00003fff  // 16 kbytes
 
-#define ADDR_DATA_SRAM1_START   0x3fc80000  // 384 kbytes
-#define ADDR_DATA_SRAM1_LAST    0x3fcdffff
+#define ADDR_FLASH_START    0x10000000  // XIP_BASE
+#define ADDR_FLASH_LAST     0x101fffff  // 2 Mbytes
 
-#define ADDR_DATA_ROM1_START    0x3ff00000  // 128 kbytes
-#define ADDR_DATA_ROM1_LAST     0x3ff1ffff
+#if 1
+#define ADDR_SRAM_START     0x00008000  // skip 32 kbytes - newlib binary
+#define ADDR_SRAM_LAST      0x0007ffff  // 512 kbytes
+#else
+#define ADDR_SRAM_START     0x20000000  // SRAM_BASE
+#define ADDR_SRAM_LAST      0x20041fff  // 256 + 8 kbytes
+#endif
 
-#define ADDR_FETCH_ROM0_START   0x40000000  // 256 kbytes
-#define ADDR_FETCH_ROM0_LAST    0x4003ffff
-
-#define ADDR_FETCH_ROM1_START   0x40040000  // 128 kbytes
-#define ADDR_FETCH_ROM1_LAST    0x4005ffff
-
-#define ADDR_FETCH_SRAM1_START  0x40380000  // 384 kbytes
-#define ADDR_FETCH_SRAM1_LAST   0x403dffff
-
-#define ADDR_FETCH_FLASH_START  0x42000000  // 8 Mbytes
-#define ADDR_FETCH_FLASH_LAST   0x427fffff
-
-#define ADDR_DATA_RTCMEM_START  0x50000000  // 8 kbytes
-#define ADDR_DATA_RTCMEM_LAST   0x50001fff
-
-#define ADDR_DATA_PERIPH_START  0x60000000  // 836 kbytes
-#define ADDR_DATA_PERIPH_LAST   0x600d0fff
+#define ADDR_PERIPH_START   0x40000000  // SYSINFO_BASE
+#define ADDR_PERIPH_LAST    0x4007ffff  // 512 kbytes
 
 class Bus_Controller : public sc_core::sc_module {
 public:
@@ -72,11 +46,9 @@ public:
     tlm_utils::simple_target_socket<Bus_Controller> cpu_data_socket{ "cpu_data" };
 
     // Outgoing requests to SoC memories and peripherals.
-    tlm_utils::simple_initiator_socket<Bus_Controller> rom0_socket{ "rom0" };
-    tlm_utils::simple_initiator_socket<Bus_Controller> rom1_socket{ "rom1" };
-    tlm_utils::simple_initiator_socket<Bus_Controller> sram1_socket{ "sram1" };
+    tlm_utils::simple_initiator_socket<Bus_Controller> rom_socket{ "rom" };
     tlm_utils::simple_initiator_socket<Bus_Controller> flash_socket{ "flash" };
-    tlm_utils::simple_initiator_socket<Bus_Controller> rtc_mem_socket{ "rtc_mem" };
+    tlm_utils::simple_initiator_socket<Bus_Controller> sram_socket{ "sram" };
     tlm_utils::simple_initiator_socket<Bus_Controller> periph_socket{ "periph" };
     tlm_utils::simple_initiator_socket<Bus_Controller> timer_socket{ "timer" }; //TODO: remove
 

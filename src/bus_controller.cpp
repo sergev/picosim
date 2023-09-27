@@ -6,13 +6,12 @@
 //
 //                      -------------------
 //                      |                 |
-// cpu_instr_socket <---|fetch       fetch|<--- rom0_socket
-//                      |       fetch/read|<--- rom1_socket
-//                      |        fetch/r/w|<--> sram1_socket
-//                      |            fetch|<--- flash_code_socket
-//                      |             read|<--- flash_data_socket
-//                      |              r/w|<--> rtc_mem_socket
-//  cpu_data_socket <-->|r/w           r/w|<--> periph_socket
+// cpu_instr_socket <---|fetch            |
+//                      |       fetch/read|<--- rom_socket
+//                      |        fetch/r/w|<--> sram_socket
+//                      |       fetch/read|<--- flash_socket
+//                      |              r/w|<--> periph_socket
+//  cpu_data_socket <-->|r/w              |
 //                      |                 |
 //                      -------------------
 //
@@ -41,31 +40,24 @@ void Bus_Controller::b_transport_instr(tlm::tlm_generic_payload &trans, sc_core:
     }
     trans.set_gp_option(tlm::TLM_MIN_PAYLOAD); // Flag of fetch request
 
-    // Internal ROM 0.
-    if (addr >= ADDR_FETCH_ROM0_START && addr <= ADDR_FETCH_ROM0_LAST) {
-        trans.set_address(addr - ADDR_FETCH_ROM0_START);
-        rom0_socket->b_transport(trans, delay);
+    // Internal ROM.
+    if (addr >= ADDR_ROM_START && addr <= ADDR_ROM_LAST) {
+        trans.set_address(addr - ADDR_ROM_START);
+        rom_socket->b_transport(trans, delay);
         return;
     }
 
-    // Internal ROM 1.
-    if (addr >= ADDR_FETCH_ROM1_START && addr <= ADDR_FETCH_ROM1_LAST) {
-        trans.set_address(addr - ADDR_FETCH_ROM1_START);
-        rom1_socket->b_transport(trans, delay);
-        return;
-    }
-
-    // Internal SRAM 1.
-    if (addr >= ADDR_FETCH_SRAM1_START && addr <= ADDR_FETCH_SRAM1_LAST) {
-        trans.set_address(addr - ADDR_FETCH_SRAM1_START);
-        sram1_socket->b_transport(trans, delay);
-        return;
-    }
-
-    // Flash memory.
-    if (addr >= ADDR_FETCH_FLASH_START && addr <= ADDR_FETCH_FLASH_LAST) {
-        trans.set_address(addr - ADDR_FETCH_FLASH_START);
+    // Flash memory (XIP).
+    if (addr >= ADDR_FLASH_START && addr <= ADDR_FLASH_LAST) {
+        trans.set_address(addr - ADDR_FLASH_START);
         flash_socket->b_transport(trans, delay);
+        return;
+    }
+
+    // Internal SRAM.
+    if (addr >= ADDR_SRAM_START && addr <= ADDR_SRAM_LAST) {
+        trans.set_address(addr - ADDR_SRAM_START);
+        sram_socket->b_transport(trans, delay);
         return;
     }
 
@@ -82,65 +74,30 @@ void Bus_Controller::b_transport_data(tlm::tlm_generic_payload &trans, sc_core::
 
     trans.set_gp_option(tlm::TLM_FULL_PAYLOAD); // Flag of data request
 
-    // Internal ROM 0.
-    if (addr >= ADDR_FETCH_ROM0_START && addr <= ADDR_FETCH_ROM0_LAST) {
-        trans.set_address(addr - ADDR_FETCH_ROM0_START);
-        rom0_socket->b_transport(trans, delay);
+    // Internal ROM.
+    if (addr >= ADDR_ROM_START && addr <= ADDR_ROM_LAST) {
+        trans.set_address(addr - ADDR_ROM_START);
+        rom_socket->b_transport(trans, delay);
         return;
     }
 
-    // Internal ROM 1 at data bus.
-    if (addr >= ADDR_DATA_ROM1_START && addr <= ADDR_DATA_ROM1_LAST) {
-        trans.set_address(addr - ADDR_DATA_ROM1_START);
-        rom1_socket->b_transport(trans, delay);
-        return;
-    }
-
-    // Internal ROM 1 at instruction bus.
-    if (addr >= ADDR_FETCH_ROM1_START && addr <= ADDR_FETCH_ROM1_LAST) {
-        trans.set_address(addr - ADDR_FETCH_ROM1_START);
-        rom1_socket->b_transport(trans, delay);
-        return;
-    }
-
-    // Internal SRAM 1 at data bus.
-    if (addr >= ADDR_DATA_SRAM1_START && addr <= ADDR_DATA_SRAM1_LAST) {
-        trans.set_address(addr - ADDR_DATA_SRAM1_START);
-        sram1_socket->b_transport(trans, delay);
-        return;
-    }
-
-    // Internal SRAM 1 at instruction bus.
-    if (addr >= ADDR_FETCH_SRAM1_START && addr <= ADDR_FETCH_SRAM1_LAST) {
-        trans.set_address(addr - ADDR_FETCH_SRAM1_START);
-        sram1_socket->b_transport(trans, delay);
-        return;
-    }
-
-    // Flash memory at data bus.
-    if (addr >= ADDR_DATA_FLASH_START && addr <= ADDR_DATA_FLASH_LAST) {
-        trans.set_address(addr - ADDR_DATA_FLASH_START);
+    // Flash memory (XIP).
+    if (addr >= ADDR_FLASH_START && addr <= ADDR_FLASH_LAST) {
+        trans.set_address(addr - ADDR_FLASH_START);
         flash_socket->b_transport(trans, delay);
         return;
     }
 
-    // Flash memory at instruction bus.
-    if (addr >= ADDR_FETCH_FLASH_START && addr <= ADDR_FETCH_FLASH_LAST) {
-        trans.set_address(addr - ADDR_FETCH_FLASH_START);
-        flash_socket->b_transport(trans, delay);
-        return;
-    }
-
-    // RTC memory.
-    if (addr >= ADDR_DATA_RTCMEM_START && addr <= ADDR_DATA_RTCMEM_LAST) {
-        trans.set_address(addr - ADDR_DATA_RTCMEM_START);
-        rtc_mem_socket->b_transport(trans, delay);
+    // Internal SRAM.
+    if (addr >= ADDR_SRAM_START && addr <= ADDR_SRAM_LAST) {
+        trans.set_address(addr - ADDR_SRAM_START);
+        sram_socket->b_transport(trans, delay);
         return;
     }
 
     // Peripherals.
-    if (addr >= ADDR_DATA_PERIPH_START && addr <= ADDR_DATA_PERIPH_LAST) {
-        trans.set_address(addr - ADDR_DATA_PERIPH_START);
+    if (addr >= ADDR_PERIPH_START && addr <= ADDR_PERIPH_LAST) {
+        trans.set_address(addr - ADDR_PERIPH_START);
         periph_socket->b_transport(trans, delay);
         return;
     }
@@ -156,46 +113,22 @@ unsigned Bus_Controller::transport_dbg(tlm::tlm_generic_payload &trans)
 {
     uint32_t addr = trans.get_address();
 
-    // Internal ROM 0.
-    if (addr >= ADDR_FETCH_ROM0_START && addr <= ADDR_FETCH_ROM0_LAST) {
-        trans.set_address(addr - ADDR_FETCH_ROM0_START);
-        return rom0_socket->transport_dbg(trans);
+    // Internal ROM.
+    if (addr >= ADDR_ROM_START && addr <= ADDR_ROM_LAST) {
+        trans.set_address(addr - ADDR_ROM_START);
+        return rom_socket->transport_dbg(trans);
     }
 
-    // Internal ROM 1.
-    if (addr >= ADDR_DATA_ROM1_START && addr <= ADDR_DATA_ROM1_LAST) {
-        trans.set_address(addr - ADDR_DATA_ROM1_START);
-        return rom1_socket->transport_dbg(trans);
-    }
-
-    // Internal SRAM 1 as data.
-    if (addr >= ADDR_DATA_SRAM1_START && addr <= ADDR_DATA_SRAM1_LAST) {
-        trans.set_address(addr - ADDR_DATA_SRAM1_START);
-        return sram1_socket->transport_dbg(trans);
-    }
-
-    // Internal SRAM 1 as code.
-    if (addr >= ADDR_FETCH_SRAM1_START && addr <= ADDR_FETCH_SRAM1_LAST) {
-        trans.set_address(addr - ADDR_FETCH_SRAM1_START);
-        return sram1_socket->transport_dbg(trans);
-    }
-
-    // Flash memory as data.
-    if (addr >= ADDR_DATA_FLASH_START && addr <= ADDR_DATA_FLASH_LAST) {
-        trans.set_address(addr - ADDR_DATA_FLASH_START);
+    // Flash memory (XIP).
+    if (addr >= ADDR_FLASH_START && addr <= ADDR_FLASH_LAST) {
+        trans.set_address(addr - ADDR_FLASH_START);
         return flash_socket->transport_dbg(trans);
     }
 
-    // Flash memory as code.
-    if (addr >= ADDR_FETCH_FLASH_START && addr <= ADDR_FETCH_FLASH_LAST) {
-        trans.set_address(addr - ADDR_FETCH_FLASH_START);
-        return flash_socket->transport_dbg(trans);
-    }
-
-    // RTC memory.
-    if (addr >= ADDR_DATA_RTCMEM_START && addr <= ADDR_DATA_RTCMEM_LAST) {
-        trans.set_address(addr - ADDR_DATA_RTCMEM_START);
-        return rtc_mem_socket->transport_dbg(trans);
+    // Internal SRAM.
+    if (addr >= ADDR_SRAM_START && addr <= ADDR_SRAM_LAST) {
+        trans.set_address(addr - ADDR_SRAM_START);
+        return sram_socket->transport_dbg(trans);
     }
 
     // Nothing to read/write.

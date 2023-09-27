@@ -5,6 +5,9 @@
 **.out
 **.d
 **.hex
+**.dis
+**.elf
 
 build
 test/build
+.DS_Store

@@ -67,7 +67,8 @@ void Simulator::read_elf_file(std::string const &filename)
         SC_REPORT_ERROR("Simulator", "Not executable");
         return;
     }
-    if (elf_header.e_machine != EM_RISCV) {
+    if (elf_header.e_machine != EM_ARM) {
+        //Log::err() << filename << ": Bad ELF machine " << elf_header.e_machine << std::endl;
         SC_REPORT_ERROR("Simulator", "Bad ELF machine");
         return;
     }

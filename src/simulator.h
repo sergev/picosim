@@ -28,11 +28,9 @@ class Simulator : public sc_core::sc_module {
 private:
     Processor cpu;
     Bus_Controller bus;
-    Memory rom0;
-    Memory rom1;
-    Memory sram1;
+    Memory rom;
     Memory flash;
-    Memory rtc;
+    Memory sram;
     Peripherals periph;
     Timer timer;
     Debug debug;

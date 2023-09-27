@@ -83,6 +83,7 @@ struct elf32_ehdr {
 
 /* e_machine */
 #define EM_NONE         0       /* No machine */
+#define EM_ARM          40      /* 32-bit ARM */
 #define EM_RISCV        243     /* RISC-V */
 #define EM_NUM          36903
 

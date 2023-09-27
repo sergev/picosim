@@ -29,10 +29,10 @@ void usage(int exit_status)
     std::cerr << "Usage:" << std::endl;
     std::cerr << "    " << prog_name << " [-L FILE] [-D] filename.elf" << std::endl;
     std::cerr << "Options:" << std::endl;
-    std::cerr << "    -L FILE   Enable log output to the specified file" << std::endl;
+    std::cerr << "    -L FILE   Enable log output to file" << std::endl;
     std::cerr << "    -D        Debug session" << std::endl;
-    std::cerr << "    -h        Show the usage" << std::endl;
-    std::cerr << "    -V        Show the version and finish" << std::endl;
+    std::cerr << "    -h        Show usage" << std::endl;
+    std::cerr << "    -V        Show version and finish" << std::endl;
     exit(exit_status);
 }
 
@@ -109,7 +109,7 @@ static void print_stats(std::ostream &out, double sec, uint64_t ncycles, uint64_
 
 int sc_main(int argc, char *argv[])
 {
-    /* Capture Ctrl+C and finish the simulation */
+    /* Capture Ctrl+C and finish simulation */
     signal(SIGINT, intHandler);
 
     /* Parse and process program arguments. */
@@ -118,8 +118,8 @@ int sc_main(int argc, char *argv[])
     /* SystemC time resolution set to 1 ns */
     sc_core::sc_set_time_resolution(1, sc_core::SC_NS);
 
-    /* Instantiate the simulator. */
-    Simulator sim("esp32", debug_session);
+    /* Instantiate simulator. */
+    Simulator sim("pico", debug_session);
     if (!filename.empty()) {
         sim.read_elf_file(filename);
     }

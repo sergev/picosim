@@ -4,12 +4,10 @@ Simulator::Simulator(sc_core::sc_module_name name, bool debug_enable)
   : sc_module(name),
     cpu("Processor", debug_enable),
     bus("BusCtrl"),
-    rom0("ROM0", 256),          // Internal ROM 0 - 256 kbytes
-    rom1("ROM1", 128),          // Internal ROM 1 - 128 kbytes
-    sram1("SRAM1", 384),        // Internal SRAM 1 - 384 kbytes
-    flash("Flash", 8192),       // Flash memory - 8192 kbytes
-    rtc("RTCMem", 8),           // RTC FAST memory - 8 kbytes
-    periph("Peripherals", 836), // Peripherals - 836 kbytes
+    rom("ROM", 16),             // Internal ROM - 16 kbytes
+    flash("Flash", 2048),       // Flash memory - 2048 kbytes
+    sram("SRAM", 256+8),        // Internal SRAM - 256+8 kbytes
+    periph("Peripherals", 512), // Peripherals - 512 kbytes
     timer("Timer"),             // TODO: move to peripherals
     debug(*this, cpu, debug_enable)
 {
@@ -18,29 +16,25 @@ Simulator::Simulator(sc_core::sc_module_name name, bool debug_enable)
     cpu.data_bus.bind(bus.cpu_data_socket);
 
     // Connect all slaves to the bus controller.
-    bus.rom0_socket.bind(rom0.socket);
-    bus.rom1_socket.bind(rom1.socket);
-    bus.sram1_socket.bind(sram1.socket);
+    bus.rom_socket.bind(rom.socket);
     bus.flash_socket.bind(flash.socket);
-    bus.rtc_mem_socket.bind(rtc.socket);
+    bus.sram_socket.bind(sram.socket);
     bus.periph_socket.bind(periph.socket);
 
-    // TODO: move the timer to peripherals.
+    // TODO: move timer to peripherals.
     bus.timer_socket.bind(timer.socket);
     timer.irq_line.bind(cpu.irq_line_socket);
 
     // Load ROM.
 #if 0
-    extern const unsigned char esp32_c3_rev3_irom0_bin[], esp32_c3_rev3_drom1_bin[];
-    extern const unsigned int esp32_c3_rev3_irom0_bin_len, esp32_c3_rev3_drom1_bin_len;
-    debug_write(esp32_c3_rev3_irom0_bin, ADDR_FETCH_ROM0_START, esp32_c3_rev3_irom0_bin_len);
-    debug_write(esp32_c3_rev3_drom1_bin, ADDR_DATA_ROM1_START, esp32_c3_rev3_drom1_bin_len);
+    extern const unsigned char rom_bin[];
+    extern const unsigned int rom_bin_len;
+    debug_write(rom_bin, ADDR_ROM_START, rom_bin_len);
 #endif
 
-    // Make ROMs read only.
+    // Make ROM read only.
     // Keep Flash memory still writable, until a binary image is loaded.
-    rom0.set_read_only();
-    rom1.set_read_only();
+    rom.set_read_only();
 }
 
 //
