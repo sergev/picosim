@@ -1,7 +1,7 @@
 Tests for instructions:
 
-File                Instruction or feature
---------------------------------------
+File                Instruction
+------------------------------------------
         (Data Transfer)
 movs_imm.S          movs r1, #255
 movs_reg.S          movs r1, r2
@@ -12,9 +12,9 @@ nop.S               nop
 
         (Memory Load)
 ldr_reg_imm.S       ldr r1, [r2, #124]
-                    ldr r1, [sp, #1020]
+ldr_sp.S            ldr r1, [sp, #1020]
 ldr_pc.S            ldr r1, [pc, #1020]
-                    ldr r1, [r2, r3]
+ldr_reg_reg.S       ldr r1, [r2, r3]
                     ldrb r1, [r2, #31]
                     ldrb r1, [r2, r3]
                     ldrsb r1, [r2, r3]

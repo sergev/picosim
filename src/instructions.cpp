@@ -422,7 +422,39 @@ void Processor::thumb_bx()
 
 void Processor::thumb_load_store_reg()
 {
-    terminate_simulation(__func__); // TODO
+    unsigned rd      = (opcode >> 0) & 0x7;
+    unsigned rn      = (opcode >> 3) & 0x7;
+    unsigned rm      = (opcode >> 6) & 0x7;
+    unsigned opc     = (opcode >> 9) & 0x7;
+    unsigned address = get_reg(rn) + get_reg(rm);
+
+    switch (opc) {
+    case 0:
+        terminate_simulation("str"); // TODO
+        break;
+    case 1:
+        terminate_simulation("strh"); // TODO
+        break;
+    case 2:
+        terminate_simulation("strb"); // TODO
+        break;
+    case 3:
+        terminate_simulation("ldrsb"); // TODO
+        break;
+    case 4:
+        // LDR instruction.
+        set_reg(rd, data_read32(address));
+        break;
+    case 5:
+        terminate_simulation("ldrh"); // TODO
+        break;
+    case 6:
+        terminate_simulation("ldrb"); // TODO
+        break;
+    case 7:
+        terminate_simulation("ldrsh"); // TODO
+        break;
+    }
 }
 
 void Processor::thumb_load_store_imm()
