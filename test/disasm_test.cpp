@@ -1361,64 +1361,35 @@ TEST(disasm, opcode16)
     test_disasm(0x9f01, "ldr r7, [sp, #4]");
     test_disasm(0x9fff, "ldr r7, [sp, #1020]");
 
+    test_disasm(0xa000, "add r0, pc, #0");
+    test_disasm(0xa001, "add r0, pc, #4");
+    test_disasm(0xa0ff, "add r0, pc, #1020");
+    test_disasm(0xa100, "add r1, pc, #0");
+    test_disasm(0xa101, "add r1, pc, #4");
+    test_disasm(0xa1ff, "add r1, pc, #1020");
+    test_disasm(0xa700, "add r7, pc, #0");
+    test_disasm(0xa701, "add r7, pc, #4");
+    test_disasm(0xa7ff, "add r7, pc, #1020");
+
+    test_disasm(0xa800, "add r0, sp, #0");
+    test_disasm(0xa801, "add r0, sp, #4");
+    test_disasm(0xa8ff, "add r0, sp, #1020");
+    test_disasm(0xa900, "add r1, sp, #0");
+    test_disasm(0xa901, "add r1, sp, #4");
+    test_disasm(0xa9ff, "add r1, sp, #1020");
+    test_disasm(0xaf00, "add r7, sp, #0");
+    test_disasm(0xaf01, "add r7, sp, #4");
+    test_disasm(0xafff, "add r7, sp, #1020");
+
+    test_disasm(0xb000, "add sp, #0");
+    test_disasm(0xb001, "add sp, #4");
+    test_disasm(0xb07f, "add sp, #508");
+
+    test_disasm(0xb080, "sub sp, #0");
+    test_disasm(0xb081, "sub sp, #4");
+    test_disasm(0xb0ff, "sub sp, #508");
+
 #if 0
-add r0, pc, #0 // (adr r0, 0x0// a000 add r0, pc, #0 // (adr r0, 0x00014004)
-add r0, pc, #4 // (adr r0, 0x0// a001 add r0, pc, #4 // (adr r0, 0x00014008)
-add r0, pc, #1020 // (adr r0, // a0ff add r0, pc, #1020 // (adr r0, 0x000145fc)
-add r1, pc, #0 // (adr r1, 0x0// a100 add r1, pc, #0 // (adr r1, 0x00014204)
-add r1, pc, #4 // (adr r1, 0x0// a101 add r1, pc, #4 // (adr r1, 0x00014208)
-add r1, pc, #1020 // (adr r1, // a1ff add r1, pc, #1020 // (adr r1, 0x000147fc)
-add r2, pc, #0 // (adr r2, 0x0// a200 add r2, pc, #0 // (adr r2, 0x00014404)
-add r2, pc, #4 // (adr r2, 0x0// a201 add r2, pc, #4 // (adr r2, 0x00014408)
-add r2, pc, #1020 // (adr r2, // a2ff add r2, pc, #1020 // (adr r2, 0x000149fc)
-add r3, pc, #0 // (adr r3, 0x0// a300 add r3, pc, #0 // (adr r3, 0x00014604)
-add r3, pc, #4 // (adr r3, 0x0// a301 add r3, pc, #4 // (adr r3, 0x00014608)
-add r3, pc, #1020 // (adr r3, // a3ff add r3, pc, #1020 // (adr r3, 0x00014bfc)
-add r4, pc, #0 // (adr r4, 0x0// a400 add r4, pc, #0 // (adr r4, 0x00014804)
-add r4, pc, #4 // (adr r4, 0x0// a401 add r4, pc, #4 // (adr r4, 0x00014808)
-add r4, pc, #1020 // (adr r4, // a4ff add r4, pc, #1020 // (adr r4, 0x00014dfc)
-add r5, pc, #0 // (adr r5, 0x0// a500 add r5, pc, #0 // (adr r5, 0x00014a04)
-add r5, pc, #4 // (adr r5, 0x0// a501 add r5, pc, #4 // (adr r5, 0x00014a08)
-add r5, pc, #1020 // (adr r5, // a5ff add r5, pc, #1020 // (adr r5, 0x00014ffc)
-add r6, pc, #0 // (adr r6, 0x0// a600 add r6, pc, #0 // (adr r6, 0x00014c04)
-add r6, pc, #4 // (adr r6, 0x0// a601 add r6, pc, #4 // (adr r6, 0x00014c08)
-add r6, pc, #1020 // (adr r6, // a6ff add r6, pc, #1020 // (adr r6, 0x000151fc)
-add r7, pc, #0 // (adr r7, 0x0// a700 add r7, pc, #0 // (adr r7, 0x00014e04)
-add r7, pc, #4 // (adr r7, 0x0// a701 add r7, pc, #4 // (adr r7, 0x00014e08)
-add r7, pc, #1020 // (adr r7, // a7ff add r7, pc, #1020 // (adr r7, 0x000153fc)
-
-add r0, sp, #0               // a800 add r0, sp, #0
-add r0, sp, #4               // a801 add r0, sp, #4
-add r0, sp, #1020 // 0x3fc    // a8ff add r0, sp, #1020 // 0x3fc
-add r1, sp, #0               // a900 add r1, sp, #0
-add r1, sp, #4               // a901 add r1, sp, #4
-add r1, sp, #1020 // 0x3fc    // a9ff add r1, sp, #1020 // 0x3fc
-add r2, sp, #0               // aa00 add r2, sp, #0
-add r2, sp, #4               // aa01 add r2, sp, #4
-add r2, sp, #1020 // 0x3fc    // aaff add r2, sp, #1020 // 0x3fc
-add r3, sp, #0               // ab00 add r3, sp, #0
-add r3, sp, #4               // ab01 add r3, sp, #4
-add r3, sp, #1020 // 0x3fc    // abff add r3, sp, #1020 // 0x3fc
-add r4, sp, #0               // ac00 add r4, sp, #0
-add r4, sp, #4               // ac01 add r4, sp, #4
-add r4, sp, #1020 // 0x3fc    // acff add r4, sp, #1020 // 0x3fc
-add r5, sp, #0               // ad00 add r5, sp, #0
-add r5, sp, #4               // ad01 add r5, sp, #4
-add r5, sp, #1020 // 0x3fc    // adff add r5, sp, #1020 // 0x3fc
-add r6, sp, #0               // ae00 add r6, sp, #0
-add r6, sp, #4               // ae01 add r6, sp, #4
-add r6, sp, #1020 // 0x3fc    // aeff add r6, sp, #1020 // 0x3fc
-add r7, sp, #0               // af00 add r7, sp, #0
-add r7, sp, #4               // af01 add r7, sp, #4
-add r7, sp, #1020 // 0x3fc    // afff add r7, sp, #1020 // 0x3fc
-add sp, #0                   // b000 add sp, #0
-add sp, #4                   // b001 add sp, #4
-add sp, #508 // 0x1fc         // b07f add sp, #508 // 0x1fc
-
-sub sp, #0                   // b080 sub sp, #0
-sub sp, #4                   // b081 sub sp, #4
-sub sp, #508 // 0x1fc         // b0ff sub sp, #508 // 0x1fc
-
 sxth r0, r0                  // b200 sxth r0, r0
 sxth r1, r0                  // b201 sxth r1, r0
 sxth r2, r0                  // b202 sxth r2, r0

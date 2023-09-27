@@ -414,12 +414,12 @@ static int thumb_add_sp_pc(unsigned short opcode, unsigned address,
     const char *src_name;
 
     if (SP) {
-        src_name = "SP";
+        src_name = reg_name[13];
     } else {
-        src_name = "PC";
+        src_name = reg_name[15];
     }
 
-    snprintf(instruction->text, sizeof(instruction->text), "ADD %s, %s, #%#x", reg_name[Rd],
+    snprintf(instruction->text, sizeof(instruction->text), "add %s, %s, #%u", reg_name[Rd],
              src_name, imm * 4);
 
     return 0;
@@ -433,12 +433,12 @@ static int thumb_adjust_stack(unsigned short opcode, unsigned address,
     const char *mnemonic;
 
     if (opc) {
-        mnemonic = "SUB";
+        mnemonic = "sub";
     } else {
-        mnemonic = "ADD";
+        mnemonic = "add";
     }
 
-    snprintf(instruction->text, sizeof(instruction->text), "%s SP, #%#x", mnemonic, imm * 4);
+    snprintf(instruction->text, sizeof(instruction->text), "%s %s, #%u", mnemonic, reg_name[13], imm * 4);
 
     return 0;
 }
