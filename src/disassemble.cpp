@@ -483,6 +483,22 @@ static std::string thumb_byterev(unsigned short opcode)
     return text.str();
 }
 
+static std::string thumb_hint(unsigned short opcode)
+{
+    switch ((opcode >> 4) & 0x0f) {
+    case 1:
+        return "yield";
+    case 2:
+        return "wfe";
+    case 3:
+        return "wfi";
+    case 4:
+        return "sev";
+    default:
+        return "";
+    }
+}
+
 static std::string long_b_bl(unsigned opcode, unsigned address)
 {
     unsigned offset = opcode & 0x7ff;
@@ -747,6 +763,8 @@ std::string arm_disassemble(unsigned opcode, unsigned address)
             return thumb_byterev(opcode);
         case 0xe:
             return thumb_breakpoint(opcode);
+        case 0xf:
+            return thumb_hint(opcode);
         default:
             // Undefined instruction.
             return "";

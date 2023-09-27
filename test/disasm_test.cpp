@@ -1473,6 +1473,11 @@ TEST(disasm, opcode16)
     test_disasm(0xbe01, "bkpt 0x0001");
     test_disasm(0xbeff, "bkpt 0x00ff");
 
+    test_disasm(0xbf10, "yield");
+    test_disasm(0xbf20, "wfe");
+    test_disasm(0xbf30, "wfi");
+    test_disasm(0xbf40, "sev");
+
     test_disasm(0xc004, "stmia r0!, {r2}");
     test_disasm(0xc008, "stmia r0!, {r3}");
     test_disasm(0xc010, "stmia r0!, {r4}");
