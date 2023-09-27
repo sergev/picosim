@@ -166,6 +166,23 @@ public:
     void data_write16(uint32_t addr, uint16_t data) { data_write(addr, data, 2); }
     void data_write32(uint32_t addr, uint32_t data) { data_write(addr, data, 4); }
 
+    //
+    // Special register field encoding
+    //
+    enum {
+        SYSM_APSR    = 0,  // The flags from previous instructions
+        SYSM_IAPSR   = 1,  // A composite of IPSR and APSR
+        SYSM_EAPSR   = 2,  // A composite of EPSR and APSR
+        SYSM_XPSR    = 3,  // A composite of all three PSR registers
+        SYSM_IPSR    = 5,  // The Interrupt status register
+        SYSM_EPSR    = 6,  // The execution status register
+        SYSM_IEPSR   = 7,  // A composite of IPSR and EPSR
+        SYSM_MSP     = 8,  // The Main Stack pointer
+        SYSM_PSP     = 9,  // The Process Stack pointer
+        SYSM_PRIMASK = 16, // Register to mask out configurable exceptions
+        SYSM_CONTROL = 20, // Stack select, Thread mode privilege
+    };
+
 private:
     /**
      * @brief Bank of CPU registers, including PC.
@@ -302,6 +319,7 @@ private:
     void thumb_branch_link();
     void thumb_barrier();
     void thumb_sysreg();
+    void thumb_cps();
     void thumb_udf();
     void thumb_svc();
     void linux_syscall(int op);

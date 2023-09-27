@@ -81,6 +81,10 @@ void Processor::process_opcode16()
         thumb_load_store_multiple();
         break;
 
+    case 0xb6:
+        thumb_cps();
+        break;
+
     case 0xba:
         thumb_byterev();
         break;
@@ -538,6 +542,20 @@ void Processor::thumb_adjust_stack()
 void Processor::thumb_extend()
 {
     terminate_simulation(__func__); // TODO
+}
+
+void Processor::thumb_cps()
+{
+    switch (opcode & 0xff) {
+    case 0x62:
+        // CPSIE I instruction.
+        set_sysreg(SYSM_PRIMASK, 0);
+        break;
+    case 0x72:
+        // CPSID I instruction.
+        set_sysreg(SYSM_PRIMASK, 1);
+        break;
+    }
 }
 
 void Processor::thumb_byterev()

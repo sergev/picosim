@@ -21,6 +21,7 @@ PROG            = movs_imm.elf \
                   psr.elf \
                   sysreg.elf \
                   nop.elf \
+                  cpsie_cpsid.elf \
                   write.elf \
                   hello.elf
 

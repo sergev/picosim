@@ -9,23 +9,6 @@
 
 #include "disassemble.h"
 
-//
-// Special register field encoding
-//
-enum {
-    SYSM_APSR    = 0,  // The flags from previous instructions
-    SYSM_IAPSR   = 1,  // A composite of IPSR and APSR
-    SYSM_EAPSR   = 2,  // A composite of EPSR and APSR
-    SYSM_XPSR    = 3,  // A composite of all three PSR registers
-    SYSM_IPSR    = 5,  // The Interrupt status register
-    SYSM_EPSR    = 6,  // The execution status register
-    SYSM_IEPSR   = 7,  // A composite of IPSR and EPSR
-    SYSM_MSP     = 8,  // The Main Stack pointer
-    SYSM_PSP     = 9,  // The Process Stack pointer
-    SYSM_PRIMASK = 16, // Register to mask out configurable exceptions
-    SYSM_CONTROL = 20, // Stack select, Thread mode privilege
-};
-
 Processor::Processor(sc_core::sc_module_name const name, bool debug)
     : sc_module(name), instr_bus("instr_bus")
 {
