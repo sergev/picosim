@@ -54,6 +54,12 @@ TEST(opcode, add_reg_reg)
     EXPECT_EQ(sim.get_reg(6), 0x23033097); // -832103203 + 1419514810
     EXPECT_EQ(sim.get_reg(8), 0x20000000); // Carry flag
     EXPECT_EQ(sim.get_reg(7), 1);
+
+    // Tested on RP2040 board:
+    // 7502fe1f + c015a134 -> 35189f53 flags 20000000
+    // 8c832ed2 + d306fde3 -> 5f8a2cb5 flags 30000000
+    // 9b74a3db + 776dd37e -> 12e27759 flags 20000000
+    // ce671cdd + 549c13ba -> 23033097 flags 20000000
 }
 
 #include "sc_main.cpp"

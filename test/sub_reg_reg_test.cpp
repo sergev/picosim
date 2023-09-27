@@ -54,6 +54,12 @@ TEST(opcode, sub_reg_reg)
     EXPECT_EQ(sim.get_reg(6), 0x79cb0923); // -832103203 - 1419514810
     EXPECT_EQ(sim.get_reg(8), 0x30000000); // Carry+Overflow flags
     EXPECT_EQ(sim.get_reg(7), 1);
+
+    // Tested on RP2040 board:
+    // 7502fe1f - c015a134 -> b4ed5ceb flags 90000000
+    // 8c832ed2 - d306fde3 -> b97c30ef flags 80000000
+    // 9b74a3db - 776dd37e -> 2406d05d flags 30000000
+    // ce671cdd - 549c13ba -> 79cb0923 flags 30000000
 }
 
 #include "sc_main.cpp"

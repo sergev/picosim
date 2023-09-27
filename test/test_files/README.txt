@@ -40,7 +40,7 @@ pop.S               pop {r1, r2, pc}
 
         (Arithmetic operations)
 add_reg_reg.S       add r1, r2, r3
-                    add r1, r2, #7
+add_reg_imm.S       add r1, r2, #7
                     adds r1, #255
                     add r11, r12
 add_pc_imm.S        add r1, pc, #1020
