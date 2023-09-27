@@ -441,7 +441,8 @@ void Processor::thumb_load_store_reg()
         data_write16(address, get_reg(rd));
         break;
     case 2:
-        terminate_simulation("strb"); // TODO
+        // STRB instruction.
+        data_write8(address, get_reg(rd));
         break;
     case 3:
         // LDRSB instruction: sign extension.
@@ -492,7 +493,7 @@ void Processor::thumb_load_store_imm()
             set_reg(rd, data_read8(address));
         } else {
             // STRB instruction.
-            terminate_simulation("strb"); // TODO
+            data_write8(address, get_reg(rd));
         }
         break;
     default:

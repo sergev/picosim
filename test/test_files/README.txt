@@ -8,7 +8,7 @@ movs_reg.S          movs r1, r2
 mov_reg.S           mov r11, r12
 psr.S               msr APSR, r1
 sysreg.S            mrs r1, PRIMASK
-cpsie_cpsid.S       cpsie i, cpsid i
+cpsie_cpsid.S       cpsie i; cpsid i
 nop.S               nop
 
         (Memory Load)
@@ -28,7 +28,8 @@ ldrsh_reg_reg.S     ldrsh r1, [r2, r3]
 str_reg_imm.S       str r1, [r2, #124]
 str_sp.S            str r1, [sp, #1020]
 str_reg_reg.S       str r1, [r2, r3]
-                    strb r1, [r2, #31]
+strb_reg_imm.S      strb r1, [r2, #31]
+strb_reg_reg.S      strb r1, [r2, r3]
 strh_reg_imm.S      strh r1, [r2, #62]
 strh_reg_reg.S      strh r1, [r2, r3]
                     stmia r7!, {r0, r1, r2, r3, r4, r5, r6}
