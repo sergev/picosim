@@ -50,6 +50,7 @@ PROG            = movs_imm.elf \
                   neg.elf \
                   mul.elf \
                   and.elf \
+                  orr.elf \
                   write.elf \
                   hello.elf
 

@@ -390,9 +390,14 @@ void Processor::thumb_arith_reg()
         // CMN instruction.
         add_with_carry(get_reg(rd), get_reg(rm), 0);
         break;
-    case 0xC:
-        terminate_simulation("orr"); // TODO
+    case 0xC: {
+        // ORR instruction.
+        int32_t result = get_reg(rd) | get_reg(rm);
+        set_reg(rd, result);
+        xpsr.field.n = is_negative(result);
+        xpsr.field.z = is_zero(result);
         break;
+    }
     case 0xD: {
         // MUL instruction.
         int32_t result = get_reg(rd) * get_reg(rm);
