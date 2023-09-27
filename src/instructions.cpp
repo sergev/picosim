@@ -735,7 +735,22 @@ void Processor::thumb_branch_link()
 
 void Processor::thumb_barrier()
 {
-    terminate_simulation(__func__); // TODO
+    unsigned op                      = (opcode >> 4) & 0x0f;
+    unsigned option [[maybe_unused]] = opcode & 0x0f;
+
+    switch (op) {
+    case 4:
+        // DSB instruction.
+        break;
+    case 5:
+        // DMB instruction.
+        break;
+    case 6:
+        // ISB instruction.
+        break;
+    default:
+        terminate_simulation("Uknown barrier instruction");
+    }
 }
 
 void Processor::thumb_udf()

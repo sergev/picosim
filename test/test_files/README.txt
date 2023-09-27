@@ -9,7 +9,6 @@ mov_reg.S           mov r11, r12
 psr.S               msr APSR, r1
 sysreg.S            mrs r1, PRIMASK
 cpsie_cpsid.S       cpsie i; cpsid i
-nop.S               nop
 
         (Memory Load)
 ldr_reg_imm.S       ldr r1, [r2, #124]
@@ -92,9 +91,7 @@ tst.S               tst r1, r2
                     bx r1
 
         (Barriers)
-                    dsb
-                    dmb
-                    isb
+nop.S               nop, dsb, dmb, isb
 
         (Events)
                     bkpt 0x00ff
