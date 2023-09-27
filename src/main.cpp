@@ -123,11 +123,10 @@ int sc_main(int argc, char *argv[])
     if (!filename.empty()) {
         sim.read_elf_file(filename);
     }
-    sim.lock_flash_memory();
 
     auto start = std::chrono::steady_clock::now();
     std::cout << "----- Start -----" << std::endl;
-    sc_core::sc_start();
+    sim.run();
     auto end = std::chrono::steady_clock::now();
 
     std::chrono::duration<double> elapsed_seconds = end - start;

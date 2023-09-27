@@ -6,8 +6,8 @@
  */
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#ifndef INC_EXTENSION_BASE_H_
-#define INC_EXTENSION_BASE_H_
+#ifndef INSTRUCTION_GENERIC_H_
+#define INSTRUCTION_GENERIC_H_
 
 #include "log.h"
 #include "systemc"
@@ -51,4 +51,4 @@ protected:
     Processor &cpu;
 };
 
-#endif /* INC_EXTENSION_BASE_H_ */
+#endif /* INSTRUCTION_GENERIC_H_ */

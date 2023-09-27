@@ -32,5 +32,6 @@ function(cpp_TEST TNAME)
     gtest_discover_tests(${TNAME} EXTRA_ARGS --gtest_repeat=1 PROPERTIES TIMEOUT 60)
 endfunction()
 
-tlm_test(smoke_test)
 cpp_test(disasm_test)
+tlm_test(smoke_test)
+tlm_test(movs_imm_test)

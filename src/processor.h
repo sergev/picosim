@@ -19,23 +19,6 @@
 #include "tlm_utils/simple_initiator_socket.h"
 #include "tlm_utils/tlm_quantumkeeper.h"
 
-typedef enum {
-    BASE_EXTENSION,
-    M_EXTENSION,
-    A_EXTENSION,
-    F_EXTENSION,
-    D_EXTENSION,
-    Q_EXTENSION,
-    L_EXTENSION,
-    C_EXTENSION,
-    R_EXTENSION,
-    J_EXTENSION,
-    P_EXTENSION,
-    V_EXTENSION,
-    N_EXTENSION,
-    UNKNOWN_EXTENSION
-} extension_t;
-
 enum {
     EXCEPTION_CAUSE_INSTRUCTION_ACCESS = 1,
     EXCEPTION_CAUSE_ILLEGAL_INSTRUCTION = 2,
@@ -241,12 +224,6 @@ private:
      * @brief CPU mai thread
      */
     void cpu_thread();
-
-    /**
-     * @brief returns what instruction extension
-     * @return extension
-     */
-    extension_t check_extension() const;
 
     /**
      *

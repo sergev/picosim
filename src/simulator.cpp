@@ -1,6 +1,6 @@
 #include "simulator.h"
 
-Simulator::Simulator(sc_core::sc_module_name name, bool debug_enable)
+Simulator::Simulator(const sc_core::sc_module_name &name, bool debug_enable)
   : sc_module(name),
     cpu("Processor", debug_enable),
     bus("BusCtrl"),
@@ -35,6 +35,20 @@ Simulator::Simulator(sc_core::sc_module_name name, bool debug_enable)
     // Make ROM read only.
     // Keep Flash memory still writable, until a binary image is loaded.
     rom.set_read_only();
+}
+
+//
+// Run program.
+//
+void Simulator::run(uint32_t start_address)
+{
+    // Make Flash memory read only.
+    flash.set_read_only();
+
+    if (start_address) {
+        cpu.set_pc(start_address);
+    }
+    sc_core::sc_start();
 }
 
 //

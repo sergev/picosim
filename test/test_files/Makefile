@@ -1,15 +1,20 @@
 CC              = arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb
 OBJDUMP         = arm-none-eabi-objdump
 CFLAGS          = -O -Wall -Werror
-LDFLAGS         =
-LIBS            = -lc -lgloss-linux
-OBJ             = hello.o
+LDFLAGS         = -nostdlib -static
+PROG            = movs_imm.elf \
+                  write.elf \
+                  hello.elf
 
-all:            hello.elf
+all:            $(PROG)
 
 clean:
-		rm -f hello.elf *.o
+		rm -f *.elf *.o *.dis
 
 hello.elf:      hello.o
-		$(CC) $(LDFLAGS) $(CFLAGS) $< $(LIBS) -o $@
+		$(CC) $< -lc -lgloss-linux -o $@
 		$(OBJDUMP) -d -S $@ > hello.dis
+
+%.elf:          %.o
+		$(CC) $(LDFLAGS) $< -o $@
+		$(OBJDUMP) -d -S $@ > $*.dis

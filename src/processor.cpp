@@ -219,8 +219,7 @@ bool Processor::cpu_step()
     wait(delay);
 
     bool breakpoint = false;
-    auto extension = check_extension();
-    bool incPCby2 = (extension == C_EXTENSION);
+    bool incPCby2 = true; // TODO
 
     if (Log::is_verbose()) {
         auto &out = Log::out();
@@ -280,30 +279,6 @@ void Processor::invalidate_direct_mem_ptr(sc_dt::uint64 start, sc_dt::uint64 end
     (void)start;
     (void)end;
     dmi_ptr_valid = false;
-}
-
-extension_t Processor::check_extension() const
-{
-    if (((instruction & 0x7F) == 0b0110011) && (((instruction & 0x7F000000) >> 25) == 0b0000001)) {
-        return M_EXTENSION;
-    }
-    if ((instruction & 0x7F) == 0b0101111) {
-        return A_EXTENSION;
-    }
-    if ((instruction & 0x03) == 0b11) {
-        return BASE_EXTENSION;
-    }
-    if ((instruction & 0x03) == 0b00) {
-        return C_EXTENSION;
-    }
-    if ((instruction & 0x03) == 0b01) {
-        return C_EXTENSION;
-    }
-    if ((instruction & 0x03) == 0b10) {
-        return C_EXTENSION;
-    }
-    std::cout << "Unknown" << std::endl;
-    return UNKNOWN_EXTENSION;
 }
 
 void Processor::set_priv(int prv)

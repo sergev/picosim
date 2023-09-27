@@ -38,18 +38,11 @@ private:
     // Entry address (PC) read from ELF file.
     uint32_t entry_address{ 0 };
 
-    // Address of signature area.
-    uint32_t begin_signature{ 0 };
-    uint32_t end_signature{ 0 };
-
 public:
-    Simulator(sc_core::sc_module_name name, bool debug_enable = false);
+    Simulator(const sc_core::sc_module_name &name = "pico", bool debug_enable = false);
 
-    // Make Flash memory read only.
-    void lock_flash_memory() { flash.set_read_only(); }
-
-    // Get statistics counters.
-    uint64_t get_instructions_executed() { return cpu.get_instructions_executed(); }
+    // Run program.
+    void run(uint32_t start_address = 0);
 
     // Debug access to the memory, 1 to 4 bytes.
     uint8_t debug_load8(uint32_t addr) { return debug_load(addr, 1); }
@@ -65,19 +58,20 @@ public:
     unsigned debug_read(uint8_t *buf, uint32_t addr, unsigned nbytes);
     unsigned debug_write(const uint8_t *buf, uint32_t addr, unsigned nbytes);
 
-    // Compare the signature contents to the reference.
-    // This method is available only for tests.
-    void check_signature(const std::string &filename);
-
     // Read ELF binary file
     void read_elf_file(const std::string &filename);
 
     // Return Program Counter read from executable image.
     uint32_t get_start_address() const { return entry_address; }
 
-    // Address of signature area.
-    uint32_t get_begin_signature() { return begin_signature; }
-    uint32_t get_end_signature() { return end_signature; };
+    // Get statistics counters.
+    uint64_t get_instructions_executed() { return cpu.get_instructions_executed(); }
+
+    // Get CPU register value.
+    int32_t get_reg(int reg_num) { return cpu.get_reg(reg_num); }
+
+    // Get PC value of core #0.
+    uint32_t get_pc() { return cpu.get_pc(); }
 };
 
 // Run test and compare to the reference.
