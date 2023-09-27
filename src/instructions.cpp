@@ -427,7 +427,32 @@ void Processor::thumb_load_store_reg()
 
 void Processor::thumb_load_store_imm()
 {
-    terminate_simulation(__func__); // TODO
+    unsigned rd        = (opcode >> 0) & 0x7;
+    unsigned rn        = (opcode >> 3) & 0x7;
+    unsigned offset    = (opcode >> 6) & 0x1f;
+    unsigned load_flag = (opcode >> 11) & 1;
+    unsigned address   = get_reg(rn);
+
+    switch (opcode >> 12) {
+    case 0x8:
+        address += offset << 1;
+        terminate_simulation(load_flag ? "ldrh" : "strh"); // TODO
+        break;
+    case 0x7:
+        address += offset;
+        terminate_simulation(load_flag ? "ldrb" : "strb"); // TODO
+        break;
+    default:
+        address += offset << 2;
+        if (load_flag) {
+            // LDR instruction.
+            set_reg(rd, data_read32(address));
+        } else {
+            // STR instruction.
+            terminate_simulation("str"); // TODO
+        }
+        break;
+    }
 }
 
 void Processor::thumb_load_store_stack()
