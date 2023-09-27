@@ -79,7 +79,7 @@ asr_reg.S           asr r1, r2
 lsl_imm.S           lsl r1, r2, #31
 lsl_reg.S           lsl r1, r2
 lsr_imm.S           lsr r1, r2, #32
-                    lsr r1, r2
+lsr_reg.S           lsr r1, r2
                     ror r1, r2
 
         Bit Shuffle

@@ -374,22 +374,36 @@ void Processor::thumb_arith_reg()
         break;
     case 0x2: {
         // LSL instruction.
-        uint32_t value = get_reg(rd);
+        uint64_t value = (uint32_t) get_reg(rd);
         unsigned shift = get_reg(rm) & 0xff;
         if (shift > 0) {
-            if (shift > 32) {
-                shift = 32;
-                xpsr.field.c = 0;
-            } else {
+            if (shift <= 32) {
                 xpsr.field.c = value >> (32 - shift);
+                value <<= shift;
+            } else {
+                xpsr.field.c = 0;
+                value = 0;
             }
         }
-        set_reg_nz(rd, value << shift);
+        set_reg_nz(rd, value);
         break;
     }
-    case 0x3:
-        terminate_simulation("lsr"); // TODO
+    case 0x3: {
+        // LSR instruction.
+        uint64_t value = (uint32_t) get_reg(rd);
+        unsigned shift = get_reg(rm) & 0xff;
+        if (shift > 0) {
+            if (shift <= 32) {
+                xpsr.field.c = value >> (shift - 1);
+                value >>= shift;
+            } else {
+                xpsr.field.c = 0;
+                value = 0;
+            }
+        }
+        set_reg_nz(rd, value);
         break;
+    }
     case 0x4: {
         // ASR instruction.
         int64_t value  = get_reg(rd);
