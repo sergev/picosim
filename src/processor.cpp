@@ -170,23 +170,19 @@ bool Processor::cpu_process_interrupt()
 }
 
 //
-// Get new value of instruction at PC.
-// Update `opcode' field.
+// Fetch two-byte instruction at given address.
 //
-void Processor::fetch_instruction()
+unsigned Processor::fetch16(unsigned address)
 {
+    uint16_t buf;
     sc_core::sc_time delay = sc_core::SC_ZERO_TIME;
-    union {
-        uint8_t u8[4];
-        uint16_t u16[2];
-    } buf;
 
     if (dmi_ptr_valid) {
         /* if memory_offset at Memory module is set, this won't work */
-        memcpy(&buf.u8, dmi_ptr + register_bank.getPC(), 4);
+        memcpy(&buf, dmi_ptr + address, sizeof(buf));
         delay += dmi_read_latency;
 #if 0
-        if (Log::is_verbose() && register_bank.getPC() >= 0x40000000 && register_bank.getPC() <= 0x4005ffff) {
+        if (Log::is_verbose() && address >= 0x40000000 && address <= 0x4005ffff) {
             Log::out() << "-------- Fetch from ROM" << std::endl;
         }
 #endif
@@ -194,16 +190,16 @@ void Processor::fetch_instruction()
         tlm::tlm_generic_payload trans;
         trans.set_command(tlm::TLM_READ_COMMAND);
         trans.set_data_ptr(reinterpret_cast<unsigned char *>(&buf));
-        trans.set_data_length(4);
-        trans.set_streaming_width(4);       // = data_length to indicate no streaming
-        trans.set_byte_enable_ptr(nullptr); // 0 indicates unused
-        trans.set_dmi_allowed(false);       // Mandatory initial value
+        trans.set_data_length(sizeof(buf));
+        trans.set_streaming_width(sizeof(buf)); // = data_length to indicate no streaming
+        trans.set_byte_enable_ptr(nullptr);     // 0 indicates unused
+        trans.set_dmi_allowed(false);           // Mandatory initial value
         trans.set_response_status(tlm::TLM_INCOMPLETE_RESPONSE);
-        trans.set_address(register_bank.getPC());
+        trans.set_address(address);
 
         instr_bus->b_transport(trans, delay);
         if (trans.is_response_error()) {
-            Log::err() << "Bad Fetch at 0x" << std::hex << register_bank.getPC() << std::endl;
+            Log::err() << "Bad Fetch at 0x" << std::hex << address << std::endl;
             SC_REPORT_ERROR("CPU base", "Read memory");
         }
 
@@ -219,23 +215,29 @@ void Processor::fetch_instruction()
     }
     wait(delay);
 
-    // Convert from little endian.
-    opcode = (buf.u16[0] << 16) | buf.u16[1];
+    return buf;
 }
 
 bool Processor::cpu_step()
 {
-    fetch_instruction();
+    // Fetch instruction.
+    // Assume 16-bit opcode.
+    unsigned pc = register_bank.getPC();
+    opcode = fetch16(pc);
     unsigned pc_increment = arm_opcode_length(opcode);
+    if (pc_increment == 4) {
+        // Extend to 32-bit opcode.
+        opcode = (opcode << 16) | fetch16(pc + 2);
+    }
 
     if (Log::is_verbose()) {
         auto &out = Log::out();
-        out << std::hex << std::setw(8) << std::setfill('0') << register_bank.getPC() << ": ";
+        out << std::hex << std::setw(8) << std::setfill('0') << pc << ": ";
         if (pc_increment == 2)
             out << std::setw(4) << (uint16_t)opcode << "     ";
         else
             out << std::setw(8) << opcode << " ";
-        out << arm_disassemble(opcode, register_bank.getPC()) << std::endl;
+        out << arm_disassemble(opcode, pc) << std::endl;
     }
 
     // Execute instruction.

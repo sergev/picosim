@@ -33,15 +33,19 @@ static const char *reg_name[16] = {
     "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8", "r9", "sl", "fp", "ip", "sp", "lr", "pc",
 };
 
-static std::string thumb_b_bl_blx(unsigned short opcode, unsigned address)
+//
+// Unknown instruction.
+//
+static const char UNKNOWN[] = "???";
+
+static std::string thumb_branch(unsigned short opcode, unsigned address)
 {
     unsigned offset = opcode & 0x7ff;
     unsigned opc = (opcode >> 11) & 0x3;
     std::ostringstream text;
 
     if (opc != 0) {
-        // Unknown instruction.
-        return "";
+        return UNKNOWN;
     }
 
     // Sign extend 11-bit offset.
@@ -109,7 +113,7 @@ static std::string thumb_shift_imm(unsigned short opcode)
     return text.str();
 }
 
-static std::string thumb_data_proc_imm(unsigned short opcode)
+static std::string thumb_arith_imm(unsigned short opcode)
 {
     unsigned imm = opcode & 0xff;
     unsigned Rd = (opcode >> 8) & 0x7;
@@ -136,7 +140,7 @@ static std::string thumb_data_proc_imm(unsigned short opcode)
     return text.str();
 }
 
-static std::string thumb_data_proc(unsigned short opcode)
+static std::string thumb_arith_reg(unsigned short opcode)
 {
     unsigned high_reg = (opcode & 0x0400) >> 10;
     unsigned op = (opcode & 0x03C0) >> 6;
@@ -169,14 +173,13 @@ static std::string thumb_data_proc(unsigned short opcode)
             if ((opcode & 0x7) == 0x0) {
                 if (H1) {
                     // BLX is not supported.
-                    return "";
+                    return UNKNOWN;
                 } else {
                     text << "bx " << reg_name[Rm];
                     return text.str();
                 }
             }
-            // Undefined instruction.
-            return "";
+            return UNKNOWN;
         }
     } else {
         switch (op) {
@@ -476,8 +479,7 @@ static std::string thumb_byterev(unsigned short opcode)
         text << "revsh ";
         break;
     default:
-        // Undefined instruction.
-        return "";
+        return UNKNOWN;
     }
     text << reg_name[rd] << ", " << reg_name[rs];
     return text.str();
@@ -495,11 +497,11 @@ static std::string thumb_hint(unsigned short opcode)
     case 4:
         return "sev";
     default:
-        return "";
+        return UNKNOWN;
     }
 }
 
-static std::string long_b_bl(unsigned opcode, unsigned address)
+static std::string long_bl(unsigned opcode, unsigned address)
 {
     unsigned offset = opcode & 0x7ff;
     unsigned b21 = 1 << 21;
@@ -530,7 +532,7 @@ static std::string long_b_bl(unsigned opcode, unsigned address)
 
     if (!(opcode & (1 << 14))) {
         // B.W is not supported.
-        return "";
+        return UNKNOWN;
     }
     text << "bl 0x" << std::hex << std::setfill('0') << std::setw(8) << address;
     return text.str();
@@ -593,7 +595,7 @@ static const char *special_name(int number)
     return "(RESERVED)";
 }
 
-static std::string long_misc(unsigned opcode)
+static std::string long_barrier(unsigned opcode)
 {
     unsigned option = opcode & 0x0f;
     std::ostringstream text;
@@ -609,7 +611,7 @@ static std::string long_misc(unsigned opcode)
         text << "isb";
         break;
     default:
-        return "";
+        return UNKNOWN;
     }
 
     if (option) {
@@ -618,108 +620,61 @@ static std::string long_misc(unsigned opcode)
     return text.str();
 }
 
-//
-// Branches and miscellaneous control
-//
-static std::string long_b_misc(unsigned opcode, unsigned address)
+static std::string long_sysreg(unsigned opcode)
 {
     std::ostringstream text;
 
-    // Permanently undefined.
-    if ((opcode & 0x07f07000) == 0x07f02000) {
-        return "";
-    }
-
-    switch ((opcode >> 12) & 0x5) {
-    case 0x1:
-    case 0x5:
-        return long_b_bl(opcode, address);
-    case 0x4:
-        return "";
-    case 0:
-        if (((opcode >> 23) & 0x07) != 0x07)
-            return "";
-        if (opcode & (1 << 26))
-            return "";
-        break;
-    }
-
-    switch ((opcode >> 20) & 0x7f) {
-    case 0x38:
-    case 0x39:
+    switch ((opcode >> 20) & 0x6) {
+    case 0x0:
         text << "msr " << special_name(opcode & 0xff) << ", " << reg_name[(opcode >> 16) & 0x0f];
         return text.str();
-    case 0x3b:
-        return long_misc(opcode);
-    case 0x3e:
-    case 0x3f:
+    case 0x6:
         text << "mrs " << reg_name[(opcode >> 8) & 0x0f] << ", " << special_name(opcode & 0xff);
         return text.str();
     }
-
-    return "";
+    return UNKNOWN;
 }
 
 //
-// Compute length of the opcode: 2 or 4 bytes.
+// Disassemble 32-bit instruction.
 //
-unsigned arm_opcode_length(unsigned opcode)
+static std::string disassemble_32bit(unsigned opcode, unsigned address)
 {
-    // Put 16-bit opcodes into upper bits.
-    if ((opcode >> 16) == 0)
-        opcode <<= 16;
+    if ((opcode & 0xf800d000) == 0xf000d000)
+        return long_bl(opcode, address);
 
-    if ((opcode & 0xe0000000) == 0xe0000000 && (opcode & 0x18000000) != 0)
-        return 4;
+    if ((opcode & 0xffffffc0) == 0xf3bf8f40)
+        return long_barrier(opcode);
 
-    return 2;
+    if ((opcode & 0xff90f060) == 0xf3808000)
+        return long_sysreg(opcode);
+
+    return UNKNOWN;
 }
 
 //
-// Disassemble instruction.
+// Disassemble 16-bit Thumb1 instruction.
 //
-std::string arm_disassemble(unsigned opcode, unsigned address)
+static std::string disassemble_16bit(unsigned opcode, unsigned address)
 {
-    // Put 16-bit opcodes into upper bits.
-    if ((opcode >> 16) == 0)
-        opcode <<= 16;
-
-    // Clear low bit ... it's set on function pointers.
-    address &= ~1;
-
-    if ((opcode & 0xe0000000) == 0xe0000000 && (opcode & 0x18000000) != 0) {
-        //
-        // Disassemble32-bit instruction.
-        //
-        if ((opcode & 0x18008000) == 0x10008000) {
-            return long_b_misc(opcode, address);
-        }
-        return "";
+    // Add/substract register or immediate.
+    if ((opcode & 0xf800) == 0x1800) {
+        return thumb_add_sub(opcode);
     }
 
-    //
-    // Disassemble 16-bit Thumb1 instruction.
-    //
-    opcode >>= 16;
-
-    if ((opcode & 0xe000) == 0x0000) {
-        if ((opcode & 0x1800) == 0x1800) {
-            // Add/substract register or immediate.
-            return thumb_add_sub(opcode);
-        } else {
-            // Shift by immediate.
-            return thumb_shift_imm(opcode);
-        }
+    // Shift by immediate.
+    else if ((opcode & 0xe000) == 0x0000) {
+        return thumb_shift_imm(opcode);
     }
 
     // Add/substract/compare/move immediate.
     else if ((opcode & 0xe000) == 0x2000) {
-        return thumb_data_proc_imm(opcode);
+        return thumb_arith_imm(opcode);
     }
 
-    // Data processing instructions.
+    // Arithmetic instructions with registers.
     else if ((opcode & 0xf800) == 0x4000) {
-        return thumb_data_proc(opcode);
+        return thumb_arith_reg(opcode);
     }
 
     // Load from literal pool.
@@ -733,7 +688,8 @@ std::string arm_disassemble(unsigned opcode, unsigned address)
     }
 
     // Load/Store immediate offset.
-    else if (((opcode & 0xe000) == 0x6000) || ((opcode & 0xf000) == 0x8000)) {
+    else if (((opcode & 0xe000) == 0x6000) ||
+             ((opcode & 0xf000) == 0x8000)) {
         return thumb_load_store_imm(opcode);
     }
 
@@ -766,8 +722,7 @@ std::string arm_disassemble(unsigned opcode, unsigned address)
         case 0xf:
             return thumb_hint(opcode);
         default:
-            // Undefined instruction.
-            return "";
+            return UNKNOWN;
         }
     }
 
@@ -776,21 +731,41 @@ std::string arm_disassemble(unsigned opcode, unsigned address)
         return thumb_load_store_multiple(opcode);
     }
 
-    // Conditional branch + SWI.
+    // Conditional branch.
     else if ((opcode & 0xf000) == 0xd000) {
         return thumb_cond_branch(opcode, address);
     }
 
+    // Branch to offset.
     else if ((opcode & 0xe000) == 0xe000) {
-        if ((opcode & 0xf801) == 0xe801) {
-            // Undefined instruction.
-            return "";
-        } else {
-            // Branch to offset.
-            return thumb_b_bl_blx(opcode, address);
-        }
+        return thumb_branch(opcode, address);
     }
 
-    // Thumb: should never reach this point.
-    return "";
+    return UNKNOWN;
+}
+
+//
+// Compute length of the opcode: 2 or 4 bytes.
+//
+unsigned arm_opcode_length(uint16_t opcode)
+{
+    if ((opcode & 0xe000) == 0xe000 && (opcode & 0x1800) != 0)
+        return 4;
+
+    return 2;
+}
+
+//
+// Disassemble instruction.
+//
+std::string arm_disassemble(unsigned opcode, unsigned address)
+{
+    // Clear low bit ... it's set on function pointers.
+    address &= ~1;
+
+    if ((opcode >> 16) != 0) {
+        return disassemble_32bit(opcode, address);
+    } else {
+        return disassemble_16bit(opcode, address);
+    }
 }

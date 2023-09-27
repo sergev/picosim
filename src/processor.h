@@ -61,9 +61,9 @@ public:
     Processor(sc_core::sc_module_name name, bool debug);
 
     //
-    // Fetch next instruction.
+    // Fetch two-byte instruction at given address.
     //
-    void fetch_instruction();
+    unsigned fetch16(unsigned address);
 
     //
     // Execute fetched instruction.

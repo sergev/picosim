@@ -31,8 +31,8 @@
 std::string arm_disassemble(unsigned opcode, unsigned address);
 
 //
-// Compute length of the opcode: 2 or 4 bytes.
+// Given 16 bits of opcode, determine instruction length: 2 or 4 bytes.
 //
-unsigned arm_opcode_length(unsigned opcode);
+unsigned arm_opcode_length(uint16_t opcode);
 
 #endif
