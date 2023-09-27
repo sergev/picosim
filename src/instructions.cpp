@@ -1,4 +1,5 @@
 #include "processor.h"
+#include "bus_controller.h"
 
 //
 // Execute 16-bit Thumb1 instruction.
@@ -198,17 +199,19 @@ void Processor::linux_syscall(int op)
 
     case 4: {
         // Syscall write(fd, buf, count).
-#if 0
         unsigned fd = get_reg(0);
-        unsigned buf = get_reg(1);
+        unsigned addr = get_reg(1);
         unsigned len = get_reg(2);
 
         // Make sure arguments are reasonable.
-        // TODO: get direct SRAM ptr.
-        if (fd == 1 && buf >= ADDR_SRAM_START && (buf+len) <= ADDR_SRAM_LAST) {
-            write(1, buf + sram_ptr, len);
-        }
+        if (fd == 1 && len > 0 && len <= 10000 &&
+            addr >= ADDR_SRAM_START && (addr+len) <= ADDR_SRAM_LAST) {
+#if 0
+            char buf[len];
+            data_readn(buf, addr, len); // TODO
+            write(1, buf, len);
 #endif
+        }
         break;
     }
     default:
