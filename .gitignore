@@ -8,6 +8,8 @@
 **.dis
 **.elf
 **.trace
+**.cpp-
+**.h-
 
 build
 test/build

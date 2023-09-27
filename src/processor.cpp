@@ -171,8 +171,9 @@ bool Processor::cpu_process_interrupt()
 
 //
 // Get new value of instruction at PC.
+// Update `opcode' field.
 //
-uint32_t Processor::fetch_instruction()
+void Processor::fetch_instruction()
 {
     sc_core::sc_time delay = sc_core::SC_ZERO_TIME;
     union {
@@ -219,12 +220,12 @@ uint32_t Processor::fetch_instruction()
     wait(delay);
 
     // Convert from little endian.
-    return (buf.u16[0] << 16) | buf.u16[1];
+    opcode = (buf.u16[0] << 16) | buf.u16[1];
 }
 
 bool Processor::cpu_step()
 {
-    opcode = fetch_instruction();
+    fetch_instruction();
     unsigned pc_increment = arm_opcode_length(opcode);
 
     if (Log::is_verbose()) {
@@ -238,17 +239,12 @@ bool Processor::cpu_step()
     }
 
     // Execute instruction.
-    bool breakpoint = false;
-    bool PC_not_affected = base_inst.process_instruction(opcode, &breakpoint);
-
-    if (breakpoint) {
-        std::cout << "Breakpoint set to true" << std::endl;
-        PC_not_affected = false;
-    }
+    bool breakpoint{}, pc_affected{};
+    process_instruction(breakpoint, pc_affected);
 
     instructions_executed++;
 
-    if (PC_not_affected) {
+    if (!breakpoint && !pc_affected) {
         inc_pc(pc_increment);
     }
 

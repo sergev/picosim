@@ -10,7 +10,6 @@
 #define CPU_BASE_H
 
 #include <unordered_map>
-#include "base_instructions.h"
 #include "log.h"
 #include "memory.h"
 #include "registers.h"
@@ -61,12 +60,23 @@ public:
      */
     Processor(sc_core::sc_module_name name, bool debug);
 
-    /**
-     * @brief Fetch and execute one instruction.
-     */
+    //
+    // Fetch next instruction.
+    //
+    void fetch_instruction();
+
+    //
+    // Execute fetched instruction.
+    //
     bool cpu_step();
 
-    uint32_t fetch_instruction();
+    //
+    // Execute current opcode.
+    // Set breakpoint flag on any exception.
+    // Set pc_affected when jump performed.
+    //
+    void process_instruction(bool &breakpoint, bool &pc_affected);
+
     void raise_exception(uint32_t cause, uint32_t inst);
     void terminate_simulation(const std::string &reason) const;
 
@@ -214,8 +224,6 @@ private:
     } control;
 
     uint64_t instructions_executed{};
-
-    Base_Instructions base_inst{ *this };
 
     uint32_t opcode{ 0 };
     bool interrupt{ false };

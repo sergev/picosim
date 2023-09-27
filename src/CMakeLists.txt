@@ -8,7 +8,7 @@ find_package(SystemCLanguage CONFIG REQUIRED)
 # Simulator
 #
 add_library(sim STATIC
-    base_instructions.cpp
+    instructions.cpp
     bus_controller.cpp
     debug.cpp
     disassemble.cpp
