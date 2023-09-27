@@ -223,7 +223,7 @@ void Processor::thumb_load_literal()
 {
     unsigned immediate = opcode & 0xff;
     unsigned rd        = (opcode >> 8) & 0x7;
-    unsigned address   = ((register_bank.getPC() + 4) & ~3) + (immediate << 2);
+    uint32_t address   = ((get_pc() + 4) & ~3) + (immediate << 2);
     unsigned word      = data_read32(address);
 
     set_reg(rd, word);
@@ -309,11 +309,9 @@ void Processor::thumb_arith_reg()
 {
     terminate_simulation(__func__); // TODO
 #if 0
-    unsigned op          = (opcode & 0x03C0) >> 6;
-    unsigned rd          = (opcode & 0x0007);
-    unsigned rm          = (opcode & 0x0038) >> 3;
-    const char *mnemonic = NULL;
-    std::ostringstream text;
+    unsigned op = (opcode & 0x03C0) >> 6;
+    unsigned rd = (opcode & 0x0007);
+    unsigned rm = (opcode & 0x0038) >> 3;
 
     switch (op) {
     case 0x0:
@@ -365,9 +363,7 @@ void Processor::thumb_arith_reg()
         mnemonic = "mvns";
         break;
     }
-
     text << mnemonic << ' ' << reg_name[rd] << ", " << reg_name[rm];
-    return text.str();
 #endif
 }
 
@@ -426,7 +422,7 @@ void Processor::thumb_load_store_reg()
     unsigned rn      = (opcode >> 3) & 0x7;
     unsigned rm      = (opcode >> 6) & 0x7;
     unsigned opc     = (opcode >> 9) & 0x7;
-    unsigned address = get_reg(rn) + get_reg(rm);
+    uint32_t address = get_reg(rn) + get_reg(rm);
 
     switch (opc) {
     case 0:
@@ -467,7 +463,7 @@ void Processor::thumb_load_store_imm()
     unsigned rn        = (opcode >> 3) & 0x7;
     unsigned offset    = (opcode >> 6) & 0x1f;
     unsigned load_flag = (opcode >> 11) & 1;
-    unsigned address   = get_reg(rn);
+    uint32_t address   = get_reg(rn);
 
     switch (opcode >> 12) {
     case 0x8:
@@ -508,7 +504,7 @@ void Processor::thumb_load_store_stack()
     unsigned offset    = opcode & 0xff;
     unsigned rd        = (opcode >> 8) & 0x7;
     unsigned load_flag = opcode & (1 << 11);
-    unsigned address   = get_reg(Registers::SP) + (offset << 2);
+    uint32_t address   = get_reg(Registers::SP) + (offset << 2);
 
     if (load_flag) {
         // LDR instruction.
