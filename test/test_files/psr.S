@@ -9,16 +9,16 @@ _start:
 // ---APSR----                         ---IPSR----
 
         ldr r7, =0xffffffff
-        msr APSR, r7
+        msr APSR_nzcvq, r7
         mrs r0, APSR        // expect f000_0000
 
-        msr IAPSR, r7
+        msr IAPSR_nzcvq, r7
         mrs r1, IAPSR       // expect f000_0000
 
-        msr EAPSR, r7
+        msr EAPSR_nzcvq, r7
         mrs r2, EAPSR       // expect f000_0000
 
-        msr XPSR, r7
+        msr XPSR_nzcvq, r7
         mrs r3, XPSR        // expect f000_0000
 
         msr IPSR, r7

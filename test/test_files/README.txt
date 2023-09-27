@@ -2,10 +2,116 @@ Tests for instructions:
 
 File            Instruction or feature
 --------------------------------------
+        (Data Transfer)
 movs_imm.S      movs r1, #255
 movs_reg.S      movs r1, r2
 mov_reg.S       mov r11, r12
-msr.S           msr APSR, r1
-mrs.S           mrs r1, PRIMASK
+psr.S           msr APSR, r1
+sysreg.S        mrs r1, PRIMASK
+nop.S           nop
 
-write.S         syscall write()
+        (Memory Load)
+ldr_reg_imm.S   ldr r1, [r2, #124]
+                ldr r1, [sp, #1020]
+ldr_pc.S        ldr r1, [pc, #1020]
+                ldr r1, [r2, r3]
+                ldrb r1, [r2, #31]
+                ldrb r1, [r2, r3]
+                ldrsb r1, [r2, r3]
+                ldrh r1, [r2, #62]
+                ldrh r1, [r2, r3]
+                ldrsh r1, [r2, r3]
+                ldmia r7, {r0, r1, r2, r3, r4, r5, r6, r7}
+
+        (Memory Store)
+                str r1, [r2, #124]
+                str r1, [sp, #1020]
+                str r1, [r2, r3]
+                strh r1, [r2, #62]
+                strh r1, [r2, r3]
+                strb r1, [r2, #31]
+                stmia r7!, {r0, r1, r2, r3, r4, r5, r6}
+
+        (Stack)
+                push {r1}
+                pop {r2}
+
+        (Arithmetic operations)
+                adds r1, r2, r3
+                adds r1, r2, #7
+                adds r1, #255
+                add r11, r12
+                add r1, pc, #1020
+                add r1, sp, #1020
+                add sp, #508
+                adcs r1, r2
+                subs r1, r2, r3
+                subs r1, r2, #7
+                subs r1, #255
+                sub sp, #508
+                sbcs r1, r2
+                negs r1, r2
+                muls r1, r2
+                cmp r1, #255
+                cmp r1, r2
+                cmp r11, r12
+                cmn r1, r2
+
+        (Logic operations)
+                ands r1, r2
+                orrs r1, r2
+                eors r1, r2
+                bics r1, r2
+                mvns r1, r2
+                tst r1, r2
+
+        (Shift operations)
+                asrs r1, r2, #32
+                asrs r1, r2
+                lsls r1, r2, #31
+                lsls r1, r2
+                lsrs r1, r2, #32
+                lsrs r1, r2
+                rors r1, r2
+
+        (Bit Shuffle)
+                rev r1, r2
+                rev16 r1, r2
+                revsh r1, r2
+                sxth r1, r2
+                sxtb r1, r2
+                uxth r1, r2
+                uxtb r1, r2
+
+        (Branching)
+                b.n 0x12345678
+                beq.n 0x12345678
+                bne.n 0x12345678
+                bcs.n 0x12345678
+                bcc.n 0x12345678
+                bmi.n 0x12345678
+                bpl.n 0x12345678
+                bvs.n 0x12345678
+                bvc.n 0x12345678
+                bhi.n 0x12345678
+                bls.n 0x12345678
+                bge.n 0x12345678
+                blt.n 0x12345678
+                bgt.n 0x12345678
+                ble.n 0x12345678
+                bl 0x12f45678
+                bx r1
+
+        (Barriers)
+                dsb
+                dmb
+                isb
+
+        (Events)
+                bkpt 0x00ff
+                udf #255
+write.S         svc 255
+                wfi
+                wfe
+                sev
+                yield
