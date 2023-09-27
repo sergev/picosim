@@ -449,7 +449,8 @@ void Processor::thumb_load_store_reg()
         terminate_simulation("ldrh"); // TODO
         break;
     case 6:
-        terminate_simulation("ldrb"); // TODO
+        // LDRB instruction.
+        set_reg(rd, data_read8(address));
         break;
     case 7:
         terminate_simulation("ldrsh"); // TODO
