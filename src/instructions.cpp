@@ -377,6 +377,7 @@ void Processor::thumb_add_cmp_mov()
     unsigned rm = (opcode >> 3) & 0x0f;
     unsigned h1 = (opcode >> 7) & 1;
     unsigned op = (opcode >> 8) & 3;
+    unsigned value = get_reg(rm);
 
     rd |= h1 << 3;
 
@@ -395,8 +396,11 @@ void Processor::thumb_add_cmp_mov()
             // NOP instruction.
             return;
         }
-        terminate_simulation("mov"); // TODO
-        //text << "mov " << reg_name[rd] << ", " << reg_name[rm];
+        if (rm == Registers::PC) {
+            // ARMv6-M feature: PC goes ahead by 4 bytes.
+            value += 4;
+        }
+        set_reg(rd, value);
         break;
     }
 }

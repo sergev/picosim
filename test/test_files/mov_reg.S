@@ -1,36 +1,34 @@
         .section .text
         .global _start
 _start:
-        ldr r1, =0x7502fe1f
-        movs r1, sp         // r15
-        movs sp, r5
+        mov r5, pc
 
-        ldr r2, =0xc015a134
-        movs r2, lr         // r14
-        movs lr, r3
+        ldr r1, =0xc015a134
+        mov lr, r1          // r14
+        mov r3, lr
 
         ldr r4, =0xd306fde3
-        movs r4, sp         // r13
-        movs sp, r6
+        mov sp, r4          // r13
+        mov r6, sp
 
-        ldr r0, =0x43f705a9
-        movs r0, ip         // r12
-        movs ip, r1
+        ldr r2, =0x43f705a9
+        mov ip, r2          // r12
+        mov r1, ip
 
-        ldr r7, =0x8c832ed2
-        movs r7, fp         // r11
-        movs fp, r2
+        ldr r0, =0x8c832ed2
+        mov fp, r0          // r11
+        mov r2, fp
 
         ldr r7, =0xf83a2582
-        movs r7, sl         // r10
-        movs sl, r0
+        mov sl, r7          // r10
+        mov r0, sl
 
         ldr r7, =0xabe76d49
-        movs r7, r9
-        movs r9, r4
+        mov r9, r7
+        mov r4, r9
 
         ldr r7, =0xc5e3fe7d
-        movs r7, r8
+        mov r8, r7
 
-        movs r7, #1             // syscall exit(status)
+        movs r7, #1         // syscall exit(status)
         svc #0
