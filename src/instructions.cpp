@@ -439,7 +439,8 @@ void Processor::thumb_load_store_reg()
         terminate_simulation("strb"); // TODO
         break;
     case 3:
-        terminate_simulation("ldrsb"); // TODO
+        // LDRSB instruction: sign extension.
+        set_reg(rd, (int32_t)(int8_t)data_read8(address));
         break;
     case 4:
         // LDR instruction.
