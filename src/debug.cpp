@@ -132,7 +132,7 @@ void Debug::gdb_thread()
             } else {
                 // see: https://github.com/riscv/riscv-gnu-toolchain/issues/217
                 // risc-v register 834
-                reg_value = cpu.get_csr(n - 65);
+                reg_value = cpu.get_sysreg(n - 65);
             }
             std::stringstream stream;
             stream << std::setfill('0') << std::hex;

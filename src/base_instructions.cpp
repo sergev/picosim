@@ -888,9 +888,9 @@ bool Base_Instructions::Exec_ECALL()
 {
     // Log::out() << "ECALL" << std::endl;
 
-    uint32_t cause = (cpu.get_priv() == MSTATUS_MPP_MACHINE) ?
-                     EXCEPTION_CAUSE_ECALL_M : EXCEPTION_CAUSE_ECALL_U;
-    cpu.raise_exception(cause, 0);
+    //uint32_t cause = (cpu.get_priv() == MSTATUS_MPP_MACHINE) ?
+    //                 EXCEPTION_CAUSE_ECALL_M : EXCEPTION_CAUSE_ECALL_U;
+    //cpu.raise_exception(cause, 0);
     return false;
 }
 
@@ -923,10 +923,10 @@ bool Base_Instructions::Exec_CSRRW() const
     /* These operations must be atomical */
     source = cpu.get_reg(rs1);
     if (rd != 0) {
-        dest = cpu.get_csr(csr);
+        dest = cpu.get_sysreg(csr);
         cpu.set_reg(rd, static_cast<int32_t>(dest));
     }
-    cpu.set_csr(csr, source);
+    cpu.set_sysreg(csr, source);
 
     // Log::out() << std::hex << "CSRRW: CSR #" << csr << " -> x" << std::dec << rd
     //                        << ". x" << rs1 << "-> CSR #" << std::hex << csr << " (0x" << source << ")"
@@ -960,13 +960,13 @@ bool Base_Instructions::Exec_CSRRS() const
     }
 
     /* These operations must be atomical */
-    aux = cpu.get_csr(csr);
+    aux = cpu.get_sysreg(csr);
     bitmask = cpu.get_reg(rs1);
 
     cpu.set_reg(rd, static_cast<int32_t>(aux));
 
     aux2 = aux | bitmask;
-    cpu.set_csr(csr, aux2);
+    cpu.set_sysreg(csr, aux2);
 
     // Log::out() << "CSRRS: CSR #" << csr << "(0x" << std::hex << aux << ") -> x"
     //                              << std::dec << rd << ". x" << rs1 << " & CSR #" << csr << " <- 0x"
@@ -1000,13 +1000,13 @@ bool Base_Instructions::Exec_CSRRC() const
     }
 
     /* These operations must be atomical */
-    aux = cpu.get_csr(csr);
+    aux = cpu.get_sysreg(csr);
     bitmask = cpu.get_reg(rs1);
 
     cpu.set_reg(rd, static_cast<int32_t>(aux));
 
     aux2 = aux & ~bitmask;
-    cpu.set_csr(csr, aux2);
+    cpu.set_sysreg(csr, aux2);
 
     // Log::out() << "CSRRC: CSR #" << csr << "(0x" << std::hex << aux << ") -> x"
     //                              << std::dec << rd << ". x" << rs1 << " & CSR #" << csr << " <- 0x"
@@ -1041,11 +1041,11 @@ bool Base_Instructions::Exec_CSRRWI() const
 
     /* These operations must be atomical */
     if (rd != 0) {
-        aux = cpu.get_csr(csr);
+        aux = cpu.get_sysreg(csr);
         cpu.set_reg(rd, static_cast<int32_t>(aux));
     }
     aux = rs1;
-    cpu.set_csr(csr, aux);
+    cpu.set_sysreg(csr, aux);
 
     // Log::out() << "CSRRWI: CSR #" << csr << " -> x" << rd << ". x" << rs1 << "-> CSR #"
     //                               << csr << std::endl;
@@ -1068,12 +1068,12 @@ bool Base_Instructions::Exec_CSRRSI() const
     }
 
     /* These operations must be atomical */
-    aux = cpu.get_csr(csr);
+    aux = cpu.get_sysreg(csr);
     cpu.set_reg(rd, static_cast<int32_t>(aux));
 
     bitmask = rs1;
     aux = aux | bitmask;
-    cpu.set_csr(csr, aux);
+    cpu.set_sysreg(csr, aux);
 
     // Log::out() << "CSRRSI: CSR #" << csr << " -> x" << rd << ". x" << rs1 << " & CSR #"
     //                               << csr << "(0x" << std::hex << aux << ")"
@@ -1097,12 +1097,12 @@ bool Base_Instructions::Exec_CSRRCI() const
     }
 
     /* These operations must be atomical */
-    aux = cpu.get_csr(csr);
+    aux = cpu.get_sysreg(csr);
     cpu.set_reg(rd, static_cast<int32_t>(aux));
 
     bitmask = rs1;
     aux = aux & ~bitmask;
-    cpu.set_csr(csr, aux);
+    cpu.set_sysreg(csr, aux);
 
     // Log::out() << "CSRRCI: CSR #" << csr << " -> x" << rd << ". x" << rs1 << " & CSR #"
     //                               << csr << "(0x" << std::hex << aux << ")"
@@ -1117,19 +1117,19 @@ bool Base_Instructions::Exec_MRET() const
 {
     uint32_t new_pc = 0;
 
-    new_pc = cpu.get_csr(CSR_MEPC);
+    //new_pc = cpu.get_csr(CSR_MEPC);
     cpu.set_pc(new_pc);
 
     // Log::out() << "MRET: PC <- 0x" << std::hex << new_pc << std::dec << std::endl;
 
     // update mstatus
-    uint32_t csr_temp;
-    csr_temp = cpu.get_csr(CSR_MSTATUS);
-    if (csr_temp & MSTATUS_MPIE) {
-        csr_temp |= MSTATUS_MIE;
-    }
-    csr_temp |= MSTATUS_MPIE;
-    cpu.set_csr(CSR_MSTATUS, csr_temp);
+    //uint32_t csr_temp;
+    //csr_temp = cpu.get_csr(CSR_MSTATUS);
+    //if (csr_temp & MSTATUS_MPIE) {
+    //    csr_temp |= MSTATUS_MIE;
+    //}
+    //csr_temp |= MSTATUS_MPIE;
+    //cpu.set_csr(CSR_MSTATUS, csr_temp);
 
     return true;
 }

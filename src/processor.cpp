@@ -9,75 +9,34 @@
 #include "disassemble.h"
 
 //
-// Writable bits of CSRs.
+// Special register field encoding
 //
 enum {
-    MASK_MSTATUS  = MSTATUS_UIE | MSTATUS_MIE | MSTATUS_UPIE | MSTATUS_MPIE | MSTATUS_MPP | MSTATUS_TW,
-    MASK_USTATUS  = MSTATUS_UIE | MSTATUS_UPIE,
-    MASK_MTVEC    = 0xffffff00,
-    MASK_MEPC     = 0xfffffffe,
-    MASK_MCAUSE   = 0x8000001f,
-    MASK_TSELECT  = 0x00000007,
-    MASK_TDATA1   = 0x001000cf,
-    MASK_TCONTROL = 0x00000088,
-    MASK_MPCER    = 0x00000fff,
-    MASK_MPCMR    = 0x00000003,
-    MASK_UCUSTOM0 = 0x00000fff,
-    MASK_UCUSTOM1 = 0x00000003,
-    MASK_UCUSTOM3 = 0x000000ff,
-    MASK_UCUSTOM5 = 0x000000ff,
+    SYSM_APSR = 0,      // The flags from previous instructions
+    SYSM_IAPSR = 1,     // A composite of IPSR and APSR
+    SYSM_EAPSR = 2,     // A composite of EPSR and APSR
+    SYSM_XPSR = 3,      // A composite of all three PSR registers
+    SYSM_IPSR = 5,      // The Interrupt status register
+    SYSM_EPSR = 6,      // The execution status register
+    SYSM_IEPSR = 7,     // A composite of IPSR and EPSR
+    SYSM_MSP = 8,       // The Main Stack pointer
+    SYSM_PSP = 9,       // The Process Stack pointer
+    SYSM_PRIMASK = 16,  // Register to mask out configurable exceptions
+    SYSM_CONTROL = 20,  // Stack select, Thread mode privilege
 };
 
-static const std::map<int, const std::string> csr_name = {
-    { CSR_DCSR,         "dcsr" },       // Debug Control and Status
-    { CSR_DPC,          "dpc" },        // Debug PC
-    { CSR_DSCRATCH0,    "dscratch0" },  // Debug Scratch Register 0
-    { CSR_DSCRATCH1,    "dscratch1" },  // Debug Scratch Register 1
-    { CSR_MARCHID,      "marchid" },    // Machine Architecture ID
-    { CSR_MCAUSE,       "mcause" },     // Machine Trap Cause
-    { CSR_MEPC,         "mepc" },       // Machine Trap Program Counter
-    { CSR_MHARTID,      "mhartid" },    // Machine Hart ID
-    { CSR_MIMPID,       "mimpid" },     // Machine Implementation ID
-    { CSR_MISA,         "misa" },       // Machine ISA
-    { CSR_MPCCR,        "mpccr" },      // Machine Performance Counter Count
-    { CSR_MPCER,        "mpcer" },      // Machine Performance Counter Event
-    { CSR_MPCMR,        "mpcmr" },      // Machine Performance Counter Mode
-    { CSR_MSCRATCH,     "mscratch" },   // Machine Scratch
-    { CSR_MSTATUS,      "mstatus" },    // Machine Mode Status
-    { CSR_MTVAL,        "mtval" },      // Machine Trap Value
-    { CSR_MTVEC,        "mtvec" },      // Machine Trap Vector
-    { CSR_MVENDORID,    "mvendorid" },  // Machine Vendor ID
-    { CSR_PMPADDR(0),   "pmpaddr0" },   // Physical memory protection address registers 0-15
-    { CSR_PMPADDR(1),   "pmpaddr1" },
-    { CSR_PMPADDR(10),  "pmpaddr10" },
-    { CSR_PMPADDR(11),  "pmpaddr11" },
-    { CSR_PMPADDR(12),  "pmpaddr12" },
-    { CSR_PMPADDR(13),  "pmpaddr13" },
-    { CSR_PMPADDR(14),  "pmpaddr14" },
-    { CSR_PMPADDR(15),  "pmpaddr15" },
-    { CSR_PMPADDR(2),   "pmpaddr2" },
-    { CSR_PMPADDR(3),   "pmpaddr3" },
-    { CSR_PMPADDR(4),   "pmpaddr4" },
-    { CSR_PMPADDR(5),   "pmpaddr5" },
-    { CSR_PMPADDR(6),   "pmpaddr6" },
-    { CSR_PMPADDR(7),   "pmpaddr7" },
-    { CSR_PMPADDR(8),   "pmpaddr8" },
-    { CSR_PMPADDR(9),   "pmpaddr9" },
-    { CSR_PMPCFG(0),    "pmpcfg0" },    // Physical memory protection configuration
-    { CSR_PMPCFG(1),    "pmpcfg1" },
-    { CSR_PMPCFG(2),    "pmpcfg2" },
-    { CSR_PMPCFG(3),    "pmpcfg3" },
-    { CSR_TCONTROL,     "tcontrol" },   // Global Trigger Control
-    { CSR_TDATA1,       "tdata1" },     // Trigger Abstract Data 1
-    { CSR_TDATA2,       "tdata2" },     // Trigger Abstract Data 2
-    { CSR_TSELECT,      "tselect" },    // Trigger Select Register
-    { CSR_USTATUS,      "ustatus" },    // User Mode Status
-    { CSR_UCUSTOM0,     "ucustom0" },   // User Custom Register 0
-    { CSR_UCUSTOM1,     "ucustom1" },   // User Custom Register 1
-    { CSR_UCUSTOM2,     "ucustom2" },   // User Custom Register 2
-    { CSR_UCUSTOM3,     "ucustom3" },   // User Custom Register 3
-    { CSR_UCUSTOM4,     "ucustom4" },   // User Custom Register 4
-    { CSR_UCUSTOM5,     "ucustom5" },   // User Custom Register 5
+static const std::map<int, const std::string> sysm_name = {
+    { SYSM_APSR,         "apsr" },
+    { SYSM_IAPSR,        "iapsr" },
+    { SYSM_EAPSR,        "eapsr" },
+    { SYSM_XPSR,         "xpsr" },
+    { SYSM_IPSR,         "ipsr" },
+    { SYSM_EPSR,         "epsr" },
+    { SYSM_IEPSR,        "iepsr" },
+    { SYSM_MSP,          "msp" },
+    { SYSM_PSP,          "psp" },
+    { SYSM_PRIMASK,      "primask" },
+    { SYSM_CONTROL,      "control" },
 };
 
 Processor::Processor(sc_core::sc_module_name const name, bool debug)
@@ -91,120 +50,93 @@ Processor::Processor(sc_core::sc_module_name const name, bool debug)
         SC_THREAD(cpu_thread);
     }
 
-    // Start from ROM0.
+    // Start from ROM.
     register_bank.setPC(0x40000000);
+    // TODO: SP_main = MemA[vectortable,4] AND 0xFFFFFFFC<31:0>;
 
     // Machine mode.
-    privilege = MSTATUS_MPP_MACHINE;
+    privilege = 0;
+    // TODO: CurrentMode = Mode_Thread;
 
     //
-    // Initial CSR values.
+    // Initial values.
     //
-    csr_mvendorid = 0x00000612;
-    csr_marchid = 0x80000001;
-    csr_mimpid = 1;
-    csr_mhartid = 0;
-    csr_misa = MISA_MXL_32 | MISA_M_EXTENSION | MISA_C_EXTENSION | MISA_U_EXTENSION | MISA_I_BASE;
-    csr_mtvec = 1;
-    csr_tdata1 = 0x23e00000;
-    csr_mpcmr = 3;
-
-    csr_pmpcfg[0] = 0x89888f88;
-    csr_pmpcfg[1] = 0x888d898b;
-    csr_pmpcfg[2] = 0x8f888d8f;
-    csr_pmpcfg[3] = 0x90888b88;
-
-    csr_pmpaddr[0] = 0x08000000;
-    csr_pmpaddr[1] = 0x0a000000;
-    csr_pmpaddr[2] = 0x0f000000;
-    csr_pmpaddr[3] = 0x0ff20000;
-    csr_pmpaddr[4] = 0x0ff38000;
-    csr_pmpaddr[5] = 0x0ffc8000;
-    csr_pmpaddr[6] = 0x10018000;
-    csr_pmpaddr[7] = 0x100df000;
-    csr_pmpaddr[8] = 0x100f8000;
-    csr_pmpaddr[9] = 0x10a00000;
-    csr_pmpaddr[10] = 0x14000000;
-    csr_pmpaddr[11] = 0x14000800;
-    csr_pmpaddr[12] = 0x18000000;
-    csr_pmpaddr[13] = 0x18040000;
-    csr_pmpaddr[14] = 0x3fffffff;
-    csr_pmpaddr[15] = 0x3fffffff;
+    psr.u32 = 0;
+    primask.u32 = 0;
+    control.u32 = 0;
+    psr.field.t = 1;
 }
 
 void Processor::raise_exception(uint32_t cause, uint32_t mtval)
 {
     if (Log::is_verbose()) {
-        const char *name;
-        switch (cause & MCAUSE_EXCEPTION_CODE) {
-        case EXCEPTION_CAUSE_INSTRUCTION_ACCESS:
-            name = "Instruction Access Fault";
-            break;
-        case EXCEPTION_CAUSE_ILLEGAL_INSTRUCTION:
-            name = "Illegal Instruction";
-            break;
-        case EXCEPTION_CAUSE_BREAKPOINT:
-            name = "Breakpoint";
-            break;
-        case EXCEPTION_CAUSE_LOAD_MISALIGN:
-            name = "Load Misalign";
-            break;
-        case EXCEPTION_CAUSE_LOAD_ACCESS_FAULT:
-            name = "Load Access Fault";
-            break;
-        case EXCEPTION_CAUSE_STORE_MISALIGN:
-            name = "Store Misalign";
-            break;
-        case EXCEPTION_CAUSE_STORE_ACCESS_FAULT:
-            name = "Store Access Fault";
-            break;
-        case EXCEPTION_CAUSE_ECALL_U:
-            name = "Syscall";
-            break;
-        case EXCEPTION_CAUSE_ECALL_M:
-            name = "Syscall from Machine mode";
-            break;
-        default:
-            name = "Unknown Exception";
-            break;
-        }
+        const char *name = "Unknown Exception";
+        //switch (cause & MCAUSE_EXCEPTION_CODE) {
+        //case EXCEPTION_CAUSE_INSTRUCTION_ACCESS:
+        //    name = "Instruction Access Fault";
+        //    break;
+        //case EXCEPTION_CAUSE_ILLEGAL_INSTRUCTION:
+        //    name = "Illegal Instruction";
+        //    break;
+        //case EXCEPTION_CAUSE_BREAKPOINT:
+        //    name = "Breakpoint";
+        //    break;
+        //case EXCEPTION_CAUSE_LOAD_MISALIGN:
+        //    name = "Load Misalign";
+        //    break;
+        //case EXCEPTION_CAUSE_LOAD_ACCESS_FAULT:
+        //    name = "Load Access Fault";
+        //    break;
+        //case EXCEPTION_CAUSE_STORE_MISALIGN:
+        //    name = "Store Misalign";
+        //    break;
+        //case EXCEPTION_CAUSE_STORE_ACCESS_FAULT:
+        //    name = "Store Access Fault";
+        //    break;
+        //case EXCEPTION_CAUSE_ECALL_U:
+        //    name = "Syscall";
+        //    break;
+        //case EXCEPTION_CAUSE_ECALL_M:
+        //    name = "Syscall from Machine mode";
+        //    break;
+        //}
         Log::out() << "-------- " << name << std::endl;
     }
 
     // Save info about the trap.
-    set_csr(CSR_MEPC, get_pc());
-    set_csr(CSR_MTVAL, mtval);
-    set_csr(CSR_MCAUSE, cause);
+    //set_csr(CSR_MEPC, get_pc());
+    //set_csr(CSR_MTVAL, mtval);
+    //set_csr(CSR_MCAUSE, cause);
 
     //
     // Update mstatus: disable interrupts.
     //
-    uint32_t old_status = get_csr(CSR_MSTATUS);
-    uint32_t new_status = old_status & MSTATUS_TW;
+    //uint32_t old_status = get_csr(CSR_MSTATUS);
+    //uint32_t new_status = old_status & MSTATUS_TW;
 
     // Copy MIE to MPIE.
-    if (old_status & MSTATUS_MIE)
-        new_status |= MSTATUS_MPIE;
+    //if (old_status & MSTATUS_MIE)
+    //    new_status |= MSTATUS_MPIE;
 
     // Set previous privilege mode.
-    new_status |= get_priv() << MSTATUS_MPP_shift;
+    //new_status |= get_priv() << MSTATUS_MPP_shift;
 
-    set_csr(CSR_MSTATUS, new_status);
+    //set_csr(CSR_MSTATUS, new_status);
 
     // Jump to the trap vector.
-    uint32_t mtvec = get_csr(CSR_MTVEC);
-    uint32_t new_pc = mtvec & ~1;
-    if ((cause & MCAUSE_INTERRUPT_FLAG) && (mtvec & 1)) {
-        // Interrupt in vector mode.
-        new_pc += (cause & MCAUSE_EXCEPTION_CODE) * 4;
-    }
-    set_pc(new_pc);
+    //uint32_t mtvec = get_csr(CSR_MTVEC);
+    uint32_t new_pc = 0 /*mtvec & ~1*/;
+    //if ((cause & MCAUSE_INTERRUPT_FLAG) && (mtvec & 1)) {
+    //    // Interrupt in vector mode.
+    //    new_pc += (cause & MCAUSE_EXCEPTION_CODE) * 4;
+    //}
+    //set_pc(new_pc);
     if (Log::is_verbose()) {
         Log::out() << "-------- Vector 0x" << std::hex << new_pc << std::endl;
     }
 
     // Switch to Machine mode.
-    set_priv(MSTATUS_MPP_MACHINE);
+    //set_priv(MSTATUS_MPP_MACHINE);
 }
 
 void Processor::terminate_simulation(const std::string &reason) const
@@ -220,41 +152,15 @@ void Processor::terminate_simulation(const std::string &reason) const
 
 bool Processor::cpu_process_interrupt()
 {
-    uint32_t csr_temp;
+    //uint32_t csr_temp;
     bool ret_value = false;
 
     if (interrupt) {
-        csr_temp = get_csr(CSR_MSTATUS);
-        if ((csr_temp & MSTATUS_MIE) == 0) {
-            Log::err() << "interrupt delayed" << std::endl;
-            return ret_value;
-        }
-
-        //TODO: implement esp32c3 interrupt controller
-        //csr_temp = get_csr(CSR_MIP);
-        if (/*(csr_temp & MIP_MEIP) ==*/ 0) {
-            //csr_temp |= MIP_MEIP; // MEIP bit in MIP register (11th bit)
-            //set_csr(CSR_MIP, csr_temp);
-            Log::err() << "Interrupt!" << std::endl;
-
-            /* updated MEPC register */
-            uint32_t old_pc = register_bank.getPC();
-            set_csr(CSR_MEPC, old_pc);
-            Log::out() << "Old PC Value 0x" << std::hex << old_pc << std::dec << std::endl;
-
-            /* update MCAUSE register */
-            set_csr(CSR_MCAUSE, 0x80000000);
-
-            /* set new PC address */
-            uint32_t new_pc = get_csr(CSR_MTVEC);
-            // new_pc = new_pc & 0xFFFFFFFC; // last two bits always to 0
-            Log::err() << "NEW PC Value 0x" << std::hex << new_pc << std::dec << std::endl;
-            register_bank.setPC(new_pc);
-
-            ret_value = true;
-            interrupt = false;
-            irq_already_down = false;
-        }
+        //csr_temp = get_csr(CSR_MSTATUS);
+        //if ((csr_temp & MSTATUS_MIE) == 0) {
+        //    Log::err() << "interrupt delayed" << std::endl;
+        //    return ret_value;
+        //}
     } else {
         if (!irq_already_down) {
             //TODO: deactivate interrupt
@@ -330,9 +236,9 @@ bool Processor::cpu_step()
     PC_not_affected = base_inst.process_instruction(instruction, &breakpoint);
 
     // Increment the HW counter.
-    if (csr_ucustom[0] != 0 && csr_ucustom[1] != 0) {
-        csr_ucustom[2] += 1;
-    }
+    //if (csr_ucustom[0] != 0 && csr_ucustom[1] != 0) {
+    //    csr_ucustom[2] += 1;
+    //}
 
     if (breakpoint) {
         std::cout << "Breakpoint set to true" << std::endl;
@@ -403,15 +309,15 @@ extension_t Processor::check_extension() const
 void Processor::set_priv(int prv)
 {
     switch (prv) {
-    case MSTATUS_MPP_MACHINE:
-        // Machine mode.
-        break;
-    case MSTATUS_MPP_USER:
-        // User mode is supported by ESP32-C3.
-        break;
+    //case MSTATUS_MPP_MACHINE:
+    //    // Machine mode.
+    //    break;
+    //case MSTATUS_MPP_USER:
+    //    // User mode is supported by ESP32-C3.
+    //    break;
     default:
         // Other modes are not supported: treat as User mode.
-        prv = MSTATUS_MPP_USER;
+        //prv = MSTATUS_MPP_USER;
         break;
     }
     privilege = prv;
@@ -477,109 +383,21 @@ void Processor::data_write(uint32_t addr, uint32_t data, int size)
     }
 }
 
-uint32_t Processor::get_csr(int csr)
+uint32_t Processor::get_sysreg(int sysm)
 {
-    switch (csr) {
-    case CSR_MARCHID:
-        // Machine Architecture ID
-        return csr_marchid;
-    case CSR_MCAUSE:
-        // Machine Trap Cause
-        return csr_mcause;
-    case CSR_MEPC:
-        // Machine Trap Program Counter
-        return csr_mepc;
-    case CSR_MHARTID:
-        // Machine Hart ID
-        return csr_mhartid;
-    case CSR_MIMPID:
-        // Machine Implementation ID
-        return csr_mimpid;
-    case CSR_MISA:
-        // Machine ISA
-        return csr_misa;
-    case CSR_MPCCR:
-        // Machine Performance Counter Count
-        return csr_mpccr;
-    case CSR_MPCER:
-        // Machine Performance Counter Event
-        return csr_mpcer;
-    case CSR_MPCMR:
-        // Machine Performance Counter Mode
-        return csr_mpcmr;
-    case CSR_MSCRATCH:
-        // Machine Scratch
-        return csr_mscratch;
-    case CSR_MSTATUS:
-        // Machine Mode Status
-        return csr_mstatus;
-    case CSR_MTVAL:
-        // Machine Trap Value
-        return csr_mtval;
-    case CSR_MTVEC:
-        // Machine Trap Vector
-        return csr_mtvec;
-    case CSR_MVENDORID:
-        // Machine Vendor ID
-        return csr_mvendorid;
-    case CSR_PMPADDR(0):
-    case CSR_PMPADDR(1):
-    case CSR_PMPADDR(2):
-    case CSR_PMPADDR(3):
-    case CSR_PMPADDR(4):
-    case CSR_PMPADDR(5):
-    case CSR_PMPADDR(6):
-    case CSR_PMPADDR(7):
-    case CSR_PMPADDR(8):
-    case CSR_PMPADDR(9):
-    case CSR_PMPADDR(10):
-    case CSR_PMPADDR(11):
-    case CSR_PMPADDR(12):
-    case CSR_PMPADDR(13):
-    case CSR_PMPADDR(14):
-    case CSR_PMPADDR(15):
-        // Physical memory protection address registers 0-15
-        return csr_pmpaddr[csr - CSR_PMPADDR(0)];
-    case CSR_PMPCFG(0):
-    case CSR_PMPCFG(1):
-    case CSR_PMPCFG(2):
-    case CSR_PMPCFG(3):
-        // Physical memory protection configuration
-        return csr_pmpcfg[csr - CSR_PMPCFG(0)];
-    case CSR_TCONTROL:
-        // Global Trigger Control
-        return csr_tcontrol;
-    case CSR_TDATA1:
-        // Trigger Abstract Data 1
-        return csr_tdata1;
-    case CSR_TDATA2:
-        // Trigger Abstract Data 2
-        return csr_tdata2;
-    case CSR_TSELECT:
-        // Trigger Select Register
-        return csr_tselect;
-    case CSR_USTATUS:
-        // User Mode Status
-        return csr_ustatus;
-    case CSR_UCUSTOM0:
-    case CSR_UCUSTOM1:
-    case CSR_UCUSTOM2:
-    case CSR_UCUSTOM3:
-    case CSR_UCUSTOM4:
-    case CSR_UCUSTOM5:
-        // User Custom Registers
-        return csr_ucustom[csr - CSR_UCUSTOM0];
+    switch (sysm) {
+    //TODO
     default:
-        Log::err() << "Read unknown CSR 0x" << std::hex << std::setw(3) << std::setfill('0') << csr << std::endl;
-        SC_REPORT_ERROR("CSR", "Read");
+        Log::err() << "Read unknown sysreg 0x" << std::hex << std::setw(3) << std::setfill('0') << sysm << std::endl;
+        SC_REPORT_ERROR("SYSREG", "Read");
         return 0;
     }
 }
 
 //
-// Update the CSR value unconditionally, and print.
+// Update system register unconditionally, and print.
 //
-void Processor::update_csr(uint32_t &reg, uint32_t value, uint32_t mask, const std::string &name)
+void Processor::update_sysreg(uint32_t &reg, uint32_t value, uint32_t mask, const std::string &name)
 {
     reg = (reg & ~mask) | (value & mask);
 
@@ -594,106 +412,13 @@ void Processor::update_csr(uint32_t &reg, uint32_t value, uint32_t mask, const s
 // Set value of CSR register.
 // Only writable bits are modified.
 //
-void Processor::set_csr(int csr, uint32_t value)
+void Processor::set_sysreg(int sysm, uint32_t value)
 {
-    switch (csr) {
+    switch (sysm) {
     default:
-    case CSR_MARCHID:   // Machine Architecture ID
-    case CSR_MVENDORID: // Machine Vendor ID
-    case CSR_MIMPID:    // Machine Implementation ID
-    case CSR_MHARTID:   // Machine Hart ID
         // Exception on write.
         raise_exception(EXCEPTION_CAUSE_ILLEGAL_INSTRUCTION, instruction);
         return;
-    case CSR_MCAUSE: // Machine Trap Cause
-        update_csr(csr_mcause, value, MASK_MCAUSE, "mcause");
-        return;
-    case CSR_MEPC: // Machine Trap Program Counter
-        update_csr(csr_mepc, value, MASK_MEPC, "mepc");
-        return;
-    case CSR_MISA: // Machine ISA
-        // Write ignored.
-        return;
-    case CSR_MPCCR: // Machine Performance Counter Count
-        update_csr(csr_mpccr, value, ~0U, "mpccr");
-        return;
-    case CSR_MPCER: // Machine Performance Counter Event
-        update_csr(csr_mpcer, value, MASK_MPCER, "mpcer");
-        return;
-    case CSR_MPCMR: // Machine Performance Counter Mode
-        update_csr(csr_mpcmr, value, MASK_MPCMR, "mpcmr");
-        return;
-    case CSR_MSCRATCH: // Machine Scratch
-        update_csr(csr_mscratch, value, ~0U, "mscratch");
-        return;
-    case CSR_MSTATUS: // Machine Mode Status
-        update_csr(csr_mstatus, value, MASK_MSTATUS, "mstatus");
-        return;
-    case CSR_MTVAL: // Machine Trap Value
-        update_csr(csr_mtval, value, ~0U, "mtval");
-        return;
-    case CSR_MTVEC: // Machine Trap Vector
-        update_csr(csr_mtvec, value, MASK_MTVEC, "mtvec");
-        return;
-    case CSR_PMPCFG(0): // Physical memory protection configuration
-    case CSR_PMPCFG(1):
-    case CSR_PMPCFG(2):
-    case CSR_PMPCFG(3):
-    case CSR_PMPADDR(0):
-    case CSR_PMPADDR(1):
-    case CSR_PMPADDR(2):
-    case CSR_PMPADDR(3):
-    case CSR_PMPADDR(4):
-    case CSR_PMPADDR(5):
-    case CSR_PMPADDR(6):
-    case CSR_PMPADDR(7):
-    case CSR_PMPADDR(8):
-    case CSR_PMPADDR(9):
-    case CSR_PMPADDR(10):
-    case CSR_PMPADDR(11):
-    case CSR_PMPADDR(12):
-    case CSR_PMPADDR(13):
-    case CSR_PMPADDR(14):
-    case CSR_PMPADDR(15):
-        // TODO: write to PMP registers ignored for now.
-        if (Log::is_verbose()) {
-            auto &out = Log::out();
-            out << "          " << csr_name.at(csr) << " = " << std::hex << std::setw(8)
-                << std::setfill('0') << value << " (write ignored)" << std::endl;
-        }
-        return;
-    case CSR_TCONTROL: // Global Trigger Control
-        update_csr(csr_tcontrol, value, MASK_TCONTROL, "tcontrol");
-        return;
-    case CSR_TDATA1: // Trigger Abstract Data 1
-        update_csr(csr_tdata1, value, MASK_TDATA1, "tdata1");
-        return;
-    case CSR_TDATA2: // Trigger Abstract Data 2
-        update_csr(csr_tdata2, value, ~0U, "tdata2");
-        return;
-    case CSR_TSELECT: // Trigger Select Register
-        update_csr(csr_tselect, value, MASK_TSELECT, "tselect");
-        return;
-    case CSR_USTATUS: // User Mode Status
-        update_csr(csr_ustatus, value, MASK_USTATUS, "ustatus");
-        return;
-    case CSR_UCUSTOM0: // User Custom Registers
-        update_csr(csr_ucustom[0], value, MASK_UCUSTOM0, "ucustom0");
-        return;
-    case CSR_UCUSTOM1:
-        update_csr(csr_ucustom[1], value, MASK_UCUSTOM1, "ucustom1");
-        return;
-    case CSR_UCUSTOM2:
-        update_csr(csr_ucustom[2], value, ~0U, "ucustom2");
-        return;
-    case CSR_UCUSTOM3:
-        update_csr(csr_ucustom[3], value, MASK_UCUSTOM3, "ucustom3");
-        return;
-    case CSR_UCUSTOM4:
-        // Write ignored.
-        return;
-    case CSR_UCUSTOM5:
-        update_csr(csr_ucustom[5], value, MASK_UCUSTOM5, "ucustom5");
-        return;
+    //TODO
     }
 }

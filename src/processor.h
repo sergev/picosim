@@ -18,7 +18,6 @@
 #include "tlm.h"
 #include "tlm_utils/simple_initiator_socket.h"
 #include "tlm_utils/tlm_quantumkeeper.h"
-#include "riscv_csr.h"
 
 typedef enum {
     BASE_EXTENSION,
@@ -124,14 +123,14 @@ public:
     void inc_pc(unsigned increment) { register_bank.incPC(increment); }
 
     //
-    // Get CSR value.
+    // Get system register.
     //
-    uint32_t get_csr(int csr);
+    uint32_t get_sysreg(int sysm);
 
     //
-    // Set CSR value.
+    // Set system register.
     //
-    void set_csr(int csr, uint32_t value);
+    void set_sysreg(int sysm, uint32_t value);
 
     /**
      * Returns privilege value
@@ -167,29 +166,57 @@ private:
      */
     Registers register_bank;
 
-    // Control and status registers.
-    uint32_t csr_ustatus{};
-    uint32_t csr_mstatus{};
-    uint32_t csr_misa{};
-    uint32_t csr_mtvec{};
-    uint32_t csr_mscratch{};
-    uint32_t csr_mepc{};
-    uint32_t csr_mcause{};
-    uint32_t csr_mtval{};
-    uint32_t csr_pmpcfg[4]{};
-    uint32_t csr_pmpaddr[16]{};
-    uint32_t csr_tselect{};
-    uint32_t csr_tdata1{};
-    uint32_t csr_tdata2{};
-    uint32_t csr_tcontrol{};
-    uint32_t csr_mpcer{};
-    uint32_t csr_mpcmr{};
-    uint32_t csr_mpccr{};
-    uint32_t csr_ucustom[6]{};
-    uint32_t csr_mvendorid{};
-    uint32_t csr_marchid{};
-    uint32_t csr_mimpid{};
-    uint32_t csr_mhartid{};
+    //
+    // APSR - Application Program Status Register
+    // IPSR - Interrupt Program Status Register
+    // EPSR - Execution Program Status Register
+    //
+    // 31_30_29_28_______24___________9____5_4_3_2_1_0
+    //  n  z  c  v        t           a    -exception-
+    // ---APSR----       -----EPSR-----    ---IPSR----
+    //
+    union {
+        uint32_t u32;
+        struct {
+            unsigned exception : 6;  // Exception number of the currently-executing exception
+            unsigned _unused1  : 3;
+            unsigned a         : 1;  // Alignment flag of SP for exception handler
+            unsigned _unused2  : 14;
+            unsigned t         : 1;  // Thumb mode, always 1
+            unsigned _unused3  : 3;
+            unsigned v         : 1;  // Overflow condition code
+            unsigned c         : 1;  // Carry condition code
+            unsigned z         : 1;  // Zero condition code
+            unsigned n         : 1;  // Negative condition code
+        } field;
+    } psr;
+
+    //
+    // PRIMASK register.
+    //
+    // 31_______________________________1__0
+    // -----------reserved--------------- pm
+    //
+    union {
+        uint32_t u32;
+        struct {
+            unsigned pm : 1;
+        } field;
+    } primask;
+
+    //
+    // CONTROL register.
+    //
+    // 31___________________________2___1_____0
+    // -----------reserved----------- spsel npriv
+    //
+    union {
+        uint32_t u32;
+        struct {
+            unsigned npriv : 1; // 1 = Thread mode has unprivileged access
+            unsigned spsel : 1; // Select stack: 0 = use SP_main, 1 = use SP_process
+        } field;
+    } control;
 
     /**
      * User/Machine/Supervisor privilege (2 bits width)
@@ -245,9 +272,9 @@ private:
     void invalidate_direct_mem_ptr(sc_dt::uint64 start, sc_dt::uint64 end);
 
     //
-    // Update the CSR value unconditionally, and print.
+    // Update system register unconditionally, and print.
     //
-    void update_csr(uint32_t &reg, uint32_t value, uint32_t mask, const std::string &name);
+    void update_sysreg(uint32_t &reg, uint32_t value, uint32_t mask, const std::string &name);
 };
 
 #endif
