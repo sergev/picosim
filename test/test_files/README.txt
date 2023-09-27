@@ -57,7 +57,7 @@ mul.S               mul r1, r2
 cmp_imm.S           cmp r1, #255
 cmp_reg.S           cmp r1, r2
 cmp_hireg.S         cmp r11, r12
-                    cmn r1, r2
+cmn.S               cmn r1, r2
 
         (Logic operations)
                     and r1, r2

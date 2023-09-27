@@ -366,7 +366,8 @@ void Processor::thumb_arith_reg()
         add_with_carry(get_reg(rd), ~get_reg(rm), 1);
         break;
     case 0xB:
-        terminate_simulation("cmn"); // TODO
+        // CMN instruction.
+        add_with_carry(get_reg(rd), get_reg(rm), 0);
         break;
     case 0xC:
         terminate_simulation("orr"); // TODO
