@@ -286,23 +286,26 @@ void Processor::thumb_shift_imm()
         }
         break;
 
-    case 1:
+    case 1: {
         // LSR instruction.
         if (imm == 0) {
             imm = 32;
         }
-        terminate_simulation("lsr"); // TODO
+        uint32_t value = get_reg(rm);
+        set_reg_nz(rd, (uint64_t)value >> imm);
+        xpsr.field.c = value >> (imm - 1);
         break;
-
-    case 2:
+    }
+    case 2: {
         // ASR instruction.
-        int64_t value = get_reg(rm);
         if (imm == 0) {
             imm = 32;
         }
+        int64_t value = get_reg(rm);
         set_reg_nz(rd, value >> imm);
         xpsr.field.c = value >> (imm - 1);
         break;
+    }
     }
 }
 
