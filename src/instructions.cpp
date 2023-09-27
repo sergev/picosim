@@ -395,7 +395,7 @@ void Processor::thumb_add_cmp_mov()
     unsigned h1 = (opcode >> 7) & 1;
     unsigned op = (opcode >> 8) & 3;
 
-    unsigned value = get_reg(rm);
+    int32_t value = get_reg(rm);
     if (rm == Registers::PC) {
         // ARMv6-M feature: PC goes ahead by 4 bytes.
         value += 4;
@@ -414,10 +414,17 @@ void Processor::thumb_add_cmp_mov()
         }
         set_reg(rd, value);
         break;
-    case 0x1:
-        terminate_simulation("cmp"); // TODO
-        //text << "cmp " << reg_name[rd] << ", " << reg_name[rm];
+
+    case 0x1: {
+        // CMP instruction.
+        int32_t lval = get_reg(rd);
+        if (rd == Registers::PC) {
+            // ARMv6-M feature: PC goes ahead by 4 bytes.
+            lval += 4;
+        }
+        add_with_carry(lval, ~value, 1);
         break;
+    }
     case 0x2:
         if (rd == 8 && rm == 8) {
             // NOP instruction.

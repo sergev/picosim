@@ -35,6 +35,7 @@ PROG            = movs_imm.elf \
                   sub_sp_imm.elf \
                   cmp_imm.elf \
                   cmp_reg.elf \
+                  cmp_hireg.elf \
                   psr.elf \
                   sysreg.elf \
                   nop.elf \
