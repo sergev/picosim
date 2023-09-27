@@ -34,6 +34,7 @@ endfunction()
 
 cpp_test(disasm_test)
 tlm_test(smoke_test)
+tlm_test(nop_test)
 tlm_test(movs_imm_test)
 tlm_test(ldr_pc_test)
 tlm_test(psr_test)

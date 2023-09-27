@@ -25,8 +25,16 @@ void Processor::process_opcode16()
         thumb_arith_imm();
         break;
 
-    case 0x40: case 0x41: case 0x42: case 0x43: case 0x44: case 0x45: case 0x46: case 0x47:
+    case 0x40: case 0x41: case 0x42: case 0x43:
         thumb_arith_reg();
+        break;
+
+    case 0x44: case 0x45: case 0x46:
+        thumb_add_cmp_mov();
+        break;
+
+    case 0x47:
+        thumb_bx();
         break;
 
     case 0x48: case 0x49: case 0x4a: case 0x4b: case 0x4c: case 0x4d: case 0x4e: case 0x4f:
@@ -257,6 +265,112 @@ void Processor::thumb_add_sub()
 void Processor::thumb_arith_reg()
 {
     terminate_simulation(__func__); // TODO
+#if 0
+    unsigned op          = (opcode & 0x03C0) >> 6;
+    unsigned Rd          = (opcode & 0x0007);
+    unsigned Rm          = (opcode & 0x0038) >> 3;
+    const char *mnemonic = NULL;
+    std::ostringstream text;
+
+    switch (op) {
+    case 0x0:
+        mnemonic = "ands";
+        break;
+    case 0x1:
+        mnemonic = "eors";
+        break;
+    case 0x2:
+        mnemonic = "lsls";
+        break;
+    case 0x3:
+        mnemonic = "lsrs";
+        break;
+    case 0x4:
+        mnemonic = "asrs";
+        break;
+    case 0x5:
+        mnemonic = "adcs";
+        break;
+    case 0x6:
+        mnemonic = "sbcs";
+        break;
+    case 0x7:
+        mnemonic = "rors";
+        break;
+    case 0x8:
+        mnemonic = "tst";
+        break;
+    case 0x9:
+        mnemonic = "negs";
+        break;
+    case 0xA:
+        mnemonic = "cmp";
+        break;
+    case 0xB:
+        mnemonic = "cmn";
+        break;
+    case 0xC:
+        mnemonic = "orrs";
+        break;
+    case 0xD:
+        mnemonic = "muls";
+        break;
+    case 0xE:
+        mnemonic = "bics";
+        break;
+    case 0xF:
+        mnemonic = "mvns";
+        break;
+    }
+
+    text << mnemonic << ' ' << reg_name[Rd] << ", " << reg_name[rm];
+    return text.str();
+#endif
+}
+
+void Processor::thumb_add_cmp_mov()
+{
+    unsigned rd = opcode & 7;
+    unsigned rm = (opcode >> 3) & 0x0f;
+    unsigned h1 = (opcode >> 7) & 1;
+    unsigned op = (opcode >> 8) & 3;
+
+    rd |= h1 << 3;
+
+    switch (op) {
+    default:
+    case 0x0:
+        terminate_simulation("add"); // TODO
+        //text << "add " << reg_name[rd] << ", " << reg_name[rm];
+        break;
+    case 0x1:
+        terminate_simulation("cmp"); // TODO
+        //text << "cmp " << reg_name[rd] << ", " << reg_name[rm];
+        break;
+    case 0x2:
+        if (rd == 8 && rm == 8) {
+            // NOP instruction.
+            return;
+        }
+        terminate_simulation("mov"); // TODO
+        //text << "mov " << reg_name[rd] << ", " << reg_name[rm];
+        break;
+    }
+}
+
+void Processor::thumb_bx()
+{
+    terminate_simulation(__func__); // TODO
+#if 0
+    unsigned rm = (opcode >> 3) & 0x0f;
+    std::ostringstream text;
+
+    if ((opcode & 0x0087) != 0)
+        return UNKNOWN;
+
+    text << "bx " << reg_name[rm];
+    return text.str();
+#endif
 }
 
 void Processor::thumb_load_store_reg()
