@@ -1045,7 +1045,7 @@ static int evaluate_ifthen_thumb(unsigned short opcode, unsigned address,
     return 0;
 }
 
-static std::string thumb_evaluate_opcode(unsigned short opcode, unsigned address)
+static std::string evaluate_opcode16(unsigned short opcode, unsigned address)
 {
     struct arm_instruction instruction{};
     instruction.opcode = opcode;
@@ -2530,29 +2530,8 @@ static int t2ev_load_halfword(unsigned opcode, unsigned address,
     return -1;
 }
 
-//
-// Compute length of the opcode: 2 or 4 bytes.
-//
-unsigned arm_opcode_length(unsigned opcode)
+static std::string evaluate_opcode32(unsigned opcode, unsigned address)
 {
-    if ((opcode & 0xf0000000) != 0xf0000000)
-        return 2;
-    return 4;
-}
-
-//
-// Disassemble instruction.
-//
-std::string arm_disassemble(unsigned opcode, unsigned address)
-{
-    // Clear low bit ... it's set on function pointers.
-    address &= ~1;
-
-    if ((opcode & 0xf0000000) != 0xf0000000) {
-        // 16-bit: Thumb1.
-        return thumb_evaluate_opcode(opcode >> 16, address);
-    }
-
     // 32-bit instructions.
     struct arm_instruction instruction{};
     instruction.instruction_size = 4;
@@ -2620,4 +2599,34 @@ std::string arm_disassemble(unsigned opcode, unsigned address)
         return "???";
 
     return instruction.text;
+}
+
+//
+// Compute length of the opcode: 2 or 4 bytes.
+//
+unsigned arm_opcode_length(unsigned opcode)
+{
+    if ((opcode & 0xe0000000) == 0xe0000000 &&
+        (opcode & 0x18000000) != 0)
+        return 4;
+
+    return 2;
+}
+
+//
+// Disassemble instruction.
+//
+std::string arm_disassemble(unsigned opcode, unsigned address)
+{
+    // Clear low bit ... it's set on function pointers.
+    address &= ~1;
+
+    if ((opcode & 0xe0000000) == 0xe0000000 &&
+        (opcode & 0x18000000) != 0) {
+        // 32-bit instruction.
+        return evaluate_opcode32(opcode, address);
+    }
+
+    // 16-bit Thumb1 instruction.
+    return evaluate_opcode16(opcode >> 16, address);
 }

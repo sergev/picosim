@@ -12,20 +12,16 @@
 all:    build
 	$(MAKE) -C build $@
 
-test:   tests/build
-	$(MAKE) -C tests/build all
-	ctest --test-dir tests/build
+test:   build
+	$(MAKE) -C build test
+	ctest --test-dir build
 
 install: build
 	$(MAKE) -C build $@
 
 clean:
-	rm -rf build tests/build
+	rm -rf build
 
 build:
 	mkdir $@
 	cmake -B $@ .
-
-tests/build:
-	mkdir $@
-	cmake -B $@ tests #-DCMAKE_BUILD_TYPE=Debug
