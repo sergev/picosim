@@ -116,17 +116,23 @@ public:
     //
     void set_sysreg(int sysm, uint32_t value);
 
-    /**
-     * Returns privilege value
-     * @return privilege value
-     */
-    int get_priv() const { return privilege; }
+    //
+    // CPU runs in either Thread mode or in Handler mode.
+    //
+    enum class Mode {
+        THREAD_MODE,
+        HANDLER_MODE,
+    };
 
-    /**
-     * Sets privilege value
-     * @param prv new privilege
-     */
-    void set_priv(int prv);
+    //
+    // Return Thread/Handler mode
+    //
+    Mode get_mode() const { return mode; }
+
+    //
+    // Set Thread/handler mode
+    //
+    void set_mode(Mode m);
 
     /**
      * Read data memory.
@@ -149,6 +155,11 @@ private:
      * @brief Bank of CPU registers, including PC.
      */
     Registers register_bank;
+
+    //
+    // Current CPU mode: Thread or Handler.
+    //
+    Mode mode{ Mode::THREAD_MODE };
 
     //
     // APSR - Application Program Status Register
@@ -201,11 +212,6 @@ private:
             unsigned spsel : 1; // Select stack: 0 = use SP_main, 1 = use SP_process
         } field;
     } control;
-
-    /**
-     * User/Machine/Supervisor privilege (2 bits width)
-     */
-    int privilege;
 
     uint64_t instructions_executed{};
 

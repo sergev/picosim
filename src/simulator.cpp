@@ -47,6 +47,13 @@ void Simulator::run(uint32_t start_address)
 
     if (start_address) {
         cpu.set_pc(start_address);
+    } else if (entry_address) {
+        // Address from ELF file.
+        cpu.set_pc(entry_address);
+    } else {
+        // Read main_SP and PC values from ROM.
+        cpu.set_reg(13, debug_load32(0));
+        cpu.set_pc(debug_load32(4));
     }
     sc_core::sc_start();
 }

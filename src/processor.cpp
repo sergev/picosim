@@ -50,13 +50,8 @@ Processor::Processor(sc_core::sc_module_name const name, bool debug)
         SC_THREAD(cpu_thread);
     }
 
-    // Start from ROM.
-    register_bank.setPC(0x40000000);
-    // TODO: SP_main = MemA[vectortable,4] AND 0xFFFFFFFC<31:0>;
-
-    // Machine mode.
-    privilege = 0;
-    // TODO: CurrentMode = Mode_Thread;
+    // Machine starts in Thread mode after Reset.
+    mode = Mode::THREAD_MODE;
 
     //
     // Initial values.
@@ -290,21 +285,10 @@ void Processor::invalidate_direct_mem_ptr(sc_dt::uint64 start, sc_dt::uint64 end
     dmi_ptr_valid = false;
 }
 
-void Processor::set_priv(int prv)
+void Processor::set_mode(Mode m)
 {
-    switch (prv) {
-    //case MSTATUS_MPP_MACHINE:
-    //    // Machine mode.
-    //    break;
-    //case MSTATUS_MPP_USER:
-    //    // User mode is supported by ESP32-C3.
-    //    break;
-    default:
-        // Other modes are not supported: treat as User mode.
-        //prv = MSTATUS_MPP_USER;
-        break;
-    }
-    privilege = prv;
+    //TODO: update CPU state when changing modes.
+    mode = m;
 }
 
 /**
