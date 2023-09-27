@@ -18,8 +18,8 @@ ldr_reg_reg.S       ldr r1, [r2, r3]
 ldrb_reg_imm.S      ldrb r1, [r2, #31]
 ldrb_reg_reg.S      ldrb r1, [r2, r3]
 ldrsb_reg_reg.S     ldrsb r1, [r2, r3]
-                    ldrh r1, [r2, #62]
-                    ldrh r1, [r2, r3]
+ldrh_reg_imm.S      ldrh r1, [r2, #62]
+ldrh_reg_reg.S      ldrh r1, [r2, r3]
                     ldrsh r1, [r2, r3]
                     ldmia r7, {r0, r1, r2, r3, r4, r5, r6, r7}
 

@@ -447,7 +447,8 @@ void Processor::thumb_load_store_reg()
         set_reg(rd, data_read32(address));
         break;
     case 5:
-        terminate_simulation("ldrh"); // TODO
+        // LDRH instruction.
+        set_reg(rd, data_read16(address));
         break;
     case 6:
         // LDRB instruction.
@@ -470,7 +471,13 @@ void Processor::thumb_load_store_imm()
     switch (opcode >> 12) {
     case 0x8:
         address += offset << 1;
-        terminate_simulation(load_flag ? "ldrh" : "strh"); // TODO
+        if (load_flag) {
+            // LDRH instruction.
+            set_reg(rd, data_read16(address));
+        } else {
+            // STRH instruction.
+            terminate_simulation("strh"); // TODO
+        }
         break;
     case 0x7:
         address += offset;
