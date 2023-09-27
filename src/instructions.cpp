@@ -455,7 +455,8 @@ void Processor::thumb_load_store_reg()
         set_reg(rd, data_read8(address));
         break;
     case 7:
-        terminate_simulation("ldrsh"); // TODO
+        // LDRSH instruction: sign extension.
+        set_reg(rd, (int32_t)(int16_t)data_read16(address));
         break;
     }
 }
