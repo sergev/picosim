@@ -554,8 +554,8 @@ static int thumb_extend(unsigned short opcode, unsigned address,
                         struct arm_instruction *instruction)
 {
     /* added in ARMv6 */
-    snprintf(instruction->text, sizeof(instruction->text), "%cXT%c %s, r%d",
-             (opcode & 0x0080) ? 'U' : 'S', (opcode & 0x0040) ? 'B' : 'H', reg_name[opcode & 0x7],
+    snprintf(instruction->text, sizeof(instruction->text), "%cxt%c %s, r%d",
+             (opcode & 0x0080) ? 'u' : 's', (opcode & 0x0040) ? 'b' : 'h', reg_name[opcode & 0x7],
              (opcode >> 3) & 0x7);
 
     return 0;

@@ -1389,265 +1389,47 @@ TEST(disasm, opcode16)
     test_disasm(0xb081, "sub sp, #4");
     test_disasm(0xb0ff, "sub sp, #508");
 
+    test_disasm(0xb200, "sxth r0, r0");
+    test_disasm(0xb201, "sxth r1, r0");
+    test_disasm(0xb207, "sxth r7, r0");
+    test_disasm(0xb208, "sxth r0, r1");
+    test_disasm(0xb209, "sxth r1, r1");
+    test_disasm(0xb20f, "sxth r7, r1");
+    test_disasm(0xb238, "sxth r0, r7");
+    test_disasm(0xb239, "sxth r1, r7");
+    test_disasm(0xb23f, "sxth r7, r7");
+
+    test_disasm(0xb240, "sxtb r0, r0");
+    test_disasm(0xb241, "sxtb r1, r0");
+    test_disasm(0xb247, "sxtb r7, r0");
+    test_disasm(0xb248, "sxtb r0, r1");
+    test_disasm(0xb249, "sxtb r1, r1");
+    test_disasm(0xb24f, "sxtb r7, r1");
+    test_disasm(0xb278, "sxtb r0, r7");
+    test_disasm(0xb279, "sxtb r1, r7");
+    test_disasm(0xb27f, "sxtb r7, r7");
+
+    test_disasm(0xb280, "uxth r0, r0");
+    test_disasm(0xb281, "uxth r1, r0");
+    test_disasm(0xb287, "uxth r7, r0");
+    test_disasm(0xb288, "uxth r0, r1");
+    test_disasm(0xb289, "uxth r1, r1");
+    test_disasm(0xb28f, "uxth r7, r1");
+    test_disasm(0xb2b8, "uxth r0, r7");
+    test_disasm(0xb2b9, "uxth r1, r7");
+    test_disasm(0xb2bf, "uxth r7, r7");
+
+    test_disasm(0xb2c0, "uxtb r0, r0");
+    test_disasm(0xb2c1, "uxtb r1, r0");
+    test_disasm(0xb2c7, "uxtb r7, r0");
+    test_disasm(0xb2c8, "uxtb r0, r1");
+    test_disasm(0xb2c9, "uxtb r1, r1");
+    test_disasm(0xb2cf, "uxtb r7, r1");
+    test_disasm(0xb2f8, "uxtb r0, r7");
+    test_disasm(0xb2f9, "uxtb r1, r7");
+    test_disasm(0xb2ff, "uxtb r7, r7");
+
 #if 0
-sxth r0, r0                  // b200 sxth r0, r0
-sxth r1, r0                  // b201 sxth r1, r0
-sxth r2, r0                  // b202 sxth r2, r0
-sxth r3, r0                  // b203 sxth r3, r0
-sxth r4, r0                  // b204 sxth r4, r0
-sxth r5, r0                  // b205 sxth r5, r0
-sxth r6, r0                  // b206 sxth r6, r0
-sxth r7, r0                  // b207 sxth r7, r0
-sxth r0, r1                  // b208 sxth r0, r1
-sxth r1, r1                  // b209 sxth r1, r1
-sxth r2, r1                  // b20a sxth r2, r1
-sxth r3, r1                  // b20b sxth r3, r1
-sxth r4, r1                  // b20c sxth r4, r1
-sxth r5, r1                  // b20d sxth r5, r1
-sxth r6, r1                  // b20e sxth r6, r1
-sxth r7, r1                  // b20f sxth r7, r1
-sxth r0, r2                  // b210 sxth r0, r2
-sxth r1, r2                  // b211 sxth r1, r2
-sxth r2, r2                  // b212 sxth r2, r2
-sxth r3, r2                  // b213 sxth r3, r2
-sxth r4, r2                  // b214 sxth r4, r2
-sxth r5, r2                  // b215 sxth r5, r2
-sxth r6, r2                  // b216 sxth r6, r2
-sxth r7, r2                  // b217 sxth r7, r2
-sxth r0, r3                  // b218 sxth r0, r3
-sxth r1, r3                  // b219 sxth r1, r3
-sxth r2, r3                  // b21a sxth r2, r3
-sxth r3, r3                  // b21b sxth r3, r3
-sxth r4, r3                  // b21c sxth r4, r3
-sxth r5, r3                  // b21d sxth r5, r3
-sxth r6, r3                  // b21e sxth r6, r3
-sxth r7, r3                  // b21f sxth r7, r3
-sxth r0, r4                  // b220 sxth r0, r4
-sxth r1, r4                  // b221 sxth r1, r4
-sxth r2, r4                  // b222 sxth r2, r4
-sxth r3, r4                  // b223 sxth r3, r4
-sxth r4, r4                  // b224 sxth r4, r4
-sxth r5, r4                  // b225 sxth r5, r4
-sxth r6, r4                  // b226 sxth r6, r4
-sxth r7, r4                  // b227 sxth r7, r4
-sxth r0, r5                  // b228 sxth r0, r5
-sxth r1, r5                  // b229 sxth r1, r5
-sxth r2, r5                  // b22a sxth r2, r5
-sxth r3, r5                  // b22b sxth r3, r5
-sxth r4, r5                  // b22c sxth r4, r5
-sxth r5, r5                  // b22d sxth r5, r5
-sxth r6, r5                  // b22e sxth r6, r5
-sxth r7, r5                  // b22f sxth r7, r5
-sxth r0, r6                  // b230 sxth r0, r6
-sxth r1, r6                  // b231 sxth r1, r6
-sxth r2, r6                  // b232 sxth r2, r6
-sxth r3, r6                  // b233 sxth r3, r6
-sxth r4, r6                  // b234 sxth r4, r6
-sxth r5, r6                  // b235 sxth r5, r6
-sxth r6, r6                  // b236 sxth r6, r6
-sxth r7, r6                  // b237 sxth r7, r6
-sxth r0, r7                  // b238 sxth r0, r7
-sxth r1, r7                  // b239 sxth r1, r7
-sxth r2, r7                  // b23a sxth r2, r7
-sxth r3, r7                  // b23b sxth r3, r7
-sxth r4, r7                  // b23c sxth r4, r7
-sxth r5, r7                  // b23d sxth r5, r7
-sxth r6, r7                  // b23e sxth r6, r7
-sxth r7, r7                  // b23f sxth r7, r7
-
-sxtb r0, r0                  // b240 sxtb r0, r0
-sxtb r1, r0                  // b241 sxtb r1, r0
-sxtb r2, r0                  // b242 sxtb r2, r0
-sxtb r3, r0                  // b243 sxtb r3, r0
-sxtb r4, r0                  // b244 sxtb r4, r0
-sxtb r5, r0                  // b245 sxtb r5, r0
-sxtb r6, r0                  // b246 sxtb r6, r0
-sxtb r7, r0                  // b247 sxtb r7, r0
-sxtb r0, r1                  // b248 sxtb r0, r1
-sxtb r1, r1                  // b249 sxtb r1, r1
-sxtb r2, r1                  // b24a sxtb r2, r1
-sxtb r3, r1                  // b24b sxtb r3, r1
-sxtb r4, r1                  // b24c sxtb r4, r1
-sxtb r5, r1                  // b24d sxtb r5, r1
-sxtb r6, r1                  // b24e sxtb r6, r1
-sxtb r7, r1                  // b24f sxtb r7, r1
-sxtb r0, r2                  // b250 sxtb r0, r2
-sxtb r1, r2                  // b251 sxtb r1, r2
-sxtb r2, r2                  // b252 sxtb r2, r2
-sxtb r3, r2                  // b253 sxtb r3, r2
-sxtb r4, r2                  // b254 sxtb r4, r2
-sxtb r5, r2                  // b255 sxtb r5, r2
-sxtb r6, r2                  // b256 sxtb r6, r2
-sxtb r7, r2                  // b257 sxtb r7, r2
-sxtb r0, r3                  // b258 sxtb r0, r3
-sxtb r1, r3                  // b259 sxtb r1, r3
-sxtb r2, r3                  // b25a sxtb r2, r3
-sxtb r3, r3                  // b25b sxtb r3, r3
-sxtb r4, r3                  // b25c sxtb r4, r3
-sxtb r5, r3                  // b25d sxtb r5, r3
-sxtb r6, r3                  // b25e sxtb r6, r3
-sxtb r7, r3                  // b25f sxtb r7, r3
-sxtb r0, r4                  // b260 sxtb r0, r4
-sxtb r1, r4                  // b261 sxtb r1, r4
-sxtb r2, r4                  // b262 sxtb r2, r4
-sxtb r3, r4                  // b263 sxtb r3, r4
-sxtb r4, r4                  // b264 sxtb r4, r4
-sxtb r5, r4                  // b265 sxtb r5, r4
-sxtb r6, r4                  // b266 sxtb r6, r4
-sxtb r7, r4                  // b267 sxtb r7, r4
-sxtb r0, r5                  // b268 sxtb r0, r5
-sxtb r1, r5                  // b269 sxtb r1, r5
-sxtb r2, r5                  // b26a sxtb r2, r5
-sxtb r3, r5                  // b26b sxtb r3, r5
-sxtb r4, r5                  // b26c sxtb r4, r5
-sxtb r5, r5                  // b26d sxtb r5, r5
-sxtb r6, r5                  // b26e sxtb r6, r5
-sxtb r7, r5                  // b26f sxtb r7, r5
-sxtb r0, r6                  // b270 sxtb r0, r6
-sxtb r1, r6                  // b271 sxtb r1, r6
-sxtb r2, r6                  // b272 sxtb r2, r6
-sxtb r3, r6                  // b273 sxtb r3, r6
-sxtb r4, r6                  // b274 sxtb r4, r6
-sxtb r5, r6                  // b275 sxtb r5, r6
-sxtb r6, r6                  // b276 sxtb r6, r6
-sxtb r7, r6                  // b277 sxtb r7, r6
-sxtb r0, r7                  // b278 sxtb r0, r7
-sxtb r1, r7                  // b279 sxtb r1, r7
-sxtb r2, r7                  // b27a sxtb r2, r7
-sxtb r3, r7                  // b27b sxtb r3, r7
-sxtb r4, r7                  // b27c sxtb r4, r7
-sxtb r5, r7                  // b27d sxtb r5, r7
-sxtb r6, r7                  // b27e sxtb r6, r7
-sxtb r7, r7                  // b27f sxtb r7, r7
-uxth r0, r0                  // b280 uxth r0, r0
-uxth r1, r0                  // b281 uxth r1, r0
-uxth r2, r0                  // b282 uxth r2, r0
-uxth r3, r0                  // b283 uxth r3, r0
-uxth r4, r0                  // b284 uxth r4, r0
-uxth r5, r0                  // b285 uxth r5, r0
-uxth r6, r0                  // b286 uxth r6, r0
-uxth r7, r0                  // b287 uxth r7, r0
-uxth r0, r1                  // b288 uxth r0, r1
-uxth r1, r1                  // b289 uxth r1, r1
-uxth r2, r1                  // b28a uxth r2, r1
-uxth r3, r1                  // b28b uxth r3, r1
-uxth r4, r1                  // b28c uxth r4, r1
-uxth r5, r1                  // b28d uxth r5, r1
-uxth r6, r1                  // b28e uxth r6, r1
-uxth r7, r1                  // b28f uxth r7, r1
-uxth r0, r2                  // b290 uxth r0, r2
-uxth r1, r2                  // b291 uxth r1, r2
-uxth r2, r2                  // b292 uxth r2, r2
-uxth r3, r2                  // b293 uxth r3, r2
-uxth r4, r2                  // b294 uxth r4, r2
-uxth r5, r2                  // b295 uxth r5, r2
-uxth r6, r2                  // b296 uxth r6, r2
-uxth r7, r2                  // b297 uxth r7, r2
-uxth r0, r3                  // b298 uxth r0, r3
-uxth r1, r3                  // b299 uxth r1, r3
-uxth r2, r3                  // b29a uxth r2, r3
-uxth r3, r3                  // b29b uxth r3, r3
-uxth r4, r3                  // b29c uxth r4, r3
-uxth r5, r3                  // b29d uxth r5, r3
-uxth r6, r3                  // b29e uxth r6, r3
-uxth r7, r3                  // b29f uxth r7, r3
-uxth r0, r4                  // b2a0 uxth r0, r4
-uxth r1, r4                  // b2a1 uxth r1, r4
-uxth r2, r4                  // b2a2 uxth r2, r4
-uxth r3, r4                  // b2a3 uxth r3, r4
-uxth r4, r4                  // b2a4 uxth r4, r4
-uxth r5, r4                  // b2a5 uxth r5, r4
-uxth r6, r4                  // b2a6 uxth r6, r4
-uxth r7, r4                  // b2a7 uxth r7, r4
-uxth r0, r5                  // b2a8 uxth r0, r5
-uxth r1, r5                  // b2a9 uxth r1, r5
-uxth r2, r5                  // b2aa uxth r2, r5
-uxth r3, r5                  // b2ab uxth r3, r5
-uxth r4, r5                  // b2ac uxth r4, r5
-uxth r5, r5                  // b2ad uxth r5, r5
-uxth r6, r5                  // b2ae uxth r6, r5
-uxth r7, r5                  // b2af uxth r7, r5
-uxth r0, r6                  // b2b0 uxth r0, r6
-uxth r1, r6                  // b2b1 uxth r1, r6
-uxth r2, r6                  // b2b2 uxth r2, r6
-uxth r3, r6                  // b2b3 uxth r3, r6
-uxth r4, r6                  // b2b4 uxth r4, r6
-uxth r5, r6                  // b2b5 uxth r5, r6
-uxth r6, r6                  // b2b6 uxth r6, r6
-uxth r7, r6                  // b2b7 uxth r7, r6
-uxth r0, r7                  // b2b8 uxth r0, r7
-uxth r1, r7                  // b2b9 uxth r1, r7
-uxth r2, r7                  // b2ba uxth r2, r7
-uxth r3, r7                  // b2bb uxth r3, r7
-uxth r4, r7                  // b2bc uxth r4, r7
-uxth r5, r7                  // b2bd uxth r5, r7
-uxth r6, r7                  // b2be uxth r6, r7
-uxth r7, r7                  // b2bf uxth r7, r7
-uxtb r0, r0                  // b2c0 uxtb r0, r0
-uxtb r1, r0                  // b2c1 uxtb r1, r0
-uxtb r2, r0                  // b2c2 uxtb r2, r0
-uxtb r3, r0                  // b2c3 uxtb r3, r0
-uxtb r4, r0                  // b2c4 uxtb r4, r0
-uxtb r5, r0                  // b2c5 uxtb r5, r0
-uxtb r6, r0                  // b2c6 uxtb r6, r0
-uxtb r7, r0                  // b2c7 uxtb r7, r0
-uxtb r0, r1                  // b2c8 uxtb r0, r1
-uxtb r1, r1                  // b2c9 uxtb r1, r1
-uxtb r2, r1                  // b2ca uxtb r2, r1
-uxtb r3, r1                  // b2cb uxtb r3, r1
-uxtb r4, r1                  // b2cc uxtb r4, r1
-uxtb r5, r1                  // b2cd uxtb r5, r1
-uxtb r6, r1                  // b2ce uxtb r6, r1
-uxtb r7, r1                  // b2cf uxtb r7, r1
-uxtb r0, r2                  // b2d0 uxtb r0, r2
-uxtb r1, r2                  // b2d1 uxtb r1, r2
-uxtb r2, r2                  // b2d2 uxtb r2, r2
-uxtb r3, r2                  // b2d3 uxtb r3, r2
-uxtb r4, r2                  // b2d4 uxtb r4, r2
-uxtb r5, r2                  // b2d5 uxtb r5, r2
-uxtb r6, r2                  // b2d6 uxtb r6, r2
-uxtb r7, r2                  // b2d7 uxtb r7, r2
-uxtb r0, r3                  // b2d8 uxtb r0, r3
-uxtb r1, r3                  // b2d9 uxtb r1, r3
-uxtb r2, r3                  // b2da uxtb r2, r3
-uxtb r3, r3                  // b2db uxtb r3, r3
-uxtb r4, r3                  // b2dc uxtb r4, r3
-uxtb r5, r3                  // b2dd uxtb r5, r3
-uxtb r6, r3                  // b2de uxtb r6, r3
-uxtb r7, r3                  // b2df uxtb r7, r3
-uxtb r0, r4                  // b2e0 uxtb r0, r4
-uxtb r1, r4                  // b2e1 uxtb r1, r4
-uxtb r2, r4                  // b2e2 uxtb r2, r4
-uxtb r3, r4                  // b2e3 uxtb r3, r4
-uxtb r4, r4                  // b2e4 uxtb r4, r4
-uxtb r5, r4                  // b2e5 uxtb r5, r4
-uxtb r6, r4                  // b2e6 uxtb r6, r4
-uxtb r7, r4                  // b2e7 uxtb r7, r4
-uxtb r0, r5                  // b2e8 uxtb r0, r5
-uxtb r1, r5                  // b2e9 uxtb r1, r5
-uxtb r2, r5                  // b2ea uxtb r2, r5
-uxtb r3, r5                  // b2eb uxtb r3, r5
-uxtb r4, r5                  // b2ec uxtb r4, r5
-uxtb r5, r5                  // b2ed uxtb r5, r5
-uxtb r6, r5                  // b2ee uxtb r6, r5
-uxtb r7, r5                  // b2ef uxtb r7, r5
-uxtb r0, r6                  // b2f0 uxtb r0, r6
-uxtb r1, r6                  // b2f1 uxtb r1, r6
-uxtb r2, r6                  // b2f2 uxtb r2, r6
-uxtb r3, r6                  // b2f3 uxtb r3, r6
-uxtb r4, r6                  // b2f4 uxtb r4, r6
-uxtb r5, r6                  // b2f5 uxtb r5, r6
-uxtb r6, r6                  // b2f6 uxtb r6, r6
-uxtb r7, r6                  // b2f7 uxtb r7, r6
-uxtb r0, r7                  // b2f8 uxtb r0, r7
-uxtb r1, r7                  // b2f9 uxtb r1, r7
-uxtb r2, r7                  // b2fa uxtb r2, r7
-uxtb r3, r7                  // b2fb uxtb r3, r7
-uxtb r4, r7                  // b2fc uxtb r4, r7
-uxtb r5, r7                  // b2fd uxtb r5, r7
-uxtb r6, r7                  // b2fe uxtb r6, r7
-uxtb r7, r7                  // b2ff uxtb r7, r7
-
 push {r0}                                    // b401 push {r0}
 push {r1}                                    // b402 push {r1}
 push {r2}                                    // b404 push {r2}
