@@ -66,7 +66,7 @@ public:
      */
     bool cpu_step();
 
-    void fetch_instruction();
+    uint32_t fetch_instruction();
     void raise_exception(uint32_t cause, uint32_t inst);
     void terminate_simulation(const std::string &reason) const;
 
@@ -217,7 +217,7 @@ private:
 
     Base_Instructions base_inst{ *this };
 
-    uint32_t instruction{ 0 };
+    uint32_t opcode{ 0 };
     bool interrupt{ false };
     uint32_t int_cause{ 0 };
     bool irq_already_down{ false };

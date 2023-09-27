@@ -172,7 +172,7 @@ bool Processor::cpu_process_interrupt()
 //
 // Get new value of instruction at PC.
 //
-void Processor::fetch_instruction()
+uint32_t Processor::fetch_instruction()
 {
     sc_core::sc_time delay = sc_core::SC_ZERO_TIME;
     union {
@@ -219,29 +219,27 @@ void Processor::fetch_instruction()
     wait(delay);
 
     // Convert from little endian.
-    instruction = (buf.u16[0] << 16) | buf.u16[1];
+    return (buf.u16[0] << 16) | buf.u16[1];
 }
 
 bool Processor::cpu_step()
 {
-    bool PC_not_affected = false;
-    bool breakpoint = false;
-    unsigned pc_increment = arm_opcode_length(instruction);
-
-    fetch_instruction();
+    opcode = fetch_instruction();
+    unsigned pc_increment = arm_opcode_length(opcode);
 
     if (Log::is_verbose()) {
         auto &out = Log::out();
         out << std::hex << std::setw(8) << std::setfill('0') << register_bank.getPC() << ": ";
         if (pc_increment == 2)
-            out << std::setw(4) << (uint16_t)instruction << "     ";
+            out << std::setw(4) << (uint16_t)opcode << "     ";
         else
-            out << std::setw(8) << instruction << " ";
-        out << arm_disassemble(instruction, register_bank.getPC()) << std::endl;
+            out << std::setw(8) << opcode << " ";
+        out << arm_disassemble(opcode, register_bank.getPC()) << std::endl;
     }
 
     // Execute instruction.
-    PC_not_affected = base_inst.process_instruction(instruction, &breakpoint);
+    bool breakpoint = false;
+    bool PC_not_affected = base_inst.process_instruction(opcode, &breakpoint);
 
     if (breakpoint) {
         std::cout << "Breakpoint set to true" << std::endl;
@@ -385,7 +383,7 @@ void Processor::set_sysreg(int sysm, uint32_t value)
     switch (sysm) {
     default:
         // Exception on write.
-        raise_exception(EXCEPTION_CAUSE_ILLEGAL_INSTRUCTION, instruction);
+        raise_exception(EXCEPTION_CAUSE_ILLEGAL_INSTRUCTION, opcode);
         return;
     //TODO
     }
