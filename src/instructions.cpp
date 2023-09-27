@@ -170,7 +170,8 @@ void Processor::thumb_arith_imm()
         xpsr.field.z = (imm == 0);
         break;
     case 1:
-        terminate_simulation("cmp"); // TODO
+        // CMP instruction.
+        add_with_carry(get_reg(rd), ~imm, 1);
         break;
     case 2:
         // ADD instruction.

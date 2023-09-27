@@ -54,7 +54,7 @@ sub_sp_imm.S        sub sp, #508
 sbc.S               sbc r1, r2
 neg.S               neg r1, r2
 mul.S               mul r1, r2
-                    cmp r1, #255
+cmp_imm.S           cmp r1, #255
                     cmp r1, r2
                     cmp r11, r12
                     cmn r1, r2
