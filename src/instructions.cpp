@@ -347,7 +347,8 @@ void Processor::thumb_arith_reg()
         set_reg(rd, add_with_carry(get_reg(rd), get_reg(rm), xpsr.field.c));
         break;
     case 0x6:
-        terminate_simulation("sbc"); // TODO
+        // SBC instruction.
+        set_reg(rd, add_with_carry(get_reg(rd), ~get_reg(rm), xpsr.field.c));
         break;
     case 0x7:
         terminate_simulation("ror"); // TODO

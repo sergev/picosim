@@ -51,30 +51,30 @@ sub_reg_reg.S       sub r1, r2, r3
 sub_reg_imm.S       sub r1, r2, #7
 sub_imm.S           sub r1, #255
 sub_sp_imm.S        sub sp, #508
-                    sbc r1, r2
-                    negs r1, r2
-                    muls r1, r2
+sbc.S               sbc r1, r2
+                    neg r1, r2
+                    mul r1, r2
                     cmp r1, #255
                     cmp r1, r2
                     cmp r11, r12
                     cmn r1, r2
 
         (Logic operations)
-                    ands r1, r2
-                    orrs r1, r2
-                    eors r1, r2
-                    bics r1, r2
-                    mvns r1, r2
+                    and r1, r2
+                    orr r1, r2
+                    eor r1, r2
+                    bic r1, r2
+                    mvn r1, r2
                     tst r1, r2
 
         (Shift operations)
-                    asrs r1, r2, #32
-                    asrs r1, r2
-                    lsls r1, r2, #31
-                    lsls r1, r2
-                    lsrs r1, r2, #32
-                    lsrs r1, r2
-                    rors r1, r2
+                    asr r1, r2, #32
+                    asr r1, r2
+                    lsl r1, r2, #31
+                    lsl r1, r2
+                    lsr r1, r2, #32
+                    lsr r1, r2
+                    ror r1, r2
 
         (Bit Shuffle)
                     rev r1, r2
