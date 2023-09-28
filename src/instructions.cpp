@@ -955,7 +955,28 @@ void Processor::thumb_branch()
 
 void Processor::thumb_branch_link()
 {
-    terminate_simulation(__func__); // TODO
+    unsigned offset = opcode & 0x7ff;
+    unsigned b21    = 1 << 21;
+    unsigned b22    = 1 << 22;
+
+    offset |= (opcode & 0x03ff0000) >> 5;
+    if (opcode & (1 << 26)) {
+        offset |= 0xff << 23;
+        if ((opcode & (1 << 11)) == 0)
+            b21 = 0;
+        if ((opcode & (1 << 13)) == 0)
+            b22 = 0;
+    } else {
+        if (opcode & (1 << 11))
+            b21 = 0;
+        if (opcode & (1 << 13))
+            b22 = 0;
+    }
+    offset |= b21 | b22;
+
+    // BL instruction.
+    set_reg(Registers::LR, next_pc);
+    next_pc = get_pc() + 4 + (offset << 1);
 }
 
 void Processor::thumb_barrier()
