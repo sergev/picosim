@@ -679,7 +679,7 @@ void Processor::thumb_extend()
         break;
     case 1:
         // SXTB instruction.
-        terminate_simulation("sxtb");
+        set_reg(rd, (int8_t) get_reg(rs));
         break;
     case 2:
         // UXTH instruction.
