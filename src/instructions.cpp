@@ -683,7 +683,7 @@ void Processor::thumb_extend()
         break;
     case 2:
         // UXTH instruction.
-        terminate_simulation("uxth");
+        set_reg(rd, (uint16_t) get_reg(rs));
         break;
     case 3:
         // UXTB instruction.

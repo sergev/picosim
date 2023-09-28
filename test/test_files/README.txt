@@ -89,7 +89,7 @@ rev16.S             rev16 r1, r2
 revsh.S             revsh r1, r2
 sxth.S              sxth r1, r2
 sxtb.S              sxtb r1, r2
-                    uxth r1, r2
+uxth.S              uxth r1, r2
                     uxtb r1, r2
 
         Branching
