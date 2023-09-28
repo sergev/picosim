@@ -687,7 +687,7 @@ void Processor::thumb_extend()
         break;
     case 3:
         // UXTB instruction.
-        terminate_simulation("uxtb");
+        set_reg(rd, (uint8_t) get_reg(rs));
         break;
     }
 }

@@ -68,6 +68,7 @@ PROG            = movs_imm.elf \
                   sxth.elf \
                   sxtb.elf \
                   uxth.elf \
+                  uxtb.elf \
                   write.elf \
                   hello.elf
 
