@@ -3,7 +3,7 @@
 //
 // Check B instruction.
 //
-TEST(opcode, branch)
+TEST(opcode, branch_jump)
 {
     Simulator sim;
     enable_trace();
