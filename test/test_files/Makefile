@@ -70,6 +70,7 @@ PROG            = movs_imm.elf \
                   uxth.elf \
                   uxtb.elf \
                   branch.elf \
+                  branch_cond.elf \
                   write.elf \
                   hello.elf
 

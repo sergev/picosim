@@ -496,9 +496,9 @@ static std::string thumb_cond_branch(unsigned opcode, unsigned address)
     };
 
     // Sign extend 8-bit offset.
-    if (offset & 0x00000080)
-        offset = 0xffffff00 | offset;
-
+    if (offset & 0x00000080) {
+        offset |= 0xffffff00;
+    }
     address += 4 + (offset << 1);
 
     text << 'b' << suffix[cond] << ".n 0x" << std::hex << std::setfill('0') << std::setw(8)

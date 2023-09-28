@@ -861,7 +861,78 @@ void Processor::thumb_push()
 //
 void Processor::thumb_cond_branch()
 {
-    terminate_simulation(__func__); // TODO
+    unsigned offset = opcode & 0xff;
+    unsigned cond   = (opcode >> 8) & 0xf;
+    bool take_jump  = false;
+
+    switch (cond) {
+    case 0:
+        // BEQ instruction.
+        take_jump = xpsr.field.z;
+        break;
+    case 1:
+        // BNE instruction.
+        take_jump = !xpsr.field.z;
+        break;
+    case 2:
+        // BCS instruction.
+        take_jump = xpsr.field.c;
+        break;
+    case 3:
+        // BCC instruction.
+        take_jump = !xpsr.field.c;
+        break;
+    case 4:
+        // BMI instruction.
+        take_jump = xpsr.field.n;
+        break;
+    case 5:
+        // BPL instruction.
+        take_jump = !xpsr.field.n;
+        break;
+    case 6:
+        // BVS instruction.
+        take_jump = xpsr.field.v;
+        break;
+    case 7:
+        // BVC instruction.
+        take_jump = !xpsr.field.v;
+        break;
+    case 8:
+        // BHI instruction.
+        take_jump = xpsr.field.c & !xpsr.field.z;
+        break;
+    case 9:
+        // BLS instruction.
+        take_jump = !xpsr.field.c | xpsr.field.z;
+        break;
+    case 10:
+        // BGE instruction.
+        take_jump = (xpsr.field.n == xpsr.field.v);
+        break;
+    case 11:
+        // BLT instruction.
+        take_jump = (xpsr.field.n != xpsr.field.v);
+        break;
+    case 12:
+        // BGT instruction.
+        take_jump = !xpsr.field.z & (xpsr.field.n == xpsr.field.v);
+        break;
+    case 13:
+        // BLE instruction.
+        take_jump = xpsr.field.z | (xpsr.field.n != xpsr.field.v);
+        break;
+    default:
+        terminate_simulation("Unknown conditional branch instruction");
+    }
+
+    if (take_jump) {
+        // Sign extend 8-bit offset.
+        if (offset & 0x00000080) {
+            offset |= 0xffffff00;
+        }
+        next_pc = get_pc() + 4 + (offset << 1);
+    }
 }
 
 void Processor::thumb_branch()

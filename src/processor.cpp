@@ -394,10 +394,7 @@ void Processor::set_sysreg(unsigned sysm, uint32_t value)
         xpsr.field.z = value >> 30;
         xpsr.field.c = value >> 29;
         xpsr.field.v = value >> 28;
-        if (Log::is_verbose()) {
-            Log::out() << "          xpsr = " << std::hex << std::setw(8)
-                       << std::setfill('0') << xpsr.u32 << std::endl;
-        }
+        // XPSR is printed in cpu_step(), when changed.
         return;
 
     case SYSM_IPSR:  // Interrupt status register
