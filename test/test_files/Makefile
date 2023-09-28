@@ -63,6 +63,7 @@ PROG            = movs_imm.elf \
                   lsr_reg.elf \
                   ror.elf \
                   rev.elf \
+                  rev16.elf \
                   write.elf \
                   hello.elf
 

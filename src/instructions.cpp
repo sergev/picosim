@@ -705,7 +705,13 @@ void Processor::thumb_byterev()
         set_reg(rd, output.u32);
         break;
     case 1:
-        terminate_simulation("rev16"); // TODO
+        // REV16 instruction.
+        input.u32 = get_reg(rs);
+        output.byte[0] = input.byte[1];
+        output.byte[1] = input.byte[0];
+        output.byte[2] = input.byte[3];
+        output.byte[3] = input.byte[2];
+        set_reg(rd, output.u32);
         break;
     case 3:
         terminate_simulation("revsh"); // TODO
