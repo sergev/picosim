@@ -668,7 +668,28 @@ void Processor::thumb_adjust_stack()
 
 void Processor::thumb_extend()
 {
-    terminate_simulation(__func__); // TODO
+    unsigned rd = opcode & 7;
+    unsigned rs = (opcode >> 3) & 7;
+    unsigned op = (opcode >> 6) & 3;
+
+    switch (op) {
+    case 0:
+        // SXTH instruction.
+        set_reg(rd, (int16_t) get_reg(rs));
+        break;
+    case 1:
+        // SXTB instruction.
+        terminate_simulation("sxtb");
+        break;
+    case 2:
+        // UXTH instruction.
+        terminate_simulation("uxth");
+        break;
+    case 3:
+        // UXTB instruction.
+        terminate_simulation("uxtb");
+        break;
+    }
 }
 
 void Processor::thumb_cps()
