@@ -52,12 +52,13 @@ static std::string thumb_branch(unsigned opcode, unsigned address)
     }
 
     // Sign extend 11-bit offset.
-    if (offset & 0x00000400)
-        offset = 0xfffff800 | offset;
+    if (offset & 0x00000400) {
+        offset |= 0xfffff800;
+    }
 
     address += 4 + (offset << 1);
 
-    text << "b.n 0x" << std::hex << std::setfill('0') << std::setw(8) << address;
+    text << "b 0x" << std::hex << std::setfill('0') << std::setw(8) << address;
     return text.str();
 }
 

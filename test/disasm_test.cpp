@@ -1693,9 +1693,9 @@ TEST(disasm, opcode16)
     test_disasm(0xdf01, "svc 1");
     test_disasm(0xdfff, "svc 255");
 
-    test_disasm(0xe000, "b.n 0x1234567c");
-    test_disasm(0xe001, "b.n 0x1234567e");
-    test_disasm(0xe7ff, "b.n 0x1234567a");
+    test_disasm(0xe000, "b 0x1234567c");
+    test_disasm(0xe001, "b 0x1234567e");
+    test_disasm(0xe7ff, "b 0x1234567a");
 }
 
 #include "gtest_main.cpp"

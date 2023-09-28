@@ -94,7 +94,7 @@ uxtb.S              uxtb r1, r2
 
         Branching
 
-                    b.n 0x12345678
+branch.S            b 0x12345678
                     bXX.n 0x12345678
                     bl 0x12f45678
                     bx r1

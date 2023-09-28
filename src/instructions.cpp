@@ -866,7 +866,20 @@ void Processor::thumb_cond_branch()
 
 void Processor::thumb_branch()
 {
-    terminate_simulation(__func__); // TODO
+    unsigned offset = opcode & 0x7ff;
+    unsigned opc    = (opcode >> 11) & 3;
+
+    if (opc != 0) {
+        terminate_simulation("Unknown branch instruction");
+    }
+
+    // Sign extend 11-bit offset.
+    if (offset & 0x00000400) {
+        offset |= 0xfffff800;
+    }
+
+    // B instruction: branch to given offset.
+    next_pc = get_pc() + 4 + (offset << 1);
 }
 
 void Processor::thumb_branch_link()
