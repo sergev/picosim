@@ -75,6 +75,7 @@ PROG            = movs_imm.elf \
                   branch_exch.elf \
                   branch_link_exch.elf \
                   stdout.elf \
+                  cq.elf \
                   hello.elf
 
 all:            $(PROG)
@@ -85,6 +86,10 @@ clean:
 hello.elf:      hello.o
 		$(CC) $< -lc -lgloss-linux -o $@
 		$(OBJDUMP) -d -S $@ > hello.dis
+
+cq.elf:         cq.o
+		$(CC) $< -lc -lgloss-linux -o $@
+		$(OBJDUMP) -d -S $@ > cq.dis
 
 %.elf:          %.o
 		$(CC) $(LDFLAGS) $< -o $@
