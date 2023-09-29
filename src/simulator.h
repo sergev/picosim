@@ -72,6 +72,12 @@ public:
 
     // Get PC value of core #0.
     uint32_t get_pc() { return cpu.get_pc(); }
+
+    // Enable stdout buffering.
+    void capture_stdout() { cpu.capture_stdout(); }
+
+    // Get captured output.
+    std::string get_stdout() { return cpu.get_stdout(); }
 };
 
 // Run test and compare to the reference.

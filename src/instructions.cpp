@@ -300,12 +300,18 @@ void Processor::put_char(char ch)
         // Legal control character.
     } else if (ch >= 0 && ch < ' ') {
         std::cout << '^';
+        if (capture_stdout_flag)
+            stdout_buf << '^';
         ch += '@';
     } else if (ch > '~') {
         std::cout << '^';
+        if (capture_stdout_flag)
+            stdout_buf << '^';
         ch = '?';
     }
     std::cout << ch << std::flush;
+    if (capture_stdout_flag)
+        stdout_buf << ch;
 }
 
 //

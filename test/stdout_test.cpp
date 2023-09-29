@@ -1,9 +1,9 @@
 #include "util.h"
 
 //
-// Check ADC instruction.
+// Check stdout.
 //
-TEST(opcode, adc)
+TEST(syscall, write_stdout)
 {
     Simulator sim;
     enable_trace();

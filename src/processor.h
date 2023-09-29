@@ -211,6 +211,12 @@ public:
     //
     int32_t add_with_carry(int32_t x, int32_t y, bool carry_in);
 
+    // Enable stdout buffering.
+    void capture_stdout() { capture_stdout_flag = true; stdout_buf.clear(); }
+
+    // Get captured output.
+    std::string get_stdout() { return stdout_buf.str(); }
+
 private:
     /**
      * @brief Bank of CPU registers, including PC.
@@ -292,6 +298,10 @@ private:
     bool dmi_ptr_valid{};
     unsigned char *dmi_ptr{};
     sc_core::sc_time dmi_read_latency;
+
+    // Capture output of write() syscall here.
+    std::stringstream stdout_buf;
+    bool capture_stdout_flag{};
 
     /**
      * main thread for CPU simulation
