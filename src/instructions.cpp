@@ -1,5 +1,4 @@
 #include "processor.h"
-#include "bus_controller.h"
 
 //
 // Execute 16-bit Thumb1 instruction.
@@ -183,46 +182,21 @@ void Processor::thumb_arith_imm()
 }
 
 //
-// svc 255
+// SVC instruction.
 //
 void Processor::thumb_svc()
 {
     unsigned offset = opcode & 0xff;
 
-    if (offset == 0 && linux_mode) {
+    if (linux_mode) {
         // Interpret Linux syscalls.
-        linux_syscall(get_reg(7));
+        if (offset == 0) {
+            linux_syscall(get_reg(7));
+        } else {
+            linux_syscall(offset);
+        }
     } else {
         terminate_simulation("Unsupported SVC instruction");
-    }
-}
-
-//
-// Interpret Linux syscalls.
-//
-void Processor::linux_syscall(int op)
-{
-    switch (get_reg(7)) {
-    case 1:
-        // Syscall exit(status).
-        app_finished = true;
-        break;
-
-    case 4: {
-        // Syscall write(fd, buf, count).
-        unsigned fd = get_reg(0);
-        unsigned addr = get_reg(1);
-        unsigned len = get_reg(2);
-
-        // Make sure arguments are reasonable.
-        if (fd == 1 && len > 0 && len <= 10000 &&
-            addr >= ADDR_SRAM_START && (addr+len) <= ADDR_SRAM_LAST) {
-            write_stdout(addr, len);
-        }
-        break;
-    }
-    default:
-        terminate_simulation("Unsupported syscall");
     }
 }
 
