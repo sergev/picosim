@@ -166,7 +166,7 @@ void Simulator::read_elf_file(std::string const &filename)
     //
     // Set PC to the entry point.
     //
-    entry_address = elf_header.e_entry;
+    entry_address = elf_header.e_entry & ~1;
     if (Log::is_verbose()) {
         Log::out() << "Entry address: 0x" << std::hex << entry_address << std::dec << std::endl;
     }

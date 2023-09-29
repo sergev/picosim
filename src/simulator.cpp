@@ -4,7 +4,8 @@ Simulator::Simulator(const sc_core::sc_module_name &name, bool debug_enable)
     : sc_module(name), cpu("Processor", debug_enable), bus("BusCtrl"),
       rom("ROM", 16),             // Internal ROM - 16 kbytes
       flash("Flash", 2048),       // Flash memory - 2048 kbytes
-      sram("SRAM", 256 + 8),      // Internal SRAM - 256+8 kbytes
+//    sram("SRAM", 256 + 8),      // Internal SRAM - 256+8 kbytes
+      sram("SRAM", 480),          // Internal SRAM for Linux mode - 480 kbytes
       periph("Peripherals", 512), // Peripherals - 512 kbytes
       timer("Timer"),             // TODO: move to peripherals
       debug(*this, cpu, debug_enable)

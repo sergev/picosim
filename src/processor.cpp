@@ -230,16 +230,28 @@ void Processor::cpu_step()
         process_opcode16();
     }
 
-    if (Log::is_verbose() && xpsr.u32 != prev_xpsr) {
-        Log::out() << "          xpsr = " << std::hex << std::setw(8)
-                   << std::setfill('0') << xpsr.u32 << std::endl;
-    }
+    if (Log::is_verbose())
+        print_nzcv(prev_xpsr);
 
     instructions_executed++;
     set_pc(next_pc & ~1);
 
     if (linux_mode && app_finished) {
         terminate_simulation("");
+    }
+}
+
+//
+// Print NZCV flags when changed.
+//
+void Processor::print_nzcv(unsigned prev_xpsr)
+{
+    if ((xpsr.u32 >> 28) != (prev_xpsr >> 28)) {
+        Log::out() << "          nzcv = "
+                   << (xpsr.field.n ? '1' : '.')
+                   << (xpsr.field.z ? '1' : '.')
+                   << (xpsr.field.c ? '1' : '.')
+                   << (xpsr.field.v ? '1' : '.') << std::endl;
     }
 }
 
@@ -334,6 +346,8 @@ void Processor::data_write(uint32_t addr, uint32_t data, int size)
     wait(delay);
 
     if (trans.is_response_error()) {
+        Log::err() << "Write failed at address 0x" << std::hex << std::setw(8) << std::setfill('0')
+                   << addr << std::endl;
         SC_REPORT_ERROR("Memory", "Write");
     }
 }
@@ -394,7 +408,10 @@ void Processor::set_sysreg(unsigned sysm, uint32_t value)
         xpsr.field.z = value >> 30;
         xpsr.field.c = value >> 29;
         xpsr.field.v = value >> 28;
-        // XPSR is printed in cpu_step(), when changed.
+        if (Log::is_verbose()) {
+            Log::out() << "          xpsr = " << std::hex << std::setw(8)
+                       << std::setfill('0') << xpsr.u32 << std::endl;
+        }
         return;
 
     case SYSM_IPSR:  // Interrupt status register
