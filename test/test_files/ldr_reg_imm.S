@@ -22,9 +22,9 @@ _start:
         adr r7, imm36
         ldr r6, [r7, #40]   // 0x6c94ee62
 
-        movs r7, #1         // syscall exit(status)
-        svc #0
+        svc #1              // syscall exit(status)
 
+        .align 2
 imm0:   .word 0x9b74a3db
 imm4:   .word 0x776dd37e
 imm8:   .word 0x5fed565c

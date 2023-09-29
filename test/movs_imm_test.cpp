@@ -7,29 +7,19 @@ TEST(opcode, movs_imm)
 {
     Simulator sim;
     enable_trace();
-
-    sim.debug_store16(0x8000, 0x2080);  // movs r0, #128
-    sim.debug_store16(0x8002, 0x2140);  // movs r1, #64
-    sim.debug_store16(0x8004, 0x2220);  // movs r2, #32
-    sim.debug_store16(0x8006, 0x2310);  // movs r3, #16
-    sim.debug_store16(0x8008, 0x2408);  // movs r4, #8
-    sim.debug_store16(0x800a, 0x2504);  // movs r5, #4
-    sim.debug_store16(0x800c, 0x2602);  // movs r6, #2
-    sim.debug_store16(0x800e, 0x2701);  // movs r7, #1
-    sim.debug_store16(0x8010, 0xdf00);  // svc  0
-
+    sim.read_elf_file(TEST_DIR "/test_files/movs_imm.elf");
     sim.run(0x8000);
     show_trace();
 
     EXPECT_EQ(sim.get_instructions_executed(), 9);
-    EXPECT_EQ(sim.get_reg(0), 128);
-    EXPECT_EQ(sim.get_reg(1), 64);
-    EXPECT_EQ(sim.get_reg(2), 32);
-    EXPECT_EQ(sim.get_reg(3), 16);
-    EXPECT_EQ(sim.get_reg(4), 8);
-    EXPECT_EQ(sim.get_reg(5), 4);
-    EXPECT_EQ(sim.get_reg(6), 2);
-    EXPECT_EQ(sim.get_reg(7), 1);
+    EXPECT_EQ(sim.get_reg(0), 0xd3);
+    EXPECT_EQ(sim.get_reg(1), 0x9d);
+    EXPECT_EQ(sim.get_reg(2), 0x97);
+    EXPECT_EQ(sim.get_reg(3), 0x1a);
+    EXPECT_EQ(sim.get_reg(4), 0x91);
+    EXPECT_EQ(sim.get_reg(5), 0xd7);
+    EXPECT_EQ(sim.get_reg(6), 0x29);
+    EXPECT_EQ(sim.get_reg(7), 0xab);
     EXPECT_EQ(sim.get_pc(), 0x8012);
 }
 

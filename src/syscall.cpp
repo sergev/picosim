@@ -207,3 +207,91 @@ void Processor::linux_syscall(int op)
     // Return -1 by default.
     set_reg(0, -1);
 }
+
+//
+// Write data from memory to stdout.
+//
+void Processor::write_stdout(unsigned addr, unsigned nbytes)
+{
+    if (addr & 1) {
+        write8_stdout(addr, nbytes);
+    }
+    if ((addr & 2) && nbytes >= 2) {
+        write16_stdout(addr, nbytes);
+        if (nbytes == 0)
+            return;
+    }
+    while (nbytes >= 4) {
+        write32_stdout(addr, nbytes);
+        if (nbytes == 0)
+            return;
+    }
+    if (nbytes >= 2) {
+        write16_stdout(addr, nbytes);
+        if (nbytes == 0)
+            return;
+    }
+    if (nbytes >= 1) {
+        write8_stdout(addr, nbytes);
+    }
+}
+
+//
+// Write one byte to stdout.
+//
+void Processor::write8_stdout(unsigned &addr, unsigned &nbytes)
+{
+    char c = data_read8(addr);
+    addr += 1;
+    nbytes -= 1;
+    put_char(c);
+}
+
+//
+// Write two bytes to stdout.
+//
+void Processor::write16_stdout(unsigned &addr, unsigned &nbytes)
+{
+    unsigned h = data_read16(addr);
+    addr += 2;
+    nbytes -= 2;
+    put_char(h);
+    put_char(h >> 8);
+}
+
+//
+// Write four bytes to stdout.
+//
+void Processor::write32_stdout(unsigned &addr, unsigned &nbytes)
+{
+    unsigned w = data_read32(addr);
+    addr += 4;
+    nbytes -= 4;
+    put_char(w);
+    put_char(w >> 8);
+    put_char(w >> 16);
+    put_char(w >> 24);
+}
+
+//
+// Write one byte to stdout.
+//
+void Processor::put_char(char ch)
+{
+    if (ch == '\n' || ch == '\r' || ch == '\t' || ch == '\b') {
+        // Legal control character.
+    } else if (ch >= 0 && ch < ' ') {
+        std::cout << '^';
+        if (capture_stdout_flag)
+            stdout_buf << '^';
+        ch += '@';
+    } else if (ch > '~') {
+        std::cout << '^';
+        if (capture_stdout_flag)
+            stdout_buf << '^';
+        ch = '?';
+    }
+    std::cout << ch << std::flush;
+    if (capture_stdout_flag)
+        stdout_buf << ch;
+}

@@ -56,7 +56,5 @@ _start:
         mrs r7, APSR
         mov r8, r7
 
-        // Skip this code
-        movs r7, #1         // syscall exit(status)
-        svc #0              // pass
+        svc #1              // syscall exit()
 after_svc:

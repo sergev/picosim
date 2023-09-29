@@ -25,8 +25,7 @@ _start:
         ldr r6, =0x789abcde
         str r6, [sp, #76]   // data + 76
 
-        movs r7, #1         // syscall exit(status)
-        svc #0
+        svc #1              // syscall exit(status)
 
         .data
         .align 2

@@ -7,8 +7,7 @@ _start:
         adr r4, data4
         ldmia r4, {r2, r4, r5, r6}
 
-        movs r7, #1         // syscall exit(status)
-        svc #0
+        svc #1              // syscall exit(status)
 
         .align 2
 data0:  .long   0x7502fe1f  // r1

@@ -6,5 +6,4 @@ _start:
         dmb
         isb
 
-        movs r7, #1         // syscall exit(status)
-        svc #0
+        svc #1              // syscall exit(status)

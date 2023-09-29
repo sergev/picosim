@@ -22,5 +22,4 @@ _start:
         sub sp, #508
         mov r6, sp          // 1234566274
 
-        movs r7, #1         // syscall exit(status)
-        svc #0
+        svc #1              // syscall exit(status)

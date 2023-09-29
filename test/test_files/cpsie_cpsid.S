@@ -11,5 +11,4 @@ _start:
         cpsie i
         mrs r2, PRIMASK     // expect 0000_0000
 
-        movs r7, #1         // syscall exit(status)
-        svc #0
+        svc #1              // syscall exit(status)

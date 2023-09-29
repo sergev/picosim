@@ -13,5 +13,4 @@ _start:
         ldr r6, =0xd306fde3
         movs r4, r6
 
-        movs r7, #1      // syscall exit(status)
-        svc #0
+        svc #1              // syscall exit(status)

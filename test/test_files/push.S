@@ -18,8 +18,7 @@ _start:
 
         push {r2, r3, r4, r6, r7, lr}
 
-        movs r7, #1         // syscall exit(status)
-        svc #0
+        svc #1              // syscall exit(status)
 
         .data
         .align 2

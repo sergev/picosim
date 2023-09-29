@@ -5,14 +5,12 @@ _start:
         mov sp, r0
         pop {r1, r3, pc}    // note branch
 
-        movs r7, #1         // syscall exit(status)
-        svc #0              // fail
+        svc #1              // syscall exit() - FAIL
 
 jump_here:
         pop {r0, r2, r4, r5, r6}
 
-        movs r7, #1         // syscall exit(status)
-        svc #0              // pass
+        svc #1              // syscall exit() - PASS
 
         .align 2
 data0:  .long   0x7502fe1f  // r1

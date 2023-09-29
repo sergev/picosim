@@ -12,5 +12,4 @@ _start:
         add r5, sp, #988    // 1234568878
         add r6, sp, #1020   // 1234568910
 
-        movs r7, #1         // syscall exit(status)
-        svc #0
+        svc #1              // syscall exit(status)

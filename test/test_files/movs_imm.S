@@ -1,12 +1,12 @@
         .section .text
         .global _start
 _start:
-        movs r0, #0x80
-        movs r1, #0x40
-        movs r2, #0x20
-        movs r3, #0x10
-        movs r4, #8
-        movs r5, #4
-        movs r6, #2
-        movs r7, #1      // syscall exit(status)
-        svc #0
+        movs r0, #0xd3
+        movs r1, #0x9d
+        movs r2, #0x97
+        movs r3, #0x1a
+        movs r4, #0x91
+        movs r5, #0xd7
+        movs r6, #0x29
+        movs r7, #0xab
+        svc #1              // syscall exit(status)

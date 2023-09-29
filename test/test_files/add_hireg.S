@@ -44,12 +44,11 @@ _start:
         add lr, r6
 
         // PC = R15, Program Counter
-        movs r0, #2
+        movs r0, #0
         add pc, r0
 
-        // Skip this code
-        movs r7, #1         // syscall exit(status)
-        svc #0              // fail
+        // Skip this instruction
+        svc #1              // syscall exit() - FAIL
 
         add r8, r8
         add r6, r9
@@ -60,6 +59,4 @@ _start:
         add r1, lr
         add r0, pc
 
-        // Skip this code
-        movs r7, #1         // syscall exit(status)
-        svc #0              // pass
+        svc #1              // syscall exit() - PASS

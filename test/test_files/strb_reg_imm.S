@@ -29,8 +29,7 @@ _start:
         ldr r6, =0x78
         strb r6, [r7, #10]  // data + 30
 
-        movs r7, #1         // syscall exit(status)
-        svc #0
+        svc #1              // syscall exit(status)
 
         .data
 imm0:   .word 0x9b74a3db

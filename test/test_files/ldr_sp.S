@@ -12,8 +12,7 @@ _start:
         ldr r5, [sp, #0]    // 0x9b74a3db
         ldr r6, [sp, #76]   // 0x6c94ee62
 
-        movs r7, #1         // syscall exit(status)
-        svc #0
+        svc #1              // syscall exit(status)
 
         .align 2
 imm0:   .word 0x9b74a3db

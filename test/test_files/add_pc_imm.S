@@ -9,5 +9,4 @@ _start:
         add r5, pc, #0x220  // 0x822a
         add r6, pc, #0x158  // 0x8164
 
-        movs r7, #1         // syscall exit(status)
-        svc #0
+        svc #1              // syscall exit(status)

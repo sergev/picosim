@@ -29,8 +29,7 @@ _start:
         movs r7, #40
         ldr r6, [r6, r7]    // 0x6c94ee62
 
-        movs r7, #1         // syscall exit(status)
-        svc #0
+        svc #1              // syscall exit(status)
 
         .align 2
 imm0:   .word 0x9b74a3db

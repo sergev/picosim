@@ -1,3 +1,4 @@
+
         .section .text
         .global _start
 _start:
@@ -22,5 +23,4 @@ _start:
         mrs r7, APSR
         mov r8, r7
 
-        movs r7, #1         // syscall exit(status)
-        svc #0
+        svc #1              // syscall exit()
