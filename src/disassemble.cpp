@@ -260,17 +260,22 @@ static std::string thumb_add_cmp_mov(unsigned opcode)
 }
 
 //
-// BX instruction.
+// BX, BLX instructions.
 //
-static std::string thumb_bx(unsigned opcode)
+static std::string thumb_bx_blx(unsigned opcode)
 {
     unsigned Rm = (opcode >> 3) & 0x0f;
     std::ostringstream text;
 
-    if ((opcode & 0x0087) != 0)
+    if ((opcode & 7) != 0)
         return UNKNOWN;
 
-    text << "bx " << reg_name[Rm];
+    if (opcode & 0x80) {
+        text << "blx " << reg_name[Rm];
+    } else {
+        text << "bx " << reg_name[Rm];
+    }
+
     return text.str();
 }
 
@@ -765,7 +770,7 @@ static std::string disassemble_16bit(unsigned opcode, unsigned address)
         return thumb_add_cmp_mov(opcode);
 
     case 0x47:
-        return thumb_bx(opcode);
+        return thumb_bx_blx(opcode);
 
     case 0x48: case 0x49: case 0x4a: case 0x4b: case 0x4c: case 0x4d: case 0x4e: case 0x4f:
         return thumb_load_literal(opcode);

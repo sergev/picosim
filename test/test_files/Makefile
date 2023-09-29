@@ -72,7 +72,8 @@ PROG            = movs_imm.elf \
                   branch_jump.elf \
                   branch_cond.elf \
                   branch_link.elf \
-                  branch_exc.elf \
+                  branch_exch.elf \
+                  branch_link_exch.elf \
                   stdout.elf \
                   hello.elf
 

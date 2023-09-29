@@ -340,7 +340,7 @@ private:
     void thumb_arith_imm();
     void thumb_arith_reg();
     void thumb_add_cmp_mov();
-    void thumb_bx();
+    void thumb_bx_blx();
     void thumb_load_literal();
     void thumb_load_store_reg();
     void thumb_load_store_imm();

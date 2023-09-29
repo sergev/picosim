@@ -35,7 +35,7 @@ void Processor::process_opcode16()
         break;
 
     case 0x47:
-        thumb_bx();
+        thumb_bx_blx();
         break;
 
     case 0x48: case 0x49: case 0x4a: case 0x4b: case 0x4c: case 0x4d: case 0x4e: case 0x4f:
@@ -611,16 +611,22 @@ void Processor::thumb_add_cmp_mov()
 // else
 //      BranchTo(address<31:1>:'0');
 //
-void Processor::thumb_bx()
+void Processor::thumb_bx_blx()
 {
-    unsigned rm = (opcode >> 3) & 0x0f;
+    unsigned rm      = (opcode >> 3) & 0x0f;
+    unsigned address = get_reg(rm);
 
-    if ((opcode & 0x0087) != 0) {
+    if (opcode & 7) {
         terminate_simulation("Bad branch-exchange instruction");
     }
 
-    // BX instruction.
-    next_pc = get_reg(rm);
+    if (opcode & 0x80) {
+        // BLX instruction.
+        set_reg(Registers::LR, next_pc);
+    } else {
+        // BX instruction.
+    }
+    next_pc = address;
 
     //TODO: if (next_pc[31:28] == 0x0f) exc_return();
 }

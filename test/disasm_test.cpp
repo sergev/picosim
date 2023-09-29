@@ -941,6 +941,23 @@ TEST(disasm, opcode16)
     test_disasm(0x4770, "bx lr");
     test_disasm(0x4778, "bx pc");
 
+    test_disasm(0x4780, "blx r0");
+    test_disasm(0x4788, "blx r1");
+    test_disasm(0x4790, "blx r2");
+    test_disasm(0x4798, "blx r3");
+    test_disasm(0x47a0, "blx r4");
+    test_disasm(0x47a8, "blx r5");
+    test_disasm(0x47b0, "blx r6");
+    test_disasm(0x47b8, "blx r7");
+    test_disasm(0x47c0, "blx r8");
+    test_disasm(0x47c8, "blx r9");
+    test_disasm(0x47d0, "blx sl");
+    test_disasm(0x47d8, "blx fp");
+    test_disasm(0x47e0, "blx ip");
+    test_disasm(0x47e8, "blx sp");
+    test_disasm(0x47f0, "blx lr");
+    test_disasm(0x47f8, "blx pc");
+
     test_disasm(0x4800, "ldr r0, [pc, #0]");
     test_disasm(0x4801, "ldr r0, [pc, #4]");
     test_disasm(0x48ff, "ldr r0, [pc, #1020]");

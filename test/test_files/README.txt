@@ -97,7 +97,8 @@ uxtb.S              uxtb r1, r2
 branch_jump.S       b 0x12345678
 branch_cond.S       bXX 0x12345678
 branch_link.S       bl 0x12f45678
-branch_exc.S        bx r1
+branch_exch.S       bx r1
+branch_link_exch.S  blx r1
 
         Barriers
 

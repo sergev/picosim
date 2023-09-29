@@ -3,7 +3,7 @@
 //
 // Check BX instruction.
 //
-TEST(opcode, branch_exc)
+TEST(opcode, branch_exch)
 {
     Simulator sim;
     enable_trace();
