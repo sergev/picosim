@@ -72,7 +72,8 @@ PROG            = movs_imm.elf \
                   branch_jump.elf \
                   branch_cond.elf \
                   branch_link.elf \
-                  write.elf \
+                  branch_exc.elf \
+                  stdout.elf \
                   hello.elf
 
 all:            $(PROG)

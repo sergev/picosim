@@ -217,17 +217,95 @@ void Processor::linux_syscall(int op)
         // Make sure arguments are reasonable.
         if (fd == 1 && len > 0 && len <= 10000 &&
             addr >= ADDR_SRAM_START && (addr+len) <= ADDR_SRAM_LAST) {
-#if 0
-            char buf[len];
-            data_readn(buf, addr, len); // TODO
-            write(1, buf, len);
-#endif
+            write_stdout(addr, len);
         }
         break;
     }
     default:
         terminate_simulation("Unsupported syscall");
     }
+}
+
+//
+// Write data from memory to stdout.
+//
+void Processor::write_stdout(unsigned addr, unsigned nbytes)
+{
+    if (addr & 1) {
+        write8_stdout(addr, nbytes);
+    }
+    if ((addr & 2) && nbytes >= 2) {
+        write16_stdout(addr, nbytes);
+        if (nbytes == 0)
+            return;
+    }
+    while (nbytes >= 4) {
+        write32_stdout(addr, nbytes);
+        if (nbytes == 0)
+            return;
+    }
+    if (nbytes >= 2) {
+        write16_stdout(addr, nbytes);
+        if (nbytes == 0)
+            return;
+    }
+    if (nbytes >= 1) {
+        write8_stdout(addr, nbytes);
+    }
+}
+
+//
+// Write one byte to stdout.
+//
+void Processor::write8_stdout(unsigned &addr, unsigned &nbytes)
+{
+    char c = data_read8(addr);
+    addr += 1;
+    nbytes -= 1;
+    put_char(c);
+}
+
+//
+// Write two bytes to stdout.
+//
+void Processor::write16_stdout(unsigned &addr, unsigned &nbytes)
+{
+    unsigned h = data_read16(addr);
+    addr += 2;
+    nbytes -= 2;
+    put_char(h);
+    put_char(h >> 8);
+}
+
+//
+// Write four bytes to stdout.
+//
+void Processor::write32_stdout(unsigned &addr, unsigned &nbytes)
+{
+    unsigned w = data_read32(addr);
+    addr += 4;
+    nbytes -= 4;
+    put_char(w);
+    put_char(w >> 8);
+    put_char(w >> 16);
+    put_char(w >> 24);
+}
+
+//
+// Write one byte to stdout.
+//
+void Processor::put_char(char ch)
+{
+    if (ch == '\n' || ch == '\r' || ch == '\t' || ch == '\b') {
+        // Legal control character.
+    } else if (ch >= 0 && ch < ' ') {
+        std::cout << '^';
+        ch += '@';
+    } else if (ch > '~') {
+        std::cout << '^';
+        ch = '?';
+    }
+    std::cout << ch << std::flush;
 }
 
 //
@@ -521,19 +599,24 @@ void Processor::thumb_add_cmp_mov()
     }
 }
 
+//
+// if CurrentMode == Mode_Handler && address<31:28> == '1111' then
+//      ExceptionReturn(address<27:0>);
+// else
+//      BranchTo(address<31:1>:'0');
+//
 void Processor::thumb_bx()
 {
-    terminate_simulation(__func__); // TODO
-#if 0
     unsigned rm = (opcode >> 3) & 0x0f;
-    std::ostringstream text;
 
-    if ((opcode & 0x0087) != 0)
-        return UNKNOWN;
+    if ((opcode & 0x0087) != 0) {
+        terminate_simulation("Bad branch-exchange instruction");
+    }
 
-    text << "bx " << reg_name[rm];
-    return text.str();
-#endif
+    // BX instruction.
+    next_pc = get_reg(rm);
+
+    //TODO: if (next_pc[31:28] == 0x0f) exc_return();
 }
 
 void Processor::thumb_load_store_reg()
@@ -749,12 +832,28 @@ void Processor::thumb_byterev()
 
 void Processor::thumb_breakpoint()
 {
-    terminate_simulation(__func__); // TODO
+    // TODO: take a Debug halt.
+    terminate_simulation("bkpt");
 }
 
 void Processor::thumb_hint()
 {
-    terminate_simulation(__func__); // TODO
+    switch ((opcode >> 4) & 0x0f) {
+    case 1:
+        // YIELD instruction.
+        break;
+    case 2:
+        // WFE instruction.
+        break;
+    case 3:
+        // WFI instruction.
+        break;
+    case 4:
+        // SEV instruction.
+        break;
+    default:
+        terminate_simulation("Unknown hint instruction");
+    }
 }
 
 void Processor::thumb_ldmia()
@@ -763,6 +862,7 @@ void Processor::thumb_ldmia()
     unsigned rn       = (opcode >> 8) & 7;
     uint32_t address  = get_reg(rn);
 
+    // LDMIA instruction.
     for (unsigned rd = 0; rd < 8; rd++) {
         if ((reg_list >> rd) & 1) {
             set_reg(rd, data_read32(address));
@@ -782,6 +882,7 @@ void Processor::thumb_stmia()
     unsigned rn       = (opcode >> 8) & 7;
     uint32_t address  = get_reg(rn);
 
+    // STMIA instruction.
     for (unsigned rd = 0; rd < 8; rd++) {
         if ((reg_list >> rd) & 1) {
             data_write32(address, get_reg(rd));
@@ -799,6 +900,7 @@ void Processor::thumb_pop()
     unsigned sp_flag  = (opcode >> 8) & 1;
     uint32_t address  = get_reg(Registers::SP);
 
+    // POP instruction.
     for (unsigned rd = 0; rd < 8; rd++) {
         if ((reg_list >> rd) & 1) {
             set_reg(rd, data_read32(address));
@@ -808,12 +910,14 @@ void Processor::thumb_pop()
 
     if (sp_flag) {
         // Jump.
-        next_pc = data_read32(address) & ~1;
+        next_pc = data_read32(address);
         address += 4;
     }
 
     // Update SP.
     set_reg(Registers::SP, address);
+
+    //TODO: if (next_pc[31:28] == 0x0f) exc_return();
 }
 
 void Processor::thumb_push()
@@ -822,6 +926,7 @@ void Processor::thumb_push()
     unsigned lr_flag  = (opcode >> 8) & 1;
     uint32_t address  = get_reg(Registers::SP);
 
+    // PUSH instruction.
     if (lr_flag) {
         // Save LR first.
         address -= 4;

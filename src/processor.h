@@ -354,6 +354,11 @@ private:
     void thumb_udf();
     void thumb_svc();
     void linux_syscall(int op);
+    void write_stdout(unsigned addr, unsigned nbytes);
+    void write8_stdout(unsigned &addr, unsigned &nbytes);
+    void write16_stdout(unsigned &addr, unsigned &nbytes);
+    void write32_stdout(unsigned &addr, unsigned &nbytes);
+    void put_char(char ch);
 };
 
 #endif

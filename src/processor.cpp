@@ -236,7 +236,7 @@ void Processor::cpu_step()
     }
 
     instructions_executed++;
-    set_pc(next_pc);
+    set_pc(next_pc & ~1);
 
     if (linux_mode && app_finished) {
         terminate_simulation("");

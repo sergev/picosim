@@ -97,7 +97,7 @@ uxtb.S              uxtb r1, r2
 branch_jump.S       b 0x12345678
 branch_cond.S       bXX 0x12345678
 branch_link.S       bl 0x12f45678
-                    bx r1
+branch_exc.S        bx r1
 
         Barriers
 
@@ -106,7 +106,7 @@ nop.S               nop; dsb; dmb; isb
         Events
 
                     bkpt 0x00ff
-write.S             svc 255
+stdout.S            svc 255
                     wfi
                     wfe
                     sev
