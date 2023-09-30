@@ -111,17 +111,23 @@ static void print_stats(std::ostream &out, double sec, uint64_t ncycles, uint64_
 
 int sc_main(int argc, char *argv[])
 {
-    /* Capture Ctrl+C and finish simulation */
+    // Capture Ctrl+C and finish simulation.
     signal(SIGINT, intHandler);
 
-    /* Parse and process program arguments. */
+    // Parse and process program arguments.
     process_arguments(argc, argv);
 
-    /* SystemC time resolution set to 1 ns */
+    // SystemC time resolution set to 1 ns.
     sc_core::sc_set_time_resolution(1, sc_core::SC_NS);
 
-    /* Instantiate simulator. */
-    Simulator sim("pico", debug_session);
+    // Figure out configuration from ELF file.
+    std::string config = "pico"; // Default
+    if (!filename.empty()) {
+        config = Simulator::get_elf_config(filename);
+    }
+
+    // Instantiate simulator.
+    Simulator sim(config.c_str(), debug_session);
     if (!filename.empty()) {
         sim.read_elf_file(filename);
     }

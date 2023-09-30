@@ -8,6 +8,12 @@
 #include "exec_elf32.h"
 #include "simulator.h"
 
+std::string Simulator::get_elf_config(std::string const &filename)
+{
+    //TODO
+    return "linux";
+}
+
 void Simulator::read_elf_file(std::string const &filename)
 {
     //

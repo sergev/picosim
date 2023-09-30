@@ -11,6 +11,7 @@
 **.h-
 **.ts-
 **.dat
+**.readelf
 
 build
 test/build

@@ -28,18 +28,20 @@ class Simulator : public sc_core::sc_module {
 private:
     Processor cpu;
     Bus_Controller bus;
-    Memory rom;
-    Memory flash;
-    Memory sram;
-    Peripherals periph;
-    Timer timer;
-    Debug debug;
+
+    // Optional components.
+    std::unique_ptr<Memory> rom;
+    std::unique_ptr<Memory> flash;
+    std::unique_ptr<Memory> sram;
+    std::unique_ptr<Peripherals> periph;
+    std::unique_ptr<Timer> timer;
+    std::unique_ptr<Debug> debug;
 
     // Entry address (PC) read from ELF file.
     uint32_t entry_address{ 0 };
 
 public:
-    Simulator(const sc_core::sc_module_name &name = "pico", bool debug_enable = false);
+    Simulator(const sc_core::sc_module_name &config = "linux", bool debug_enable = false);
 
     // Run program.
     void run(uint32_t start_address = 0);
@@ -58,7 +60,10 @@ public:
     unsigned debug_read(uint8_t *buf, uint32_t addr, unsigned nbytes);
     unsigned debug_write(const uint8_t *buf, uint32_t addr, unsigned nbytes);
 
-    // Read ELF binary file
+    // Figure out SoC configuration from ELF file.
+    static std::string get_elf_config(const std::string &filename);
+
+    // Read ELF binary file.
     void read_elf_file(const std::string &filename);
 
     // Return Program Counter read from executable image.

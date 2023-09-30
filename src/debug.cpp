@@ -21,12 +21,10 @@
 constexpr char nibble_to_hex[16] = { '0', '1', '2', '3', '4', '5', '6', '7',
                                      '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
-Debug::Debug(Simulator &s, Processor &p, bool debug_enable)
+Debug::Debug(Simulator &s, Processor &p)
     : sc_module(sc_core::sc_module_name("Debug")), sim(s), cpu(p)
 {
-    if (debug_enable) {
-        SC_THREAD(gdb_thread);
-    }
+    SC_THREAD(gdb_thread);
 }
 
 Debug::~Debug()

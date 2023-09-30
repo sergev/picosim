@@ -1,34 +1,38 @@
 #include "simulator.h"
 
 Simulator::Simulator(const sc_core::sc_module_name &name, bool debug_enable)
-    : sc_module(name), cpu("Processor", debug_enable), bus("BusCtrl"),
-      rom("ROM", 16),             // Internal ROM - 16 kbytes
-      flash("Flash", 2048),       // Flash memory - 2048 kbytes
-//    sram("SRAM", 256 + 8),      // Internal SRAM - 256+8 kbytes
-      sram("SRAM", 480),          // Internal SRAM for Linux mode - 480 kbytes
-      periph("Peripherals", 512), // Peripherals - 512 kbytes
-      timer("Timer"),             // TODO: move to peripherals
-      debug(*this, cpu, debug_enable)
+    : sc_module(name), cpu("Processor", debug_enable), bus("BusCtrl")
 {
+    // Allocate optional components.
+    rom    = std::make_unique<Memory>("ROM", 16);               // Internal ROM - 16 kbytes
+    flash  = std::make_unique<Memory>("Flash", 2048);           // Flash memory - 2048 kbytes
+//  sram   = std::make_unique<Memory>("SRAM", 256 + 8);         // Internal SRAM - 256+8 kbytes
+    sram   = std::make_unique<Memory>("SRAM", 480);             // Internal SRAM for Linux mode - 480 kbytes
+    periph = std::make_unique<Peripherals>("Peripherals", 512); // Peripherals - 512 kbytes
+    timer  = std::make_unique<Timer>("Timer");                  // TODO: move to peripherals
+    if (debug_enable) {
+        debug = std::make_unique<Debug>(*this, cpu);
+    }
+
     // Connect CPU to the bus controller.
     cpu.instr_bus.bind(bus.cpu_instr_socket);
     cpu.data_bus.bind(bus.cpu_data_socket);
 
     // Connect all slaves to the bus controller.
-    bus.rom_socket.bind(rom.socket);
-    bus.flash_socket.bind(flash.socket);
-    bus.sram_socket.bind(sram.socket);
-    bus.periph_socket.bind(periph.socket);
+    bus.rom_socket.bind(rom->socket);
+    bus.flash_socket.bind(flash->socket);
+    bus.sram_socket.bind(sram->socket);
+    bus.periph_socket.bind(periph->socket);
 
     // TODO: move timer to peripherals.
-    bus.timer_socket.bind(timer.socket);
-    timer.irq_line.bind(cpu.irq_line_socket);
+    bus.timer_socket.bind(timer->socket);
+    timer->irq_line.bind(cpu.irq_line_socket);
 
     // Set base addresses.
-    rom.set_base(ADDR_ROM_START);
-    flash.set_base(ADDR_FLASH_START);
-    sram.set_base(ADDR_SRAM_START);
-    periph.set_base(ADDR_PERIPH_START);
+    rom->set_base(ADDR_ROM_START);
+    flash->set_base(ADDR_FLASH_START);
+    sram->set_base(ADDR_SRAM_START);
+    periph->set_base(ADDR_PERIPH_START);
 
     // Load ROM.
 #if 0
@@ -39,7 +43,7 @@ Simulator::Simulator(const sc_core::sc_module_name &name, bool debug_enable)
 
     // Make ROM read only.
     // Keep Flash memory still writable, until a binary image is loaded.
-    rom.set_read_only();
+    rom->set_read_only();
 }
 
 //
@@ -48,7 +52,7 @@ Simulator::Simulator(const sc_core::sc_module_name &name, bool debug_enable)
 void Simulator::run(uint32_t start_address)
 {
     // Make Flash memory read only.
-    flash.set_read_only();
+    flash->set_read_only();
 
     if (start_address) {
         cpu.set_pc(start_address);
