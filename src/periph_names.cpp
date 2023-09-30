@@ -1,12 +1,13 @@
 #include "peripherals.h"
 #include "rp2040/addressmap.h"
 #include "rp2040/sio.h"
+#include "rp2040/clocks.h"
 
 static const std::map<unsigned, const std::string> periph_reg_name = {
+    // clang-format off
     //
     // SIO registers at address d000_0000...d000_017c
     //
-    // clang-format off
     { SIO_BASE + SIO_CPUID_OFFSET,                          "SIO_CPUID" },
     { SIO_BASE + SIO_GPIO_IN_OFFSET,                        "SIO_GPIO_IN" },
     { SIO_BASE + SIO_GPIO_HI_IN_OFFSET,                     "SIO_GPIO_HI_IN" },
@@ -101,6 +102,59 @@ static const std::map<unsigned, const std::string> periph_reg_name = {
     { SIO_BASE + SIO_SPINLOCK29_OFFSET,                     "SIO_SPINLOCK29" },
     { SIO_BASE + SIO_SPINLOCK30_OFFSET,                     "SIO_SPINLOCK30" },
     { SIO_BASE + SIO_SPINLOCK31_OFFSET,                     "SIO_SPINLOCK31" },
+
+    //
+    // Clocks registers at address 4000_8000...4000_00c4
+    //
+    { CLOCKS_BASE + CLOCKS_CLK_GPOUT0_CTRL_OFFSET,          "CLOCKS_CLK_GPOUT0_CTRL" },
+    { CLOCKS_BASE + CLOCKS_CLK_GPOUT0_DIV_OFFSET,           "CLOCKS_CLK_GPOUT0_DIV" },
+    { CLOCKS_BASE + CLOCKS_CLK_GPOUT0_SELECTED_OFFSET,      "CLOCKS_CLK_GPOUT0_SELECTED" },
+    { CLOCKS_BASE + CLOCKS_CLK_GPOUT1_CTRL_OFFSET,          "CLOCKS_CLK_GPOUT1_CTRL" },
+    { CLOCKS_BASE + CLOCKS_CLK_GPOUT1_DIV_OFFSET,           "CLOCKS_CLK_GPOUT1_DIV" },
+    { CLOCKS_BASE + CLOCKS_CLK_GPOUT1_SELECTED_OFFSET,      "CLOCKS_CLK_GPOUT1_SELECTED" },
+    { CLOCKS_BASE + CLOCKS_CLK_GPOUT2_CTRL_OFFSET,          "CLOCKS_CLK_GPOUT2_CTRL" },
+    { CLOCKS_BASE + CLOCKS_CLK_GPOUT2_DIV_OFFSET,           "CLOCKS_CLK_GPOUT2_DIV" },
+    { CLOCKS_BASE + CLOCKS_CLK_GPOUT2_SELECTED_OFFSET,      "CLOCKS_CLK_GPOUT2_SELECTED" },
+    { CLOCKS_BASE + CLOCKS_CLK_GPOUT3_CTRL_OFFSET,          "CLOCKS_CLK_GPOUT3_CTRL" },
+    { CLOCKS_BASE + CLOCKS_CLK_GPOUT3_DIV_OFFSET,           "CLOCKS_CLK_GPOUT3_DIV" },
+    { CLOCKS_BASE + CLOCKS_CLK_GPOUT3_SELECTED_OFFSET,      "CLOCKS_CLK_GPOUT3_SELECTED" },
+    { CLOCKS_BASE + CLOCKS_CLK_REF_CTRL_OFFSET,             "CLOCKS_CLK_REF_CTRL" },
+    { CLOCKS_BASE + CLOCKS_CLK_REF_DIV_OFFSET,              "CLOCKS_CLK_REF_DIV" },
+    { CLOCKS_BASE + CLOCKS_CLK_REF_SELECTED_OFFSET,         "CLOCKS_CLK_REF_SELECTED" },
+    { CLOCKS_BASE + CLOCKS_CLK_SYS_CTRL_OFFSET,             "CLOCKS_CLK_SYS_CTRL" },
+    { CLOCKS_BASE + CLOCKS_CLK_SYS_DIV_OFFSET,              "CLOCKS_CLK_SYS_DIV" },
+    { CLOCKS_BASE + CLOCKS_CLK_SYS_SELECTED_OFFSET,         "CLOCKS_CLK_SYS_SELECTED" },
+    { CLOCKS_BASE + CLOCKS_CLK_PERI_CTRL_OFFSET,            "CLOCKS_CLK_PERI_CTRL" },
+    { CLOCKS_BASE + CLOCKS_CLK_PERI_SELECTED_OFFSET,        "CLOCKS_CLK_PERI_SELECTED" },
+    { CLOCKS_BASE + CLOCKS_CLK_USB_CTRL_OFFSET,             "CLOCKS_CLK_USB_CTRL" },
+    { CLOCKS_BASE + CLOCKS_CLK_USB_DIV_OFFSET,              "CLOCKS_CLK_USB_DIV" },
+    { CLOCKS_BASE + CLOCKS_CLK_USB_SELECTED_OFFSET,         "CLOCKS_CLK_USB_SELECTED" },
+    { CLOCKS_BASE + CLOCKS_CLK_ADC_CTRL_OFFSET,             "CLOCKS_CLK_ADC_CTRL" },
+    { CLOCKS_BASE + CLOCKS_CLK_ADC_DIV_OFFSET,              "CLOCKS_CLK_ADC_DIV" },
+    { CLOCKS_BASE + CLOCKS_CLK_ADC_SELECTED_OFFSET,         "CLOCKS_CLK_ADC_SELECTED" },
+    { CLOCKS_BASE + CLOCKS_CLK_RTC_CTRL_OFFSET,             "CLOCKS_CLK_RTC_CTRL" },
+    { CLOCKS_BASE + CLOCKS_CLK_RTC_DIV_OFFSET,              "CLOCKS_CLK_RTC_DIV" },
+    { CLOCKS_BASE + CLOCKS_CLK_RTC_SELECTED_OFFSET,         "CLOCKS_CLK_RTC_SELECTED" },
+    { CLOCKS_BASE + CLOCKS_CLK_SYS_RESUS_CTRL_OFFSET,       "CLOCKS_CLK_SYS_RESUS_CTRL" },
+    { CLOCKS_BASE + CLOCKS_CLK_SYS_RESUS_STATUS_OFFSET,     "CLOCKS_CLK_SYS_RESUS_STATUS" },
+    { CLOCKS_BASE + CLOCKS_FC0_REF_KHZ_OFFSET,              "CLOCKS_FC0_REF_KHZ" },
+    { CLOCKS_BASE + CLOCKS_FC0_MIN_KHZ_OFFSET,              "CLOCKS_FC0_MIN_KHZ" },
+    { CLOCKS_BASE + CLOCKS_FC0_MAX_KHZ_OFFSET,              "CLOCKS_FC0_MAX_KHZ" },
+    { CLOCKS_BASE + CLOCKS_FC0_DELAY_OFFSET,                "CLOCKS_FC0_DELAY" },
+    { CLOCKS_BASE + CLOCKS_FC0_INTERVAL_OFFSET,             "CLOCKS_FC0_INTERVAL" },
+    { CLOCKS_BASE + CLOCKS_FC0_SRC_OFFSET,                  "CLOCKS_FC0_SRC" },
+    { CLOCKS_BASE + CLOCKS_FC0_STATUS_OFFSET,               "CLOCKS_FC0_STATUS" },
+    { CLOCKS_BASE + CLOCKS_FC0_RESULT_OFFSET,               "CLOCKS_FC0_RESULT" },
+    { CLOCKS_BASE + CLOCKS_WAKE_EN0_OFFSET,                 "CLOCKS_WAKE_EN0" },
+    { CLOCKS_BASE + CLOCKS_WAKE_EN1_OFFSET,                 "CLOCKS_WAKE_EN1" },
+    { CLOCKS_BASE + CLOCKS_SLEEP_EN0_OFFSET,                "CLOCKS_SLEEP_EN0" },
+    { CLOCKS_BASE + CLOCKS_SLEEP_EN1_OFFSET,                "CLOCKS_SLEEP_EN1" },
+    { CLOCKS_BASE + CLOCKS_ENABLED0_OFFSET,                 "CLOCKS_ENABLED0" },
+    { CLOCKS_BASE + CLOCKS_ENABLED1_OFFSET,                 "CLOCKS_ENABLED1" },
+    { CLOCKS_BASE + CLOCKS_INTR_OFFSET,                     "CLOCKS_INTR" },
+    { CLOCKS_BASE + CLOCKS_INTE_OFFSET,                     "CLOCKS_INTE" },
+    { CLOCKS_BASE + CLOCKS_INTF_OFFSET,                     "CLOCKS_INTF" },
+    { CLOCKS_BASE + CLOCKS_INTS_OFFSET,                     "CLOCKS_INTS" },
     // clang-format on
 };
 
@@ -114,6 +168,6 @@ std::string Peripherals::reg_name(unsigned addr)
         return periph_reg_name.at(addr);
 
     std::stringstream buf;
-    buf << "[0x" << std::hex << addr << "]";
+    buf << "Register [" << std::hex << addr << "]";
     return buf.str();
 }
