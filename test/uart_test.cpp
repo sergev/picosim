@@ -5,7 +5,7 @@
 //
 TEST(sim, uart)
 {
-    Simulator sim;
+    Simulator sim("pico");
     enable_trace();
     sim.capture_stdout();
     sim.read_elf_file(TEST_DIR "/hello-uart/hello_uart.elf");

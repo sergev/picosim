@@ -1646,61 +1646,61 @@ TEST(disasm, opcode16)
     test_disasm(0xcf80, "ldmia r7, {r7}");
     test_disasm(0xcfff, "ldmia r7, {r0, r1, r2, r3, r4, r5, r6, r7}");
 
-    test_disasm(0xd000, "beq.n 0x1234567c");
-    test_disasm(0xd001, "beq.n 0x1234567e");
-    test_disasm(0xd0ff, "beq.n 0x1234567a");
+    test_disasm(0xd000, "beq 0x1234567c");
+    test_disasm(0xd001, "beq 0x1234567e");
+    test_disasm(0xd0ff, "beq 0x1234567a");
 
-    test_disasm(0xd100, "bne.n 0x1234567c");
-    test_disasm(0xd101, "bne.n 0x1234567e");
-    test_disasm(0xd1ff, "bne.n 0x1234567a");
+    test_disasm(0xd100, "bne 0x1234567c");
+    test_disasm(0xd101, "bne 0x1234567e");
+    test_disasm(0xd1ff, "bne 0x1234567a");
 
-    test_disasm(0xd200, "bcs.n 0x1234567c");
-    test_disasm(0xd201, "bcs.n 0x1234567e");
-    test_disasm(0xd2ff, "bcs.n 0x1234567a");
+    test_disasm(0xd200, "bcs 0x1234567c");
+    test_disasm(0xd201, "bcs 0x1234567e");
+    test_disasm(0xd2ff, "bcs 0x1234567a");
 
-    test_disasm(0xd300, "bcc.n 0x1234567c");
-    test_disasm(0xd301, "bcc.n 0x1234567e");
-    test_disasm(0xd3ff, "bcc.n 0x1234567a");
+    test_disasm(0xd300, "bcc 0x1234567c");
+    test_disasm(0xd301, "bcc 0x1234567e");
+    test_disasm(0xd3ff, "bcc 0x1234567a");
 
-    test_disasm(0xd400, "bmi.n 0x1234567c");
-    test_disasm(0xd401, "bmi.n 0x1234567e");
-    test_disasm(0xd4ff, "bmi.n 0x1234567a");
+    test_disasm(0xd400, "bmi 0x1234567c");
+    test_disasm(0xd401, "bmi 0x1234567e");
+    test_disasm(0xd4ff, "bmi 0x1234567a");
 
-    test_disasm(0xd500, "bpl.n 0x1234567c");
-    test_disasm(0xd501, "bpl.n 0x1234567e");
-    test_disasm(0xd5ff, "bpl.n 0x1234567a");
+    test_disasm(0xd500, "bpl 0x1234567c");
+    test_disasm(0xd501, "bpl 0x1234567e");
+    test_disasm(0xd5ff, "bpl 0x1234567a");
 
-    test_disasm(0xd600, "bvs.n 0x1234567c");
-    test_disasm(0xd601, "bvs.n 0x1234567e");
-    test_disasm(0xd6ff, "bvs.n 0x1234567a");
+    test_disasm(0xd600, "bvs 0x1234567c");
+    test_disasm(0xd601, "bvs 0x1234567e");
+    test_disasm(0xd6ff, "bvs 0x1234567a");
 
-    test_disasm(0xd700, "bvc.n 0x1234567c");
-    test_disasm(0xd701, "bvc.n 0x1234567e");
-    test_disasm(0xd7ff, "bvc.n 0x1234567a");
+    test_disasm(0xd700, "bvc 0x1234567c");
+    test_disasm(0xd701, "bvc 0x1234567e");
+    test_disasm(0xd7ff, "bvc 0x1234567a");
 
-    test_disasm(0xd800, "bhi.n 0x1234567c");
-    test_disasm(0xd801, "bhi.n 0x1234567e");
-    test_disasm(0xd8ff, "bhi.n 0x1234567a");
+    test_disasm(0xd800, "bhi 0x1234567c");
+    test_disasm(0xd801, "bhi 0x1234567e");
+    test_disasm(0xd8ff, "bhi 0x1234567a");
 
-    test_disasm(0xd900, "bls.n 0x1234567c");
-    test_disasm(0xd901, "bls.n 0x1234567e");
-    test_disasm(0xd9ff, "bls.n 0x1234567a");
+    test_disasm(0xd900, "bls 0x1234567c");
+    test_disasm(0xd901, "bls 0x1234567e");
+    test_disasm(0xd9ff, "bls 0x1234567a");
 
-    test_disasm(0xda00, "bge.n 0x1234567c");
-    test_disasm(0xda01, "bge.n 0x1234567e");
-    test_disasm(0xdaff, "bge.n 0x1234567a");
+    test_disasm(0xda00, "bge 0x1234567c");
+    test_disasm(0xda01, "bge 0x1234567e");
+    test_disasm(0xdaff, "bge 0x1234567a");
 
-    test_disasm(0xdb00, "blt.n 0x1234567c");
-    test_disasm(0xdb01, "blt.n 0x1234567e");
-    test_disasm(0xdbff, "blt.n 0x1234567a");
+    test_disasm(0xdb00, "blt 0x1234567c");
+    test_disasm(0xdb01, "blt 0x1234567e");
+    test_disasm(0xdbff, "blt 0x1234567a");
 
-    test_disasm(0xdc00, "bgt.n 0x1234567c");
-    test_disasm(0xdc01, "bgt.n 0x1234567e");
-    test_disasm(0xdcff, "bgt.n 0x1234567a");
+    test_disasm(0xdc00, "bgt 0x1234567c");
+    test_disasm(0xdc01, "bgt 0x1234567e");
+    test_disasm(0xdcff, "bgt 0x1234567a");
 
-    test_disasm(0xdd00, "ble.n 0x1234567c");
-    test_disasm(0xdd01, "ble.n 0x1234567e");
-    test_disasm(0xddff, "ble.n 0x1234567a");
+    test_disasm(0xdd00, "ble 0x1234567c");
+    test_disasm(0xdd01, "ble 0x1234567e");
+    test_disasm(0xddff, "ble 0x1234567a");
 
     test_disasm(0xde00, "udf #0");
     test_disasm(0xde01, "udf #1");

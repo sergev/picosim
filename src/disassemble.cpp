@@ -506,7 +506,7 @@ static std::string thumb_cond_branch(unsigned opcode, unsigned address)
     }
     address += 4 + (offset << 1);
 
-    text << 'b' << suffix[cond] << ".n 0x" << std::hex << std::setfill('0') << std::setw(8)
+    text << 'b' << suffix[cond] << " 0x" << std::hex << std::setfill('0') << std::setw(8)
          << address;
     return text.str();
 }

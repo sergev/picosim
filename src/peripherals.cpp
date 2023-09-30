@@ -1,8 +1,8 @@
 #include "peripherals.h"
 
 #include <algorithm>
-// #include "esp32c3/soc.h"
-// #include "esp32c3/uart_reg.h"
+#include "rp2040/addressmap.h"
+#include "rp2040/resets.h"
 
 Peripherals::Peripherals(sc_core::sc_module_name const &name, unsigned base_addr, unsigned last_addr)
     : sc_module(name),
@@ -109,12 +109,15 @@ unsigned Peripherals::periph_read(unsigned addr)
 void Peripherals::periph_write(unsigned addr, unsigned val)
 {
     auto shadow = (uint32_t *)&mem[addr];
-#if 0
-    //TODO: peripheral registers
-    switch (addr + SOC_PERIPHERAL_LOW) {
-    case UART_FIFO_REG(0):
-        putchar(val);
+
+    addr += base_address;
+    switch (addr) {
+    case RESETS_BASE + REG_ALIAS_CLR_BITS + RESETS_RESET_OFFSET: {
+        // Clear RESET bits - set RESET_DONE bits.
+        auto *reset_done = (uint32_t *)&mem[RESETS_BASE + RESETS_RESET_DONE_OFFSET - base_address];
+        *reset_done |= val;
+        break;
     }
-#endif
+    }
     *shadow = val;
 }
