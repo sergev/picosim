@@ -19,7 +19,7 @@ public:
     tlm_utils::simple_target_socket<Peripherals> socket{ "socket" };
 
     // Allocate memory of given size.
-    explicit Peripherals(sc_core::sc_module_name const &name, unsigned kbytes);
+    explicit Peripherals(sc_core::sc_module_name const &name, unsigned base_addr, unsigned last_addr);
 
     // Deallocate.
     ~Peripherals() override;
@@ -31,11 +31,11 @@ private:
     // Shadow storage, allocated via calloc().
     uint8_t *mem;
 
-    // Size of the memory in bytes.
-    unsigned size_bytes;
-
     // Base address in memory map.
     unsigned base_address;
+
+    // Size of the memory in bytes.
+    unsigned size_bytes;
 
     // Get register name by address.
     std::string reg_name(unsigned addr);

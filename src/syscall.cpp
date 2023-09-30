@@ -18,10 +18,11 @@ void Processor::linux_syscall(int op)
         unsigned fd = get_reg(0);
         unsigned addr = get_reg(1);
         unsigned len = get_reg(2);
+        const unsigned sram_base = 0x00008000;
+        const unsigned sram_end  = 0x00080000;
 
         // Make sure arguments are reasonable.
-        if (fd == 1 && len > 0 && len <= 10000 &&
-            addr >= ADDR_SRAM_START && (addr+len) <= ADDR_SRAM_LAST) {
+        if (fd == 1 && len > 0 && len <= 10000 && addr >= sram_base && (addr+len) <= sram_end) {
             write_stdout(addr, len);
             set_reg(0, len);
         } else {

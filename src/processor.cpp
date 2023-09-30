@@ -12,8 +12,6 @@
 Processor::Processor(sc_core::sc_module_name const name, bool debug)
     : sc_module(name), instr_bus("instr_bus")
 {
-    irq_line_socket.register_b_transport(this, &Processor::call_interrupt);
-
     instr_bus.register_invalidate_direct_mem_ptr(this, &Processor::invalidate_direct_mem_ptr);
 
     if (!debug) {
@@ -29,6 +27,13 @@ Processor::Processor(sc_core::sc_module_name const name, bool debug)
     xpsr.u32    = 0;
     primask.u32 = 0;
     control.u32 = 0;
+}
+
+void Processor::irq_bind(tlm_utils::simple_initiator_socket<Timer> &socket)
+{
+    irq_line_socket = std::make_unique<tlm_utils::simple_target_socket<Processor>>("irq");
+    irq_line_socket->register_b_transport(this, &Processor::call_interrupt);
+    irq_line_socket->bind(socket);
 }
 
 void Processor::raise_exception(uint32_t cause, uint32_t mtval)

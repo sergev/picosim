@@ -4,8 +4,10 @@
 // #include "esp32c3/soc.h"
 // #include "esp32c3/uart_reg.h"
 
-Peripherals::Peripherals(sc_core::sc_module_name const &name, unsigned kbytes)
-    : sc_module(name), size_bytes(1024 * kbytes)
+Peripherals::Peripherals(sc_core::sc_module_name const &name, unsigned base_addr, unsigned last_addr)
+    : sc_module(name),
+      base_address(base_addr),
+      size_bytes((last_addr + 1 - base_addr) * 1024)
 {
     // Register callbacks for incoming interface method calls
     socket.register_b_transport(this, &Peripherals::b_transport);

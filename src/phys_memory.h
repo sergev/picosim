@@ -26,7 +26,7 @@ public:
     tlm_utils::simple_target_socket<Memory> socket;
 
     // Allocate memory of given size.
-    explicit Memory(sc_core::sc_module_name const &name, unsigned kbytes);
+    explicit Memory(sc_core::sc_module_name const &name, unsigned base_addr, unsigned last_addr);
 
     // Deallocate.
     ~Memory() override;
@@ -41,11 +41,11 @@ private:
     // Memory contents, allocated via calloc().
     uint8_t *mem;
 
-    // Size of the memory in bytes.
-    unsigned size_bytes;
-
     // Base address in memory map.
     unsigned base_address;
+
+    // Size of the memory in bytes.
+    unsigned size_bytes;
 
     // Latency of the memory access.
     const sc_core::sc_time LATENCY{ 1, sc_core::SC_NS };

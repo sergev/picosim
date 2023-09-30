@@ -9,8 +9,11 @@
 
 #include <algorithm>
 
-Memory::Memory(sc_core::sc_module_name const &name, unsigned kbytes)
-    : sc_module(name), socket("socket"), size_bytes(1024 * kbytes)
+Memory::Memory(sc_core::sc_module_name const &name, unsigned base_addr, unsigned last_addr)
+    : sc_module(name),
+      socket("socket"),
+      base_address(base_addr),
+      size_bytes((last_addr + 1 - base_addr) * 1024)
 {
     // Register callbacks for incoming interface method calls
     socket.register_b_transport(this, &Memory::b_transport);

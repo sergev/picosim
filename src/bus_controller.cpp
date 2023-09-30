@@ -25,6 +25,43 @@ Bus_Controller::Bus_Controller(sc_core::sc_module_name const name) : sc_module(n
     cpu_data_socket.register_transport_dbg(this, &Bus_Controller::transport_dbg);
 }
 
+void Bus_Controller::sram_bind(tlm_utils::simple_target_socket<Memory> &socket, unsigned base_addr, unsigned last_addr)
+{
+    sram_base = base_addr;
+    sram_limit = last_addr + 1;
+    sram_socket.bind(socket);
+}
+
+void Bus_Controller::rom_bind(tlm_utils::simple_target_socket<Memory> &socket, unsigned base_addr, unsigned last_addr)
+{
+    rom_base = base_addr;
+    rom_limit = last_addr + 1;
+    rom_socket = std::make_unique<tlm_utils::simple_initiator_socket<Bus_Controller>>("rom");
+    rom_socket->bind(socket);
+}
+
+void Bus_Controller::flash_bind(tlm_utils::simple_target_socket<Memory> &socket, unsigned base_addr, unsigned last_addr)
+{
+    flash_base = base_addr;
+    flash_limit = last_addr + 1;
+    flash_socket = std::make_unique<tlm_utils::simple_initiator_socket<Bus_Controller>>("flash");
+    flash_socket->bind(socket);
+}
+
+void Bus_Controller::periph_bind(tlm_utils::simple_target_socket<Peripherals> &socket, unsigned base_addr, unsigned last_addr)
+{
+    periph_base = base_addr;
+    periph_limit = last_addr + 1;
+    periph_socket = std::make_unique<tlm_utils::simple_initiator_socket<Bus_Controller>>("periph");
+    periph_socket->bind(socket);
+}
+
+void Bus_Controller::timer_bind(tlm_utils::simple_target_socket<Timer> &socket)
+{
+    timer_socket = std::make_unique<tlm_utils::simple_initiator_socket<Bus_Controller>>("timer");
+    timer_socket->bind(socket);
+}
+
 //
 // Fetch request.
 //
@@ -41,24 +78,24 @@ void Bus_Controller::b_transport_instr(tlm::tlm_generic_payload &trans, sc_core:
     }
     trans.set_gp_option(tlm::TLM_MIN_PAYLOAD); // Flag of fetch request
 
+    // Internal SRAM.
+    if (addr >= sram_base && addr < sram_limit) {
+        trans.set_address(addr - sram_base);
+        sram_socket->b_transport(trans, delay);
+        return;
+    }
+
     // Internal ROM.
-    if (addr >= ADDR_ROM_START && addr <= ADDR_ROM_LAST) {
-        trans.set_address(addr - ADDR_ROM_START);
-        rom_socket->b_transport(trans, delay);
+    if (addr >= rom_base && addr < rom_limit) {
+        trans.set_address(addr - rom_base);
+        (*rom_socket)->b_transport(trans, delay);
         return;
     }
 
     // Flash memory (XIP).
-    if (addr >= ADDR_FLASH_START && addr <= ADDR_FLASH_LAST) {
-        trans.set_address(addr - ADDR_FLASH_START);
-        flash_socket->b_transport(trans, delay);
-        return;
-    }
-
-    // Internal SRAM.
-    if (addr >= ADDR_SRAM_START && addr <= ADDR_SRAM_LAST) {
-        trans.set_address(addr - ADDR_SRAM_START);
-        sram_socket->b_transport(trans, delay);
+    if (addr >= flash_base && addr < flash_limit) {
+        trans.set_address(addr - flash_base);
+        (*flash_socket)->b_transport(trans, delay);
         return;
     }
 
@@ -75,31 +112,31 @@ void Bus_Controller::b_transport_data(tlm::tlm_generic_payload &trans, sc_core::
 
     trans.set_gp_option(tlm::TLM_FULL_PAYLOAD); // Flag of data request
 
-    // Internal ROM.
-    if (addr >= ADDR_ROM_START && addr <= ADDR_ROM_LAST) {
-        trans.set_address(addr - ADDR_ROM_START);
-        rom_socket->b_transport(trans, delay);
-        return;
-    }
-
-    // Flash memory (XIP).
-    if (addr >= ADDR_FLASH_START && addr <= ADDR_FLASH_LAST) {
-        trans.set_address(addr - ADDR_FLASH_START);
-        flash_socket->b_transport(trans, delay);
-        return;
-    }
-
     // Internal SRAM.
-    if (addr >= ADDR_SRAM_START && addr <= ADDR_SRAM_LAST) {
-        trans.set_address(addr - ADDR_SRAM_START);
+    if (addr >= sram_base && addr < sram_limit) {
+        trans.set_address(addr - sram_base);
         sram_socket->b_transport(trans, delay);
         return;
     }
 
+    // Internal ROM.
+    if (addr >= rom_base && addr < rom_limit) {
+        trans.set_address(addr - rom_base);
+        (*rom_socket)->b_transport(trans, delay);
+        return;
+    }
+
+    // Flash memory (XIP).
+    if (addr >= flash_base && addr < flash_limit) {
+        trans.set_address(addr - flash_base);
+        (*flash_socket)->b_transport(trans, delay);
+        return;
+    }
+
     // Peripherals.
-    if (addr >= ADDR_PERIPH_START && addr <= ADDR_PERIPH_LAST) {
-        trans.set_address(addr - ADDR_PERIPH_START);
-        periph_socket->b_transport(trans, delay);
+    if (addr >= periph_base && addr < periph_limit) {
+        trans.set_address(addr - periph_base);
+        (*periph_socket)->b_transport(trans, delay);
         return;
     }
 
@@ -114,22 +151,22 @@ unsigned Bus_Controller::transport_dbg(tlm::tlm_generic_payload &trans)
 {
     uint32_t addr = trans.get_address();
 
+    // Internal SRAM.
+    if (addr >= sram_base && addr < sram_limit) {
+        trans.set_address(addr - sram_base);
+        return sram_socket->transport_dbg(trans);
+    }
+
     // Internal ROM.
-    if (addr >= ADDR_ROM_START && addr <= ADDR_ROM_LAST) {
-        trans.set_address(addr - ADDR_ROM_START);
-        return rom_socket->transport_dbg(trans);
+    if (addr >= rom_base && addr < rom_limit) {
+        trans.set_address(addr - rom_base);
+        return (*rom_socket)->transport_dbg(trans);
     }
 
     // Flash memory (XIP).
-    if (addr >= ADDR_FLASH_START && addr <= ADDR_FLASH_LAST) {
-        trans.set_address(addr - ADDR_FLASH_START);
-        return flash_socket->transport_dbg(trans);
-    }
-
-    // Internal SRAM.
-    if (addr >= ADDR_SRAM_START && addr <= ADDR_SRAM_LAST) {
-        trans.set_address(addr - ADDR_SRAM_START);
-        return sram_socket->transport_dbg(trans);
+    if (addr >= flash_base && addr < flash_limit) {
+        trans.set_address(addr - flash_base);
+        return (*flash_socket)->transport_dbg(trans);
     }
 
     // Nothing to read/write.

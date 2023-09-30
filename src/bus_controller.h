@@ -17,25 +17,9 @@
 #include "tlm_utils/simple_initiator_socket.h"
 #include "tlm_utils/simple_target_socket.h"
 
-//
-// Address Map from RP2040 Datasheet, page 24.
-//
-#define ADDR_ROM_START 0x00000000 // ROM_BASE
-#define ADDR_ROM_LAST  0x00003fff // 16 kbytes
-
-#define ADDR_FLASH_START 0x10000000 // XIP_BASE
-#define ADDR_FLASH_LAST  0x101fffff // 2 Mbytes
-
-#if 1
-#define ADDR_SRAM_START 0x00008000 // skip 32 kbytes - newlib binary
-#define ADDR_SRAM_LAST  0x0007ffff // 512 kbytes
-#else
-#define ADDR_SRAM_START 0x20000000 // SRAM_BASE
-#define ADDR_SRAM_LAST  0x20041fff // 256 + 8 kbytes
-#endif
-
-#define ADDR_PERIPH_START 0x40000000 // SYSINFO_BASE
-#define ADDR_PERIPH_LAST  0x4007ffff // 512 kbytes
+class Memory;
+class Peripherals;
+class Timer;
 
 class Bus_Controller : public sc_core::sc_module {
 public:
@@ -45,17 +29,30 @@ public:
     // Incoming data loads/stores from CPU.
     tlm_utils::simple_target_socket<Bus_Controller> cpu_data_socket{ "cpu_data" };
 
-    // Outgoing requests to SoC memories and peripherals.
-    tlm_utils::simple_initiator_socket<Bus_Controller> rom_socket{ "rom" };
-    tlm_utils::simple_initiator_socket<Bus_Controller> flash_socket{ "flash" };
-    tlm_utils::simple_initiator_socket<Bus_Controller> sram_socket{ "sram" };
-    tlm_utils::simple_initiator_socket<Bus_Controller> periph_socket{ "periph" };
-    tlm_utils::simple_initiator_socket<Bus_Controller> timer_socket{ "timer" }; // TODO: remove
-
     // Constructor.
     explicit Bus_Controller(sc_core::sc_module_name name);
 
+    // Bind to outgoing sockets.
+    void sram_bind(tlm_utils::simple_target_socket<Memory> &socket, unsigned base_addr, unsigned last_addr);
+    void rom_bind(tlm_utils::simple_target_socket<Memory> &socket, unsigned base_addr, unsigned last_addr);
+    void flash_bind(tlm_utils::simple_target_socket<Memory> &socket, unsigned base_addr, unsigned last_addr);
+    void periph_bind(tlm_utils::simple_target_socket<Peripherals> &socket, unsigned base_addr, unsigned last_addr);
+    void timer_bind(tlm_utils::simple_target_socket<Timer> &socket); // TODO: remove
+
 private:
+    // Outgoing requests to SoC memories and peripherals.
+    tlm_utils::simple_initiator_socket<Bus_Controller> sram_socket{ "sram" };
+    std::unique_ptr<tlm_utils::simple_initiator_socket<Bus_Controller>> rom_socket;
+    std::unique_ptr<tlm_utils::simple_initiator_socket<Bus_Controller>> flash_socket;
+    std::unique_ptr<tlm_utils::simple_initiator_socket<Bus_Controller>> periph_socket;
+    std::unique_ptr<tlm_utils::simple_initiator_socket<Bus_Controller>> timer_socket;
+
+    // Address map.
+    unsigned sram_base{}, sram_limit{};
+    unsigned rom_base{}, rom_limit{};
+    unsigned flash_base{}, flash_limit{};
+    unsigned periph_base{}, periph_limit{};
+
     // Process fetch requests.
     void b_transport_instr(tlm::tlm_generic_payload &trans, sc_core::sc_time &delay);
 
