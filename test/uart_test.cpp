@@ -3,7 +3,7 @@
 //
 // Check stdout.
 //
-TEST(sim, DISABLED_uart)
+TEST(sim, uart)
 {
     Simulator sim;
     enable_trace();

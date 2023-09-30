@@ -8,35 +8,26 @@
 #include "exec_elf32.h"
 #include "simulator.h"
 
-std::string Simulator::get_elf_config(std::string const &filename)
-{
-    //TODO
-    return "linux";
-}
-
-void Simulator::read_elf_file(std::string const &filename)
+static bool open_elf_file(std::string const &filename, std::ifstream &elf_file, elf32_ehdr &elf_header)
 {
     //
     // Open input file.
-    // Note that it's automatically closed when the ifstream object is destroyed.
     //
-    std::ifstream elf_file;
     elf_file.open(filename, std::ios::in | std::ios::binary);
     if (!elf_file.is_open()) {
         Log::err() << "Cannot open file: " << filename << std::endl;
         SC_REPORT_ERROR("Simulator", "Cannot open file");
-        return;
+        return false;
     }
 
     //
     // Read ELF header, which is at the beginning of the file.
     //
-    elf32_ehdr elf_header;
     elf_file.read((char *)&elf_header, sizeof elf_header);
     if (elf_file.fail()) {
         Log::err() << filename << ": Cannot read ELF header" << std::endl;
         SC_REPORT_ERROR("Simulator", "Cannot read ELF header");
-        return;
+        return false;
     }
 
     //
@@ -45,51 +36,83 @@ void Simulator::read_elf_file(std::string const &filename)
     if (elf_header.e_ident[EI_MAG0] != ELFMAG0 || elf_header.e_ident[EI_MAG1] != ELFMAG1 ||
         elf_header.e_ident[EI_MAG2] != ELFMAG2 || elf_header.e_ident[EI_MAG3] != ELFMAG3) {
         SC_REPORT_ERROR("Simulator", "Bad ELF magic");
-        return;
+        return false;
     }
     if (elf_header.e_ident[EI_CLASS] != ELFCLASS32) {
         SC_REPORT_ERROR("Simulator", "Bad ELF class");
-        return;
+        return false;
     }
     if (elf_header.e_ident[EI_DATA] != ELFDATA2LSB) {
         SC_REPORT_ERROR("Simulator", "Bad ELF data format, little-endian expected");
-        return;
+        return false;
     }
     if (elf_header.e_ident[EI_VERSION] != EV_CURRENT) {
         SC_REPORT_ERROR("Simulator", "Bad ELF Indent version");
-        return;
+        return false;
     }
     if (elf_header.e_ident[EI_OSABI] != ELFOSABI_SYSV) {
         SC_REPORT_ERROR("Simulator", "Bad ABI identification");
-        return;
+        return false;
     }
     if (elf_header.e_ehsize != sizeof(struct elf32_ehdr)) {
         SC_REPORT_ERROR("Simulator", "Bad ELF header size");
-        return;
+        return false;
     }
     if (elf_header.e_type != ET_EXEC) {
         SC_REPORT_ERROR("Simulator", "Not executable");
-        return;
+        return false;
     }
     if (elf_header.e_machine != EM_ARM) {
         // Log::err() << filename << ": Bad ELF machine " << elf_header.e_machine << std::endl;
         SC_REPORT_ERROR("Simulator", "Bad ELF machine");
-        return;
+        return false;
     }
     if (elf_header.e_version != EV_CURRENT) {
         SC_REPORT_ERROR("Simulator", "Bad ELF version");
-        return;
+        return false;
     }
     if (elf_header.e_phentsize != sizeof(struct elf32_phdr)) {
         SC_REPORT_ERROR("Simulator", "Bad ELF Program Header Entry size");
-        return;
+        return false;
     }
     if (elf_header.e_phoff == 0) {
         SC_REPORT_ERROR("Simulator", "Bad ELF Program Header offset");
-        return;
+        return false;
     }
     if (elf_header.e_phnum == 0) {
         SC_REPORT_ERROR("Simulator", "Empty Program header");
+        return false;
+    }
+    return true;
+}
+
+std::string Simulator::get_elf_config(std::string const &filename)
+{
+    std::string config = "linux"; // Assume Linux by default
+
+    //
+    // Open input file, read and check ELF header.
+    // Note that it's automatically closed when the ifstream object is destroyed.
+    //
+    std::ifstream elf_file;
+    elf32_ehdr elf_header;
+    if (open_elf_file(filename, elf_file, elf_header)) {
+        if (elf_header.e_entry >= 0x10000000 && elf_header.e_entry <= 0x101fffff) {
+            config = "pico";
+        }
+    }
+    return config;
+}
+
+void Simulator::read_elf_file(std::string const &filename)
+{
+    //
+    // Open input file, read and check ELF header.
+    // Note that it's automatically closed when the ifstream object is destroyed.
+    //
+    std::ifstream elf_file;
+    elf32_ehdr elf_header;
+    if (!open_elf_file(filename, elf_file, elf_header)) {
         return;
     }
 
@@ -169,12 +192,11 @@ void Simulator::read_elf_file(std::string const &filename)
         }
     }
 
-    //
-    // Set PC to the entry point.
-    //
-    entry_address = elf_header.e_entry & ~1;
-    if (Log::is_verbose()) {
-        Log::out() << "Entry address: 0x" << std::hex << entry_address << std::dec << std::endl;
+    if (config == "linux") {
+        // Get entry address.
+        entry_address = elf_header.e_entry & ~1;
+        if (Log::is_verbose()) {
+            Log::out() << "Entry address: 0x" << std::hex << entry_address << std::dec << std::endl;
+        }
     }
-    cpu.set_pc(entry_address);
 }

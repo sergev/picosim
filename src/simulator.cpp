@@ -25,9 +25,17 @@
 // Initialize the chip.
 //
 Simulator::Simulator(const sc_core::sc_module_name &name, bool debug_enable)
-    : sc_module(name), cpu("Processor", debug_enable), bus("BusCtrl")
+    : sc_module(name), cpu("Processor", debug_enable), bus("BusCtrl"),
+      config((const char*)name)
 {
-    const std::string config = (const char*)name;
+    // Connect CPU to the bus controller.
+    cpu.instr_bus.bind(bus.cpu_instr_socket);
+    cpu.data_bus.bind(bus.cpu_data_socket);
+
+    if (debug_enable) {
+        // Setup port for GDB.
+        debug = std::make_unique<Debug>(*this, cpu);
+    }
 
     //
     // Allocate optional components, per configuration.
@@ -49,16 +57,15 @@ Simulator::Simulator(const sc_core::sc_module_name &name, bool debug_enable)
         //
         // Internal SRAM - 256+8 kbytes
         sram = std::make_unique<Memory>("SRAM", RP2040_SRAM_BASE, RP2040_SRAM_LAST);
+        bus.sram_bind(sram->socket, RP2040_SRAM_BASE, RP2040_SRAM_LAST);
 
         // Internal ROM - 16 kbytes
         rom = std::make_unique<Memory>("ROM", RP2040_ROM_BASE, RP2040_ROM_LAST);
-        rom->set_read_only();
         bus.rom_bind(rom->socket, RP2040_ROM_BASE, RP2040_ROM_LAST);
 
         // Flash memory - 2048 kbytes
         flash = std::make_unique<Memory>("Flash", RP2040_FLASH_BASE, RP2040_FLASH_LAST);
         bus.flash_bind(flash->socket, RP2040_FLASH_BASE, RP2040_FLASH_LAST);
-        // Keep Flash memory still writable, until binary is loaded.
 
         // Peripherals - 512 kbytes
         periph = std::make_unique<Peripherals>("Peripherals", RP2040_PERIPH_BASE, RP2040_PERIPH_LAST);
@@ -69,22 +76,16 @@ Simulator::Simulator(const sc_core::sc_module_name &name, bool debug_enable)
         bus.timer_bind(timer->socket);
         cpu.irq_bind(timer->irq_line);
 
-        // TODO: Load ROM.
-#if 0
-        extern const unsigned char rom_bin[];
-        extern const unsigned int rom_bin_len;
-        debug_write(rom_bin, RP2040_ROM_BASE, rom_bin_len);
-#endif
-    }
+        // Load ROM.
+        // Keep Flash memory writable, until binary is loaded.
+        extern const unsigned char pico_bootrom_b2_bin[];
+        extern const unsigned int pico_bootrom_b2_bin_len;
+        debug_write(pico_bootrom_b2_bin, RP2040_ROM_BASE, pico_bootrom_b2_bin_len);
+        rom->set_read_only();
 
-    if (debug_enable) {
-        // Setup port for GDB.
-        debug = std::make_unique<Debug>(*this, cpu);
+        // Start from ROM.
+        entry_address = 0;
     }
-
-    // Connect CPU to the bus controller.
-    cpu.instr_bus.bind(bus.cpu_instr_socket);
-    cpu.data_bus.bind(bus.cpu_data_socket);
 }
 
 //
@@ -99,13 +100,14 @@ void Simulator::run(uint32_t start_address)
 
     if (start_address) {
         cpu.set_pc(start_address);
-    } else if (entry_address) {
+    } else if (config == "linux") {
         // Address from ELF file.
         cpu.set_pc(entry_address);
     } else {
-        // Read main_SP and PC values from ROM.
-        cpu.set_reg(13, cpu.data_read32(0));
-        cpu.set_pc(cpu.data_read32(4));
+        // Read MSP and PC values from ROM.
+        // Must use debug i/o here, as we've not started yet.
+        cpu.set_reg(Registers::SP, debug_load32(0));
+        cpu.set_pc(debug_load32(4) & ~1);
     }
     sc_core::sc_start();
 }

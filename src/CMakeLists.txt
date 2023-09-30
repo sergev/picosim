@@ -22,8 +22,7 @@ add_library(sim STATIC
     simulator.cpp
     syscall.cpp
     timer.cpp
-    #../firmware/esp32-c3-rev3-drom1.c
-    #../firmware/esp32-c3-rev3-irom0.c
+    pico-bootrom-b2.c
 )
 add_executable(picosim
     main.cpp

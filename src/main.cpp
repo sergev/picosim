@@ -80,7 +80,6 @@ void process_arguments(int argc, char *argv[])
         usage(EXIT_SUCCESS);
     }
     filename = std::string(argv[0]);
-    std::cout << "file: " << filename << std::endl;
 }
 
 //
@@ -123,7 +122,9 @@ int sc_main(int argc, char *argv[])
     // Figure out configuration from ELF file.
     std::string config = "pico"; // Default
     if (!filename.empty()) {
+        std::cout << "File: " << filename << std::endl;
         config = Simulator::get_elf_config(filename);
+        std::cout << "Configuration: " << config << std::endl;
     }
 
     // Instantiate simulator.

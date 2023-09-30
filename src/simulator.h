@@ -37,6 +37,8 @@ private:
     std::unique_ptr<Timer> timer;
     std::unique_ptr<Debug> debug;
 
+    const std::string config;
+
     // Entry address (PC) read from ELF file.
     uint32_t entry_address{ 0 };
 

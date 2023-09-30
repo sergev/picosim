@@ -20,8 +20,12 @@ std::ostream &Log::err()
     std::ios_base::fmtflags default_flags{};
     out.flags(default_flags);
 
-    auto time_nsec = sc_core::sc_time_stamp().value();
-    out << '(' << std::dec << time_nsec << ") ";
+    // Print cycle count when simulating.
+    int status = sc_core::sc_get_status();
+    if (status > sc_core::SC_ELABORATION) {
+        auto time_nsec = sc_core::sc_time_stamp().value();
+        out << '(' << std::dec << time_nsec << ") ";
+    }
     return out;
 }
 
