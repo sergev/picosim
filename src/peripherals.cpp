@@ -5,6 +5,7 @@
 #include "rp2040/resets.h"
 #include "rp2040/clocks.h"
 #include "rp2040/tbman.h"
+#include "rp2040/xosc.h"
 
 Peripherals::Peripherals(sc_core::sc_module_name const &name, unsigned base_addr, unsigned last_addr)
     : sc_module(name),
@@ -104,12 +105,23 @@ unsigned Peripherals::periph_read(unsigned addr)
 
     switch (addr + base_address) {
 
+    case RESETS_BASE + RESETS_RESET_DONE_OFFSET:
+        return resets_reset_done;
+
     case TBMAN_BASE + TBMAN_PLATFORM_OFFSET:
         // Indicate the platform is ASIC.
         return TBMAN_PLATFORM_ASIC_BITS;
 
-#if 1
     case CLOCKS_BASE + CLOCKS_CLK_SYS_SELECTED_OFFSET:
+        // Indicate that clksrc_pll_sys is selected.
+        return 1;
+
+    case XOSC_BASE + XOSC_STATUS_OFFSET:
+        // Oscillator is running and stable.
+        return XOSC_STATUS_STABLE_BITS;
+
+#if 1
+    case 0x40028000:
         // Terminate for now.
         Log::out() << "--- " << reg_name(addr) + " is not implemented yet" << std::endl;
         sc_core::sc_stop();
@@ -127,12 +139,18 @@ void Peripherals::periph_write(unsigned addr, unsigned val)
     auto shadow = (uint32_t *)&mem[addr];
 
     switch (addr + base_address) {
-    case RESETS_BASE + REG_ALIAS_CLR_BITS + RESETS_RESET_OFFSET: {
+    case RESETS_BASE + RESETS_RESET_OFFSET:
+        // Set RESET value - invert as RESET_DONE value.
+        resets_reset_done = ~val;
+        return;
+    case RESETS_BASE + REG_ALIAS_SET_BITS + RESETS_RESET_OFFSET:
+        // Set RESET bits - clear RESET_DONE bits.
+        resets_reset_done &= ~val;
+        return;
+    case RESETS_BASE + REG_ALIAS_CLR_BITS + RESETS_RESET_OFFSET:
         // Clear RESET bits - set RESET_DONE bits.
-        auto *reset_done = (uint32_t *)&mem[RESETS_BASE + RESETS_RESET_DONE_OFFSET - base_address];
-        *reset_done |= val;
-        break;
-    }
+        resets_reset_done |= val;
+        return;
     }
     *shadow = val;
 }

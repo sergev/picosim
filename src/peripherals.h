@@ -52,5 +52,11 @@ private:
 
     // Blocking transport method.
     void b_transport(tlm::tlm_generic_payload &trans, sc_core::sc_time &delay);
+
+    //
+    // Peripheral registers.
+    //
+    unsigned resets_reset_done{};
+
 };
 #endif /* __PERIPHERALS_H__ */

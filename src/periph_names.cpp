@@ -9,6 +9,7 @@
 #include "rp2040/watchdog.h"
 #include "rp2040/tbman.h"
 #include "rp2040/rosc.h"
+#include "rp2040/xosc.h"
 
 static const std::map<unsigned, const std::string> periph_reg_name = {
     // clang-format off
@@ -434,6 +435,15 @@ static const std::map<unsigned, const std::string> periph_reg_name = {
     { ROSC_BASE + ROSC_STATUS_OFFSET,                       "ROSC_STATUS" },
     { ROSC_BASE + ROSC_RANDOMBIT_OFFSET,                    "ROSC_RANDOMBIT" },
     { ROSC_BASE + ROSC_COUNT_OFFSET,                        "ROSC_COUNT" },
+
+    //
+    // XOSC registers at address 4002_4000...4002_401c
+    //
+    { XOSC_BASE + XOSC_CTRL_OFFSET,                         "XOSC_CTRL" },
+    { XOSC_BASE + XOSC_STATUS_OFFSET,                       "XOSC_STATUS" },
+    { XOSC_BASE + XOSC_DORMANT_OFFSET,                      "XOSC_DORMANT" },
+    { XOSC_BASE + XOSC_STARTUP_OFFSET,                      "XOSC_STARTUP" },
+    { XOSC_BASE + XOSC_COUNT_OFFSET,                        "XOSC_COUNT" },
 
     // clang-format on
 };
