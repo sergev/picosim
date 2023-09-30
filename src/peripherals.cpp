@@ -3,6 +3,8 @@
 #include <algorithm>
 #include "rp2040/addressmap.h"
 #include "rp2040/resets.h"
+#include "rp2040/clocks.h"
+#include "rp2040/tbman.h"
 
 Peripherals::Peripherals(sc_core::sc_module_name const &name, unsigned base_addr, unsigned last_addr)
     : sc_module(name),
@@ -100,6 +102,20 @@ unsigned Peripherals::periph_read(unsigned addr)
 {
     auto shadow = (uint32_t *)&mem[addr];
 
+    switch (addr + base_address) {
+
+    case TBMAN_BASE + TBMAN_PLATFORM_OFFSET:
+        // Indicate the platform is ASIC.
+        return TBMAN_PLATFORM_ASIC_BITS;
+
+#if 1
+    case CLOCKS_BASE + CLOCKS_CLK_SYS_SELECTED_OFFSET:
+        // Terminate for now.
+        Log::out() << "--- " << reg_name(addr) + " is not implemented yet" << std::endl;
+        sc_core::sc_stop();
+        break;
+#endif
+    }
     return *shadow;
 }
 
@@ -110,8 +126,7 @@ void Peripherals::periph_write(unsigned addr, unsigned val)
 {
     auto shadow = (uint32_t *)&mem[addr];
 
-    addr += base_address;
-    switch (addr) {
+    switch (addr + base_address) {
     case RESETS_BASE + REG_ALIAS_CLR_BITS + RESETS_RESET_OFFSET: {
         // Clear RESET bits - set RESET_DONE bits.
         auto *reset_done = (uint32_t *)&mem[RESETS_BASE + RESETS_RESET_DONE_OFFSET - base_address];
