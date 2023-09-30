@@ -36,7 +36,12 @@ public:
     void sram_bind(tlm_utils::simple_target_socket<Memory> &socket, unsigned base_addr, unsigned last_addr);
     void rom_bind(tlm_utils::simple_target_socket<Memory> &socket, unsigned base_addr, unsigned last_addr);
     void flash_bind(tlm_utils::simple_target_socket<Memory> &socket, unsigned base_addr, unsigned last_addr);
-    void periph_bind(tlm_utils::simple_target_socket<Peripherals> &socket, unsigned base_addr, unsigned last_addr);
+    void periph1_bind(tlm_utils::simple_target_socket<Peripherals> &socket,
+                      unsigned base_addr, unsigned last_addr, const std::string &name);
+    void periph2_bind(tlm_utils::simple_target_socket<Peripherals> &socket,
+                      unsigned base_addr, unsigned last_addr, const std::string &name);
+    void periph3_bind(tlm_utils::simple_target_socket<Peripherals> &socket,
+                      unsigned base_addr, unsigned last_addr, const std::string &name);
     void timer_bind(tlm_utils::simple_target_socket<Timer> &socket); // TODO: remove
 
 private:
@@ -44,14 +49,18 @@ private:
     tlm_utils::simple_initiator_socket<Bus_Controller> sram_socket{ "sram" };
     std::unique_ptr<tlm_utils::simple_initiator_socket<Bus_Controller>> rom_socket;
     std::unique_ptr<tlm_utils::simple_initiator_socket<Bus_Controller>> flash_socket;
-    std::unique_ptr<tlm_utils::simple_initiator_socket<Bus_Controller>> periph_socket;
+    std::unique_ptr<tlm_utils::simple_initiator_socket<Bus_Controller>> periph1_socket;
+    std::unique_ptr<tlm_utils::simple_initiator_socket<Bus_Controller>> periph2_socket;
+    std::unique_ptr<tlm_utils::simple_initiator_socket<Bus_Controller>> periph3_socket;
     std::unique_ptr<tlm_utils::simple_initiator_socket<Bus_Controller>> timer_socket;
 
     // Address map.
     unsigned sram_base{}, sram_limit{};
     unsigned rom_base{}, rom_limit{};
     unsigned flash_base{}, flash_limit{};
-    unsigned periph_base{}, periph_limit{};
+    unsigned periph1_base{}, periph1_limit{};
+    unsigned periph2_base{}, periph2_limit{};
+    unsigned periph3_base{}, periph3_limit{};
 
     // Process fetch requests.
     void b_transport_instr(tlm::tlm_generic_payload &trans, sc_core::sc_time &delay);

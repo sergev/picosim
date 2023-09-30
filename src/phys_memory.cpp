@@ -55,7 +55,7 @@ void Memory::b_transport(tlm::tlm_generic_payload &trans, sc_core::sc_time &dela
 
         if (!is_fetch && Log::is_verbose()) {
             auto &out = Log::out();
-            out << std::hex << std::setw(8) << std::setfill('0') << "          Load " << basename()
+            out << std::hex << std::setw(8) << std::setfill('0') << "          Read " << basename()
                 << " [" << (addr + base_address) << "] = ";
             switch (len) {
             case 1:
@@ -79,7 +79,7 @@ void Memory::b_transport(tlm::tlm_generic_payload &trans, sc_core::sc_time &dela
         //
         if (Log::is_verbose()) {
             auto &out = Log::out();
-            out << std::hex << std::setw(8) << std::setfill('0') << "          Store " << basename()
+            out << std::hex << std::setw(8) << std::setfill('0') << "          Write " << basename()
                 << " [" << (addr + base_address) << "] = ";
             switch (len) {
             case 1:

@@ -12,8 +12,14 @@
 #define RP2040_SRAM_BASE 0x20000000 // SRAM_BASE
 #define RP2040_SRAM_LAST 0x20041fff // 256 + 8 kbytes
 
-#define RP2040_PERIPH_BASE 0x40000000 // SYSINFO_BASE
-#define RP2040_PERIPH_LAST 0x4007ffff // 512 kbytes
+#define RP2040_SYSINFO_BASE 0x40000000 // SYSINFO_BASE
+#define RP2040_SYSINFO_LAST 0x4007ffff // 512 kbytes
+
+#define RP2040_AHB_BASE 0x50000000 // DMA_BASE
+#define RP2040_AHB_LAST 0x504fffff // 5 Mbytes
+
+#define RP2040_SIO_BASE 0xd0000000 // SIO_BASE
+#define RP2040_SIO_LAST 0xd00001ff // 512 bytes
 
 //
 // Address Map of binaries compiled for Linux with Newlib.
@@ -67,9 +73,15 @@ Simulator::Simulator(const sc_core::sc_module_name &name, bool debug_enable)
         flash = std::make_unique<Memory>("Flash", RP2040_FLASH_BASE, RP2040_FLASH_LAST);
         bus.flash_bind(flash->socket, RP2040_FLASH_BASE, RP2040_FLASH_LAST);
 
-        // Peripherals - 512 kbytes
-        periph = std::make_unique<Peripherals>("Peripherals", RP2040_PERIPH_BASE, RP2040_PERIPH_LAST);
-        bus.periph_bind(periph->socket, RP2040_PERIPH_BASE, RP2040_PERIPH_LAST);
+        // Peripherals
+        periph1 = std::make_unique<Peripherals>("Sysinfo", RP2040_SYSINFO_BASE, RP2040_SYSINFO_LAST);
+        bus.periph1_bind(periph1->socket, RP2040_SYSINFO_BASE, RP2040_SYSINFO_LAST, "sysinfo");
+
+        periph2 = std::make_unique<Peripherals>("Ahb", RP2040_AHB_BASE, RP2040_AHB_LAST);
+        bus.periph2_bind(periph2->socket, RP2040_AHB_BASE, RP2040_AHB_LAST, "ahb");
+
+        periph3 = std::make_unique<Peripherals>("Sio", RP2040_SIO_BASE, RP2040_SIO_LAST);
+        bus.periph3_bind(periph3->socket, RP2040_SIO_BASE, RP2040_SIO_LAST, "sio");
 
         // TODO: move timer to peripherals
         timer = std::make_unique<Timer>("Timer");
@@ -103,11 +115,6 @@ void Simulator::run(uint32_t start_address)
     } else if (config == "linux") {
         // Address from ELF file.
         cpu.set_pc(entry_address);
-    } else {
-        // Read MSP and PC values from ROM.
-        // Must use debug i/o here, as we've not started yet.
-        cpu.set_reg(Registers::SP, debug_load32(0));
-        cpu.set_pc(debug_load32(4) & ~1);
     }
     sc_core::sc_start();
 }

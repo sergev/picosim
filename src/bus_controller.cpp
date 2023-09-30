@@ -6,12 +6,12 @@
 //
 //                      -------------------
 //                      |                 |
-// cpu_instr_socket <---|fetch            |
-//                      |       fetch/read|<--- rom_socket
+// cpu_instr_socket <---|fetch  fetch/read|<--- rom_socket
 //                      |        fetch/r/w|<--> sram_socket
 //                      |       fetch/read|<--- flash_socket
-//                      |              r/w|<--> periph_socket
-//  cpu_data_socket <-->|r/w              |
+//                      |              r/w|<--> periph1_socket
+//                      |              r/w|<--> periph2_socket
+//  cpu_data_socket <-->|r/w           r/w|<--> periph3_socket
 //                      |                 |
 //                      -------------------
 //
@@ -48,12 +48,31 @@ void Bus_Controller::flash_bind(tlm_utils::simple_target_socket<Memory> &socket,
     flash_socket->bind(socket);
 }
 
-void Bus_Controller::periph_bind(tlm_utils::simple_target_socket<Peripherals> &socket, unsigned base_addr, unsigned last_addr)
+void Bus_Controller::periph1_bind(tlm_utils::simple_target_socket<Peripherals> &socket,
+                                  unsigned base_addr, unsigned last_addr, const std::string &name)
 {
-    periph_base = base_addr;
-    periph_limit = last_addr + 1;
-    periph_socket = std::make_unique<tlm_utils::simple_initiator_socket<Bus_Controller>>("periph");
-    periph_socket->bind(socket);
+    periph1_base = base_addr;
+    periph1_limit = last_addr + 1;
+    periph1_socket = std::make_unique<tlm_utils::simple_initiator_socket<Bus_Controller>>(name.c_str());
+    periph1_socket->bind(socket);
+}
+
+void Bus_Controller::periph2_bind(tlm_utils::simple_target_socket<Peripherals> &socket,
+                                  unsigned base_addr, unsigned last_addr, const std::string &name)
+{
+    periph2_base = base_addr;
+    periph2_limit = last_addr + 1;
+    periph2_socket = std::make_unique<tlm_utils::simple_initiator_socket<Bus_Controller>>(name.c_str());
+    periph2_socket->bind(socket);
+}
+
+void Bus_Controller::periph3_bind(tlm_utils::simple_target_socket<Peripherals> &socket,
+                                  unsigned base_addr, unsigned last_addr, const std::string &name)
+{
+    periph3_base = base_addr;
+    periph3_limit = last_addr + 1;
+    periph3_socket = std::make_unique<tlm_utils::simple_initiator_socket<Bus_Controller>>(name.c_str());
+    periph3_socket->bind(socket);
 }
 
 void Bus_Controller::timer_bind(tlm_utils::simple_target_socket<Timer> &socket)
@@ -134,9 +153,19 @@ void Bus_Controller::b_transport_data(tlm::tlm_generic_payload &trans, sc_core::
     }
 
     // Peripherals.
-    if (addr >= periph_base && addr < periph_limit) {
-        trans.set_address(addr - periph_base);
-        (*periph_socket)->b_transport(trans, delay);
+    if (addr >= periph1_base && addr < periph1_limit) {
+        trans.set_address(addr - periph1_base);
+        (*periph1_socket)->b_transport(trans, delay);
+        return;
+    }
+    if (addr >= periph2_base && addr < periph2_limit) {
+        trans.set_address(addr - periph2_base);
+        (*periph2_socket)->b_transport(trans, delay);
+        return;
+    }
+    if (addr >= periph3_base && addr < periph3_limit) {
+        trans.set_address(addr - periph3_base);
+        (*periph3_socket)->b_transport(trans, delay);
         return;
     }
 

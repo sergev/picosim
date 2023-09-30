@@ -262,6 +262,12 @@ void Processor::print_nzcv(unsigned prev_xpsr)
 
 void Processor::cpu_thread()
 {
+    if (! linux_mode) {
+        // Read MSP and PC values from ROM.
+        set_reg(Registers::SP, data_read32(0));
+        set_pc(data_read32(4) & ~1);
+    }
+
     while (true) {
         sc_core::wait(sc_core::SC_ZERO_TIME);
 
@@ -319,7 +325,7 @@ uint32_t Processor::data_read(uint32_t addr, int size)
     wait(delay);
 
     if (trans.is_response_error()) {
-        Log::err() << "Load error at 0x" << std::hex << std::setw(8) << std::setfill('0') << addr
+        Log::err() << "Read error at 0x" << std::hex << std::setw(8) << std::setfill('0') << addr
                    << std::endl;
         SC_REPORT_ERROR("Memory", "Read");
     }

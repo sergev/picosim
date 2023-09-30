@@ -58,8 +58,9 @@ void Peripherals::b_transport(tlm::tlm_generic_payload &trans, sc_core::sc_time 
             break;
         }
         if (Log::is_verbose()) {
-            Log::out() << "          Read " << std::hex << std::setw(len * 2) << std::setfill('0')
-                       << val << " from " << reg_name(addr) << std::endl;
+            Log::out() << "          Read " << reg_name(addr) << " = "
+                       << std::hex << std::setw(len * 2) << std::setfill('0') << val
+                       << std::endl;
         }
     } else if (cmd == tlm::TLM_WRITE_COMMAND) {
         //
@@ -79,8 +80,9 @@ void Peripherals::b_transport(tlm::tlm_generic_payload &trans, sc_core::sc_time 
         periph_write(addr, val);
 
         if (Log::is_verbose()) {
-            Log::out() << "          Write " << std::hex << std::setw(len * 2) << std::setfill('0')
-                       << val << " to " << reg_name(addr) << std::endl;
+            Log::out() << "          Write " << reg_name(addr) << " = "
+                       << std::hex << std::setw(len * 2) << std::setfill('0') << val
+                       << std::endl;
         }
     }
 
@@ -93,7 +95,6 @@ void Peripherals::b_transport(tlm::tlm_generic_payload &trans, sc_core::sc_time 
 
 //
 // Read peripheral register.
-// Update reg_name.
 //
 unsigned Peripherals::periph_read(unsigned addr)
 {
@@ -104,7 +105,6 @@ unsigned Peripherals::periph_read(unsigned addr)
 
 //
 // Write to a peripheral register.
-// Update reg_name.
 //
 void Peripherals::periph_write(unsigned addr, unsigned val)
 {
