@@ -33,9 +33,10 @@ private:
     std::unique_ptr<Memory> rom;
     std::unique_ptr<Memory> flash;
     std::unique_ptr<Memory> sram;
-    std::unique_ptr<Peripherals> periph1;
-    std::unique_ptr<Peripherals> periph2;
-    std::unique_ptr<Peripherals> periph3;
+    std::unique_ptr<Peripherals> periph1; // sysinfo
+    std::unique_ptr<Peripherals> periph2; // ahb
+    std::unique_ptr<Peripherals> periph3; // sio
+    std::unique_ptr<Peripherals> periph4; // ssi
     std::unique_ptr<Timer> timer;
     std::unique_ptr<Debug> debug;
 

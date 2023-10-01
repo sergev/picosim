@@ -42,6 +42,8 @@ public:
                       unsigned base_addr, unsigned last_addr, const std::string &name);
     void periph3_bind(tlm_utils::simple_target_socket<Peripherals> &socket,
                       unsigned base_addr, unsigned last_addr, const std::string &name);
+    void periph4_bind(tlm_utils::simple_target_socket<Peripherals> &socket,
+                      unsigned base_addr, unsigned last_addr, const std::string &name);
     void timer_bind(tlm_utils::simple_target_socket<Timer> &socket); // TODO: remove
 
 private:
@@ -52,6 +54,7 @@ private:
     std::unique_ptr<tlm_utils::simple_initiator_socket<Bus_Controller>> periph1_socket;
     std::unique_ptr<tlm_utils::simple_initiator_socket<Bus_Controller>> periph2_socket;
     std::unique_ptr<tlm_utils::simple_initiator_socket<Bus_Controller>> periph3_socket;
+    std::unique_ptr<tlm_utils::simple_initiator_socket<Bus_Controller>> periph4_socket;
     std::unique_ptr<tlm_utils::simple_initiator_socket<Bus_Controller>> timer_socket;
 
     // Address map.
@@ -61,6 +64,7 @@ private:
     unsigned periph1_base{}, periph1_limit{};
     unsigned periph2_base{}, periph2_limit{};
     unsigned periph3_base{}, periph3_limit{};
+    unsigned periph4_base{}, periph4_limit{};
 
     // Process fetch requests.
     void b_transport_instr(tlm::tlm_generic_payload &trans, sc_core::sc_time &delay);

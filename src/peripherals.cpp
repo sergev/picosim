@@ -6,6 +6,9 @@
 #include "rp2040/clocks.h"
 #include "rp2040/tbman.h"
 #include "rp2040/xosc.h"
+#include "rp2040/pll.h"
+#include "rp2040/sio.h"
+#include "rp2040/io_qspi.h"
 
 Peripherals::Peripherals(sc_core::sc_module_name const &name, unsigned base_addr, unsigned last_addr)
     : sc_module(name),
@@ -112,16 +115,33 @@ unsigned Peripherals::periph_read(unsigned addr)
         // Indicate the platform is ASIC.
         return TBMAN_PLATFORM_ASIC_BITS;
 
+    case CLOCKS_BASE + CLOCKS_CLK_SYS_CTRL_OFFSET:
+        return clk_sys_ctrl;
+
     case CLOCKS_BASE + CLOCKS_CLK_SYS_SELECTED_OFFSET:
-        // Indicate that clksrc_pll_sys is selected.
-        return 1;
+        if (clk_sys_ctrl & CLOCKS_CLK_SYS_CTRL_SRC_BITS) {
+            // Indicate that clksrc_clk_sys_aux is selected.
+            return 2;
+        } else {
+            // Indicate that clk_ref is selected.
+            return 1;
+        }
 
     case XOSC_BASE + XOSC_STATUS_OFFSET:
         // Oscillator is running and stable.
         return XOSC_STATUS_STABLE_BITS;
 
+    case PLL_SYS_BASE + PLL_CS_OFFSET:
+    case PLL_USB_BASE + PLL_CS_OFFSET:
+        // PLL is locked.
+        return PLL_CS_LOCK_BITS;
+
+    case SIO_BASE + SIO_GPIO_HI_IN_OFFSET:
+        // Indicate flash is present: /CS pulled up.
+        return 2;
+
 #if 1
-    case 0x40028000:
+    case IO_QSPI_BASE + IO_QSPI_GPIO_QSPI_SD1_CTRL_OFFSET:
         // Terminate for now.
         Log::out() << "--- " << reg_name(addr) + " is not implemented yet" << std::endl;
         sc_core::sc_stop();
@@ -150,6 +170,16 @@ void Peripherals::periph_write(unsigned addr, unsigned val)
     case RESETS_BASE + REG_ALIAS_CLR_BITS + RESETS_RESET_OFFSET:
         // Clear RESET bits - set RESET_DONE bits.
         resets_reset_done |= val;
+        return;
+
+    case CLOCKS_BASE + CLOCKS_CLK_SYS_CTRL_OFFSET:
+        clk_sys_ctrl = val;
+        return;
+    case CLOCKS_BASE + REG_ALIAS_SET_BITS + CLOCKS_CLK_SYS_CTRL_OFFSET:
+        clk_sys_ctrl |= val;
+        return;
+    case CLOCKS_BASE + REG_ALIAS_CLR_BITS + CLOCKS_CLK_SYS_CTRL_OFFSET:
+        clk_sys_ctrl &= ~val;
         return;
     }
     *shadow = val;

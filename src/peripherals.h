@@ -57,6 +57,7 @@ private:
     // Peripheral registers.
     //
     unsigned resets_reset_done{};
+    unsigned clk_sys_ctrl{};
 
 };
 #endif /* __PERIPHERALS_H__ */
