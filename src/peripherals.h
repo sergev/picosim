@@ -58,6 +58,7 @@ private:
     //
     unsigned resets_reset_done{};
     unsigned clk_sys_ctrl{};
+    unsigned clk_ref_ctrl{};
 
 };
 #endif /* __PERIPHERALS_H__ */

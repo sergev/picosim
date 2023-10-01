@@ -128,6 +128,13 @@ unsigned Peripherals::periph_read(unsigned addr)
             return 1;
         }
 
+    case CLOCKS_BASE + CLOCKS_CLK_REF_CTRL_OFFSET:
+        return clk_ref_ctrl;
+
+    case CLOCKS_BASE + CLOCKS_CLK_REF_SELECTED_OFFSET:
+        // Indicate which clock source is selected.
+        return 1 << (clk_ref_ctrl & CLOCKS_CLK_REF_CTRL_SRC_BITS);
+
     case XOSC_BASE + XOSC_STATUS_OFFSET:
         // Oscillator is running and stable.
         return XOSC_STATUS_STABLE_BITS;
@@ -147,7 +154,6 @@ unsigned Peripherals::periph_read(unsigned addr)
 
 #if 1
     case IO_QSPI_BASE + IO_QSPI_GPIO_QSPI_SD1_CTRL_OFFSET:
-    case CLOCKS_BASE + CLOCKS_CLK_REF_SELECTED_OFFSET:
         // Terminate for now.
         Log::out() << "--- " << reg_name(addr) + " is not implemented yet" << std::endl;
         sc_core::sc_stop();
@@ -186,6 +192,22 @@ void Peripherals::periph_write(unsigned addr, unsigned val)
         return;
     case CLOCKS_BASE + REG_ALIAS_CLR_BITS + CLOCKS_CLK_SYS_CTRL_OFFSET:
         clk_sys_ctrl &= ~val;
+        return;
+    case CLOCKS_BASE + REG_ALIAS_XOR_BITS + CLOCKS_CLK_SYS_CTRL_OFFSET:
+        clk_sys_ctrl ^= val;
+        return;
+
+    case CLOCKS_BASE + CLOCKS_CLK_REF_CTRL_OFFSET:
+        clk_ref_ctrl = val;
+        return;
+    case CLOCKS_BASE + REG_ALIAS_SET_BITS + CLOCKS_CLK_REF_CTRL_OFFSET:
+        clk_ref_ctrl |= val;
+        return;
+    case CLOCKS_BASE + REG_ALIAS_CLR_BITS + CLOCKS_CLK_REF_CTRL_OFFSET:
+        clk_ref_ctrl &= ~val;
+        return;
+    case CLOCKS_BASE + REG_ALIAS_XOR_BITS + CLOCKS_CLK_REF_CTRL_OFFSET:
+        clk_ref_ctrl ^= val;
         return;
     }
     *shadow = val;
