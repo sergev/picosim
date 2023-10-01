@@ -12,6 +12,8 @@
 #include "rp2040/xosc.h"
 #include "rp2040/pll.h"
 #include "rp2040/io_qspi.h"
+#include "rp2040/ssi.h"
+#include "rp2040/pads_qspi.h"
 
 static const std::map<unsigned, const std::string> periph_reg_name = {
     // clang-format off
@@ -531,6 +533,49 @@ static const std::map<unsigned, const std::string> periph_reg_name = {
     { IO_QSPI_BASE + IO_QSPI_DORMANT_WAKE_INTE_OFFSET,          "QSPI_DORMANT_WAKE_INTE" },
     { IO_QSPI_BASE + IO_QSPI_DORMANT_WAKE_INTF_OFFSET,          "QSPI_DORMANT_WAKE_INTF" },
     { IO_QSPI_BASE + IO_QSPI_DORMANT_WAKE_INTS_OFFSET,          "QSPI_DORMANT_WAKE_INTS" },
+
+    //
+    // SSI registers at address 1800_0000...1800_00f8
+    //
+    { XIP_SSI_BASE + SSI_CTRLR0_OFFSET,                     "SSI_CTRLR0" },
+    { XIP_SSI_BASE + SSI_CTRLR1_OFFSET,                     "SSI_CTRLR1" },
+    { XIP_SSI_BASE + SSI_SSIENR_OFFSET,                     "SSI_SSIENR" },
+    { XIP_SSI_BASE + SSI_MWCR_OFFSET,                       "SSI_MWCR" },
+    { XIP_SSI_BASE + SSI_SER_OFFSET,                        "SSI_SER" },
+    { XIP_SSI_BASE + SSI_BAUDR_OFFSET,                      "SSI_BAUDR" },
+    { XIP_SSI_BASE + SSI_TXFTLR_OFFSET,                     "SSI_TXFTLR" },
+    { XIP_SSI_BASE + SSI_RXFTLR_OFFSET,                     "SSI_RXFTLR" },
+    { XIP_SSI_BASE + SSI_TXFLR_OFFSET,                      "SSI_TXFLR" },
+    { XIP_SSI_BASE + SSI_RXFLR_OFFSET,                      "SSI_RXFLR" },
+    { XIP_SSI_BASE + SSI_SR_OFFSET,                         "SSI_SR" },
+    { XIP_SSI_BASE + SSI_IMR_OFFSET,                        "SSI_IMR" },
+    { XIP_SSI_BASE + SSI_ISR_OFFSET,                        "SSI_ISR" },
+    { XIP_SSI_BASE + SSI_RISR_OFFSET,                       "SSI_RISR" },
+    { XIP_SSI_BASE + SSI_TXOICR_OFFSET,                     "SSI_TXOICR" },
+    { XIP_SSI_BASE + SSI_RXOICR_OFFSET,                     "SSI_RXOICR" },
+    { XIP_SSI_BASE + SSI_RXUICR_OFFSET,                     "SSI_RXUICR" },
+    { XIP_SSI_BASE + SSI_MSTICR_OFFSET,                     "SSI_MSTICR" },
+    { XIP_SSI_BASE + SSI_ICR_OFFSET,                        "SSI_ICR" },
+    { XIP_SSI_BASE + SSI_DMACR_OFFSET,                      "SSI_DMACR" },
+    { XIP_SSI_BASE + SSI_DMATDLR_OFFSET,                    "SSI_DMATDLR" },
+    { XIP_SSI_BASE + SSI_DMARDLR_OFFSET,                    "SSI_DMARDLR" },
+    { XIP_SSI_BASE + SSI_IDR_OFFSET,                        "SSI_IDR" },
+    { XIP_SSI_BASE + SSI_SSI_VERSION_ID_OFFSET,             "SSI_VERSION_ID" },
+    { XIP_SSI_BASE + SSI_DR0_OFFSET,                        "SSI_DR0" },
+    { XIP_SSI_BASE + SSI_RX_SAMPLE_DLY_OFFSET,              "SSI_RX_SAMPLE_DLY" },
+    { XIP_SSI_BASE + SSI_SPI_CTRLR0_OFFSET,                 "SSI_SPI_CTRLR0" },
+    { XIP_SSI_BASE + SSI_TXD_DRIVE_EDGE_OFFSET,             "SSI_TXD_DRIVE_EDGE" },
+
+    //
+    // QSPI Bank Pad Control registers at address 4002_0000...4002_0018
+    //
+    { PADS_QSPI_BASE + PADS_QSPI_VOLTAGE_SELECT_OFFSET,     "QSPI_VOLTAGE_SELECT" },
+    { PADS_QSPI_BASE + PADS_QSPI_GPIO_QSPI_SCLK_OFFSET,     "GPIO_QSPI_SCLK" },
+    { PADS_QSPI_BASE + PADS_QSPI_GPIO_QSPI_SD0_OFFSET,      "GPIO_QSPI_SD0" },
+    { PADS_QSPI_BASE + PADS_QSPI_GPIO_QSPI_SD1_OFFSET,      "GPIO_QSPI_SD1" },
+    { PADS_QSPI_BASE + PADS_QSPI_GPIO_QSPI_SD2_OFFSET,      "GPIO_QSPI_SD2" },
+    { PADS_QSPI_BASE + PADS_QSPI_GPIO_QSPI_SD3_OFFSET,      "GPIO_QSPI_SD3" },
+    { PADS_QSPI_BASE + PADS_QSPI_GPIO_QSPI_SS_OFFSET,       "GPIO_QSPI_SS" },
 
     // clang-format on
 };
