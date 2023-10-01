@@ -99,7 +99,7 @@ void Processor::raise_exception(uint32_t cause, uint32_t mtval)
     //     // Interrupt in vector mode.
     //     new_pc += (cause & MCAUSE_EXCEPTION_CODE) * 4;
     // }
-    // set_pc(new_pc);
+    // next_pc = new_pc;
     if (Log::is_verbose()) {
         Log::out() << "-------- Vector 0x" << std::hex << new_pc << std::endl;
     }
@@ -262,10 +262,14 @@ void Processor::print_nzcv(unsigned prev_xpsr)
 
 void Processor::cpu_thread()
 {
-    if (! linux_mode) {
-        // Read MSP and PC values from ROM.
+    if (!linux_mode) {
+        // Read master stack pointer from ROM.
         set_reg(Registers::SP, data_read32(0));
-        set_pc(data_read32(4) & ~1);
+
+        if (get_pc() == 0) {
+            // Read PC value from ROM.
+            set_pc(data_read32(4) & ~1);
+        }
     }
 
     while (true) {

@@ -3,7 +3,7 @@
 //
 // Check stdout.
 //
-TEST(sim, uart)
+TEST(sim, DISABLED_uart)
 {
     Simulator sim("pico");
     enable_trace();

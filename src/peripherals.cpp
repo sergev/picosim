@@ -9,6 +9,7 @@
 #include "rp2040/pll.h"
 #include "rp2040/sio.h"
 #include "rp2040/io_qspi.h"
+#include "rp2040/ssi.h"
 
 Peripherals::Peripherals(sc_core::sc_module_name const &name, unsigned base_addr, unsigned last_addr)
     : sc_module(name),
@@ -140,8 +141,13 @@ unsigned Peripherals::periph_read(unsigned addr)
         // Indicate flash is present: /CS pulled up.
         return 2;
 
+    case XIP_SSI_BASE + SSI_RXFLR_OFFSET:
+        // Receive FIFO level.
+        return 1; // pretend we have something to send
+
 #if 1
     case IO_QSPI_BASE + IO_QSPI_GPIO_QSPI_SD1_CTRL_OFFSET:
+    case CLOCKS_BASE + CLOCKS_CLK_REF_SELECTED_OFFSET:
         // Terminate for now.
         Log::out() << "--- " << reg_name(addr) + " is not implemented yet" << std::endl;
         sc_core::sc_stop();

@@ -87,7 +87,7 @@ Simulator::Simulator(const sc_core::sc_module_name &name, bool debug_enable)
         bus.periph3_bind(periph3->socket, RP2040_SIO_BASE, RP2040_SIO_LAST, "sio");
 
         periph4 = std::make_unique<Peripherals>("Ssi", RP2040_SSI_BASE, RP2040_SSI_LAST);
-        bus.periph4_bind(periph4->socket, RP2040_SSI_BASE, RP2040_SSI_LAST, "sio");
+        bus.periph4_bind(periph4->socket, RP2040_SSI_BASE, RP2040_SSI_LAST, "ssi");
 
         // TODO: move timer to peripherals
         timer = std::make_unique<Timer>("Timer");
@@ -117,6 +117,7 @@ void Simulator::run(uint32_t start_address)
     }
 
     if (start_address) {
+        // Address from user.
         cpu.set_pc(start_address);
     } else if (config == "linux") {
         // Address from ELF file.

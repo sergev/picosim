@@ -15,6 +15,7 @@ static const std::string version = "0.1"; // TODO
 static std::string filename;
 static bool debug_session = false;
 static const char *prog_name;
+static unsigned start_address;
 
 void intHandler(int dummy)
 {
@@ -33,6 +34,7 @@ void usage(int exit_status)
     std::cerr << "Options:" << std::endl;
     std::cerr << "    -L FILE   Enable log output to file" << std::endl;
     std::cerr << "    -D        Debug session" << std::endl;
+    std::cerr << "    -s NUM    Start address" << std::endl;
     std::cerr << "    -h        Show usage" << std::endl;
     std::cerr << "    -V        Show version and finish" << std::endl;
     exit(exit_status);
@@ -45,7 +47,7 @@ void process_arguments(int argc, char *argv[])
 
     // Parse command line options.
     for (;;) {
-        switch (getopt(argc, argv, "hVDL:f:")) {
+        switch (getopt(argc, argv, "hVDL:s:")) {
         case EOF:
             break;
         case 0:
@@ -54,6 +56,9 @@ void process_arguments(int argc, char *argv[])
             // Show usage message and exit.
             usage(EXIT_SUCCESS);
             break;
+        case 's':
+            start_address = std::stoul(optarg, nullptr, 0);
+            continue;
         case 'V':
             // Show version and exit.
             std::cout << "RP2040 Simulator Version " << version << std::endl;
@@ -126,6 +131,9 @@ int sc_main(int argc, char *argv[])
         config = Simulator::get_elf_config(filename);
         std::cout << "Configuration: " << config << std::endl;
     }
+    if (start_address != 0) {
+        std::cout << "Start address: 0x" << std::hex << start_address << std::dec << std::endl;
+    }
 
     // Instantiate simulator.
     Simulator sim(config.c_str(), debug_session);
@@ -135,7 +143,7 @@ int sc_main(int argc, char *argv[])
 
     auto start = std::chrono::steady_clock::now();
     std::cout << "----- Start -----" << std::endl;
-    sim.run();
+    sim.run(start_address);
     auto end = std::chrono::steady_clock::now();
 
     std::chrono::duration<double> elapsed_seconds = end - start;
