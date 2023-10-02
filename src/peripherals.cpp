@@ -204,7 +204,11 @@ unsigned Peripherals::periph_read(unsigned addr)
 
     case XIP_SSI_BASE + SSI_DR0_OFFSET:
         // TODO: receive data from Flash interface
-        return 0;
+        return sim.flash_receive();
+
+    case IO_QSPI_BASE + IO_QSPI_GPIO_QSPI_SS_CTRL_OFFSET:
+        // Select Flash interface.
+        return ss_ctrl;
 
 #if 1
     case IO_QSPI_BASE + IO_QSPI_GPIO_QSPI_SD1_CTRL_OFFSET:
@@ -306,8 +310,28 @@ void Peripherals::periph_write(unsigned addr, unsigned val)
         return;
 
     case XIP_SSI_BASE + SSI_DR0_OFFSET:
-        // TODO: send data to Flash interface
+        // Send data to Flash interface.
+        sim.flash_send(val);
         return;
+
+    case IO_QSPI_BASE + IO_QSPI_GPIO_QSPI_SS_CTRL_OFFSET:
+        // Select Flash interface.
+        // Bits 9:8 - OUTOVER - connected as /SS for Flash chip.
+        // 0 - drive output from peripheral signal selected by funcsel
+        // 1 - drive output from inverse of peripheral signal selected by funcsel
+        // 2 - drive output low (select enabled)
+        // 3 - drive output high
+        ss_ctrl = val;
+flash_select:
+        sim.flash_select((val & IO_QSPI_GPIO_QSPI_SS_CTRL_OUTOVER_BITS) ==
+                         (IO_QSPI_GPIO_QSPI_SS_CTRL_OUTOVER_VALUE_LOW << IO_QSPI_GPIO_QSPI_SS_CTRL_OUTOVER_LSB));
+        return;
+    case IO_QSPI_BASE + REG_ALIAS_CLR_BITS + IO_QSPI_GPIO_QSPI_SS_CTRL_OFFSET:
+        ss_ctrl &= ~val;
+        goto flash_select;
+    case IO_QSPI_BASE + REG_ALIAS_XOR_BITS + IO_QSPI_GPIO_QSPI_SS_CTRL_OFFSET:
+        ss_ctrl ^= val;
+        goto flash_select;
 
     case UART0_BASE + UART_UARTDR_OFFSET:
         // Print byte on stdout.

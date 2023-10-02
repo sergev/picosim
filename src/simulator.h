@@ -50,6 +50,12 @@ private:
     // Spinlocks.
     std::array<bool, 32> spinlock{};
 
+    // Serial interface to Flash memory.
+    bool flash_enable{};
+    unsigned flash_tcount{};
+    unsigned flash_rcount{};
+    uint8_t flash_tbuf[4];
+
 public:
     Simulator(const sc_core::sc_module_name &config = "linux", bool debug_enable = false);
 
@@ -101,6 +107,11 @@ public:
     bool spinlock_is_locked(unsigned index) { return spinlock[index]; }
     void lock_spinlock(unsigned index) { spinlock[index] = true; }
     void release_spinlock(unsigned index) { spinlock[index] = false; }
+
+    // Serial interface to Flash memory.
+    void flash_select(bool enable);
+    void flash_send(unsigned char val);
+    unsigned char flash_receive();
 };
 
 // Run test and compare to the reference.

@@ -64,6 +64,7 @@ private:
     unsigned resets_reset_done{};
     unsigned clk_sys_ctrl{};
     unsigned clk_ref_ctrl{};
+    unsigned ss_ctrl{};
     unsigned m0plus_vtor{0x10000100};
 };
 #endif /* __PERIPHERALS_H__ */

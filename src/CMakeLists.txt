@@ -22,6 +22,7 @@ add_library(sim STATIC
     simulator.cpp
     syscall.cpp
     timer.cpp
+    flash.cpp
     pico-bootrom-b2.c
 )
 add_executable(picosim
