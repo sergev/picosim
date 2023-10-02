@@ -22,7 +22,7 @@ class Debug : public sc_core::sc_module {
     SC_HAS_PROCESS(Debug);
 
 public:
-    Debug(Simulator &sim, Processor &p);
+    Debug(Simulator &s, Processor &p);
     ~Debug() override;
 
 private:

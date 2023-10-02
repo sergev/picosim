@@ -46,6 +46,9 @@ private:
     // Entry address (PC) read from ELF file.
     uint32_t entry_address{ 0 };
 
+    // Spinlocks.
+    std::array<bool, 32> spinlock{};
+
 public:
     Simulator(const sc_core::sc_module_name &config = "linux", bool debug_enable = false);
 
@@ -89,6 +92,11 @@ public:
 
     // Get captured output.
     std::string get_stdout() { return cpu.get_stdout(); }
+
+    // Spinlocks.
+    bool spinlock_is_locked(unsigned index) { return spinlock[index]; }
+    void lock_spinlock(unsigned index) { spinlock[index] = true; }
+    void release_spinlock(unsigned index) { spinlock[index] = false; }
 };
 
 // Run test and compare to the reference.

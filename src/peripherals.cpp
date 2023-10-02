@@ -1,6 +1,5 @@
-#include "peripherals.h"
+#include "simulator.h"
 
-#include <algorithm>
 #include "rp2040/addressmap.h"
 #include "rp2040/resets.h"
 #include "rp2040/clocks.h"
@@ -11,8 +10,9 @@
 #include "rp2040/io_qspi.h"
 #include "rp2040/ssi.h"
 
-Peripherals::Peripherals(sc_core::sc_module_name const &name, unsigned base_addr, unsigned last_addr)
+Peripherals::Peripherals(Simulator &s, sc_core::sc_module_name const &name, unsigned base_addr, unsigned last_addr)
     : sc_module(name),
+      sim(s),
       base_address(base_addr),
       size_bytes((last_addr + 1 - base_addr) * 1024)
 {
@@ -152,8 +152,6 @@ unsigned Peripherals::periph_read(unsigned addr)
         // Receive FIFO level.
         return 1; // pretend we have something to send
 
-#if 1
-    case IO_QSPI_BASE + IO_QSPI_GPIO_QSPI_SD1_CTRL_OFFSET:
     case SIO_BASE + SIO_SPINLOCK0_OFFSET:
     case SIO_BASE + SIO_SPINLOCK1_OFFSET:
     case SIO_BASE + SIO_SPINLOCK2_OFFSET:
@@ -185,7 +183,17 @@ unsigned Peripherals::periph_read(unsigned addr)
     case SIO_BASE + SIO_SPINLOCK28_OFFSET:
     case SIO_BASE + SIO_SPINLOCK29_OFFSET:
     case SIO_BASE + SIO_SPINLOCK30_OFFSET:
-    case SIO_BASE + SIO_SPINLOCK31_OFFSET:
+    case SIO_BASE + SIO_SPINLOCK31_OFFSET: {
+        unsigned index = (addr >> 2) & 0x1f;
+        if (sim.spinlock_is_locked(index)) {
+            return 0;
+        }
+        sim.lock_spinlock(index);
+        return 1 << index;
+    }
+
+#if 1
+    case IO_QSPI_BASE + IO_QSPI_GPIO_QSPI_SD1_CTRL_OFFSET:
         // Terminate for now.
         Log::out() << "--- " << reg_name(addr) + " is not implemented yet" << std::endl;
         sc_core::sc_stop();
@@ -241,6 +249,43 @@ void Peripherals::periph_write(unsigned addr, unsigned val)
     case CLOCKS_BASE + REG_ALIAS_XOR_BITS + CLOCKS_CLK_REF_CTRL_OFFSET:
         clk_ref_ctrl ^= val;
         return;
+
+    case SIO_BASE + SIO_SPINLOCK0_OFFSET:
+    case SIO_BASE + SIO_SPINLOCK1_OFFSET:
+    case SIO_BASE + SIO_SPINLOCK2_OFFSET:
+    case SIO_BASE + SIO_SPINLOCK3_OFFSET:
+    case SIO_BASE + SIO_SPINLOCK4_OFFSET:
+    case SIO_BASE + SIO_SPINLOCK5_OFFSET:
+    case SIO_BASE + SIO_SPINLOCK6_OFFSET:
+    case SIO_BASE + SIO_SPINLOCK7_OFFSET:
+    case SIO_BASE + SIO_SPINLOCK8_OFFSET:
+    case SIO_BASE + SIO_SPINLOCK9_OFFSET:
+    case SIO_BASE + SIO_SPINLOCK10_OFFSET:
+    case SIO_BASE + SIO_SPINLOCK11_OFFSET:
+    case SIO_BASE + SIO_SPINLOCK12_OFFSET:
+    case SIO_BASE + SIO_SPINLOCK13_OFFSET:
+    case SIO_BASE + SIO_SPINLOCK14_OFFSET:
+    case SIO_BASE + SIO_SPINLOCK15_OFFSET:
+    case SIO_BASE + SIO_SPINLOCK16_OFFSET:
+    case SIO_BASE + SIO_SPINLOCK17_OFFSET:
+    case SIO_BASE + SIO_SPINLOCK18_OFFSET:
+    case SIO_BASE + SIO_SPINLOCK19_OFFSET:
+    case SIO_BASE + SIO_SPINLOCK20_OFFSET:
+    case SIO_BASE + SIO_SPINLOCK21_OFFSET:
+    case SIO_BASE + SIO_SPINLOCK22_OFFSET:
+    case SIO_BASE + SIO_SPINLOCK23_OFFSET:
+    case SIO_BASE + SIO_SPINLOCK24_OFFSET:
+    case SIO_BASE + SIO_SPINLOCK25_OFFSET:
+    case SIO_BASE + SIO_SPINLOCK26_OFFSET:
+    case SIO_BASE + SIO_SPINLOCK27_OFFSET:
+    case SIO_BASE + SIO_SPINLOCK28_OFFSET:
+    case SIO_BASE + SIO_SPINLOCK29_OFFSET:
+    case SIO_BASE + SIO_SPINLOCK30_OFFSET:
+    case SIO_BASE + SIO_SPINLOCK31_OFFSET: {
+        unsigned index = (addr >> 2) & 0x1f;
+        sim.release_spinlock(index);
+        return;
+    }
     }
     *shadow = val;
 }

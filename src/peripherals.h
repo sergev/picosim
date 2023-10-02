@@ -10,6 +10,8 @@
 #include "tlm.h"
 #include "tlm_utils/simple_target_socket.h"
 
+class Simulator;
+
 /**
  * @brief Basic TLM-2 memory
  */
@@ -19,7 +21,7 @@ public:
     tlm_utils::simple_target_socket<Peripherals> socket{ "socket" };
 
     // Allocate memory of given size.
-    explicit Peripherals(sc_core::sc_module_name const &name, unsigned base_addr, unsigned last_addr);
+    explicit Peripherals(Simulator &s, sc_core::sc_module_name const &name, unsigned base_addr, unsigned last_addr);
 
     // Deallocate.
     ~Peripherals() override;
@@ -30,6 +32,9 @@ public:
 private:
     // Shadow storage, allocated via calloc().
     uint8_t *mem;
+
+    // Reference to simulator.
+    Simulator &sim;
 
     // Base address in memory map.
     unsigned base_address;

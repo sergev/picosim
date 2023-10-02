@@ -80,19 +80,19 @@ Simulator::Simulator(const sc_core::sc_module_name &name, bool debug_enable)
         bus.flash_bind(flash->socket, RP2040_FLASH_BASE, RP2040_FLASH_LAST);
 
         // Peripherals
-        periph1 = std::make_unique<Peripherals>("Sysinfo", RP2040_SYSINFO_BASE, RP2040_SYSINFO_LAST);
+        periph1 = std::make_unique<Peripherals>(*this, "Sysinfo", RP2040_SYSINFO_BASE, RP2040_SYSINFO_LAST);
         bus.periph1_bind(periph1->socket, RP2040_SYSINFO_BASE, RP2040_SYSINFO_LAST, "sysinfo");
 
-        periph2 = std::make_unique<Peripherals>("Ahb", RP2040_AHB_BASE, RP2040_AHB_LAST);
+        periph2 = std::make_unique<Peripherals>(*this, "Ahb", RP2040_AHB_BASE, RP2040_AHB_LAST);
         bus.periph2_bind(periph2->socket, RP2040_AHB_BASE, RP2040_AHB_LAST, "ahb");
 
-        periph3 = std::make_unique<Peripherals>("Sio", RP2040_SIO_BASE, RP2040_SIO_LAST);
+        periph3 = std::make_unique<Peripherals>(*this, "Sio", RP2040_SIO_BASE, RP2040_SIO_LAST);
         bus.periph3_bind(periph3->socket, RP2040_SIO_BASE, RP2040_SIO_LAST, "sio");
 
-        periph4 = std::make_unique<Peripherals>("Ssi", RP2040_SSI_BASE, RP2040_SSI_LAST);
+        periph4 = std::make_unique<Peripherals>(*this, "Ssi", RP2040_SSI_BASE, RP2040_SSI_LAST);
         bus.periph4_bind(periph4->socket, RP2040_SSI_BASE, RP2040_SSI_LAST, "ssi");
 
-        periph5 = std::make_unique<Peripherals>("Ppb", RP2040_PPB_BASE, RP2040_PPB_LAST);
+        periph5 = std::make_unique<Peripherals>(*this, "Ppb", RP2040_PPB_BASE, RP2040_PPB_LAST);
         bus.periph5_bind(periph5->socket, RP2040_PPB_BASE, RP2040_PPB_LAST, "ppb");
 
         // TODO: move timer to peripherals
