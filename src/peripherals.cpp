@@ -9,6 +9,7 @@
 #include "rp2040/sio.h"
 #include "rp2040/io_qspi.h"
 #include "rp2040/ssi.h"
+#include "rp2040/m0plus.h"
 
 Peripherals::Peripherals(Simulator &s, sc_core::sc_module_name const &name, unsigned base_addr, unsigned last_addr)
     : sc_module(name),
@@ -192,6 +193,9 @@ unsigned Peripherals::periph_read(unsigned addr)
         return 1 << index;
     }
 
+    case PPB_BASE + M0PLUS_VTOR_OFFSET:
+        return m0plus_vtor;
+
 #if 1
     case IO_QSPI_BASE + IO_QSPI_GPIO_QSPI_SD1_CTRL_OFFSET:
         // Terminate for now.
@@ -286,6 +290,10 @@ void Peripherals::periph_write(unsigned addr, unsigned val)
         sim.release_spinlock(index);
         return;
     }
+
+    case PPB_BASE + M0PLUS_VTOR_OFFSET:
+        m0plus_vtor = val;
+        return;
     }
     *shadow = val;
 }
