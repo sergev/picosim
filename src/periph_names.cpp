@@ -15,6 +15,7 @@
 #include "rp2040/ssi.h"
 #include "rp2040/pads_qspi.h"
 #include "rp2040/m0plus.h"
+#include "rp2040/timer.h"
 
 static const std::map<unsigned, const std::string> periph_reg_name = {
     // clang-format off
@@ -674,6 +675,27 @@ static const std::map<unsigned, const std::string> periph_reg_name = {
     { PPB_BASE + M0PLUS_MPU_RNR_OFFSET,                     "M0PLUS_MPU_RNR" },
     { PPB_BASE + M0PLUS_MPU_RBAR_OFFSET,                    "M0PLUS_MPU_RBAR" },
     { PPB_BASE + M0PLUS_MPU_RASR_OFFSET,                    "M0PLUS_MPU_RASR" },
+
+    //
+    // Timer registers at address 4005_4000...4005_4040
+    //
+    { TIMER_BASE + TIMER_TIMEHW_OFFSET,                     "TIMER_TIMEHW" },
+    { TIMER_BASE + TIMER_TIMELW_OFFSET,                     "TIMER_TIMELW" },
+    { TIMER_BASE + TIMER_TIMEHR_OFFSET,                     "TIMER_TIMEHR" },
+    { TIMER_BASE + TIMER_TIMELR_OFFSET,                     "TIMER_TIMELR" },
+    { TIMER_BASE + TIMER_ALARM0_OFFSET,                     "TIMER_ALARM0" },
+    { TIMER_BASE + TIMER_ALARM1_OFFSET,                     "TIMER_ALARM1" },
+    { TIMER_BASE + TIMER_ALARM2_OFFSET,                     "TIMER_ALARM2" },
+    { TIMER_BASE + TIMER_ALARM3_OFFSET,                     "TIMER_ALARM3" },
+    { TIMER_BASE + TIMER_ARMED_OFFSET,                      "TIMER_ARMED" },
+    { TIMER_BASE + TIMER_TIMERAWH_OFFSET,                   "TIMER_TIMERAWH" },
+    { TIMER_BASE + TIMER_TIMERAWL_OFFSET,                   "TIMER_TIMERAWL" },
+    { TIMER_BASE + TIMER_DBGPAUSE_OFFSET,                   "TIMER_DBGPAUSE" },
+    { TIMER_BASE + TIMER_PAUSE_OFFSET,                      "TIMER_PAUSE" },
+    { TIMER_BASE + TIMER_INTR_OFFSET,                       "TIMER_INTR" },
+    { TIMER_BASE + TIMER_INTE_OFFSET,                       "TIMER_INTE" },
+    { TIMER_BASE + TIMER_INTF_OFFSET,                       "TIMER_INTF" },
+    { TIMER_BASE + TIMER_INTS_OFFSET,                       "TIMER_INTS" },
 
     // clang-format on
 };
