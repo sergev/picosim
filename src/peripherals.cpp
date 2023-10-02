@@ -153,6 +153,10 @@ unsigned Peripherals::periph_read(unsigned addr)
         // Receive FIFO level.
         return 1; // pretend we have something to send
 
+    case XIP_SSI_BASE + SSI_SR_OFFSET:
+        // SSI status: Transmit FIFO not full and Receive FIFO not empty.
+        return SSI_SR_TFNF_BITS | SSI_SR_RFNE_BITS;
+
     case SIO_BASE + SIO_SPINLOCK0_OFFSET:
     case SIO_BASE + SIO_SPINLOCK1_OFFSET:
     case SIO_BASE + SIO_SPINLOCK2_OFFSET:

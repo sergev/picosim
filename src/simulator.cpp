@@ -9,6 +9,9 @@
 #define RP2040_FLASH_BASE 0x10000000 // XIP_BASE
 #define RP2040_FLASH_LAST 0x101fffff // 2 Mbytes
 
+#define RP2040_XIP_BASE 0x14000000 // XIP_CTRL_BASE
+#define RP2040_XIP_LAST 0x1400001f // 32 bytes
+
 #define RP2040_SSI_BASE 0x18000000 // XIP_SSI_BASE
 #define RP2040_SSI_LAST 0x180000ff // 256 bytes
 
@@ -94,6 +97,9 @@ Simulator::Simulator(const sc_core::sc_module_name &name, bool debug_enable)
 
         periph5 = std::make_unique<Peripherals>(*this, "Ppb", RP2040_PPB_BASE, RP2040_PPB_LAST);
         bus.periph5_bind(periph5->socket, RP2040_PPB_BASE, RP2040_PPB_LAST, "ppb");
+
+        periph6 = std::make_unique<Peripherals>(*this, "Xip", RP2040_XIP_BASE, RP2040_XIP_LAST);
+        bus.periph6_bind(periph6->socket, RP2040_XIP_BASE, RP2040_XIP_LAST, "xip");
 
         // TODO: move timer to peripherals
         timer = std::make_unique<Timer>("Timer");

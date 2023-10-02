@@ -13,6 +13,7 @@
 //                      |              r/w|<--> periph3_socket
 //  cpu_data_socket <-->|r/w           r/w|<--> periph4_socket
 //                      |              r/w|<--> periph5_socket
+//                      |              r/w|<--> periph6_socket
 //                      -------------------
 //
 #include "bus_controller.h"
@@ -93,6 +94,15 @@ void Bus_Controller::periph5_bind(tlm_utils::simple_target_socket<Peripherals> &
     periph5_socket->bind(socket);
 }
 
+void Bus_Controller::periph6_bind(tlm_utils::simple_target_socket<Peripherals> &socket,
+                                  unsigned base_addr, unsigned last_addr, const std::string &name)
+{
+    periph6_base = base_addr;
+    periph6_limit = last_addr + 1;
+    periph6_socket = std::make_unique<tlm_utils::simple_initiator_socket<Bus_Controller>>(name.c_str());
+    periph6_socket->bind(socket);
+}
+
 void Bus_Controller::timer_bind(tlm_utils::simple_target_socket<Timer> &socket)
 {
     timer_socket = std::make_unique<tlm_utils::simple_initiator_socket<Bus_Controller>>("timer");
@@ -170,30 +180,39 @@ void Bus_Controller::b_transport_data(tlm::tlm_generic_payload &trans, sc_core::
         return;
     }
 
+    //
     // Peripherals.
-    if (addr >= periph1_base && addr < periph1_limit) {
+    //
+    uint32_t addr_base = addr & ~0x3000; // ignore set/clr/xor bits
+
+    if (addr_base >= periph1_base && addr_base < periph1_limit) {
         trans.set_address(addr - periph1_base);
         (*periph1_socket)->b_transport(trans, delay);
         return;
     }
-    if (addr >= periph2_base && addr < periph2_limit) {
+    if (addr_base >= periph2_base && addr_base < periph2_limit) {
         trans.set_address(addr - periph2_base);
         (*periph2_socket)->b_transport(trans, delay);
         return;
     }
-    if (addr >= periph3_base && addr < periph3_limit) {
+    if (addr_base >= periph3_base && addr_base < periph3_limit) {
         trans.set_address(addr - periph3_base);
         (*periph3_socket)->b_transport(trans, delay);
         return;
     }
-    if (addr >= periph4_base && addr < periph4_limit) {
+    if (addr_base >= periph4_base && addr_base < periph4_limit) {
         trans.set_address(addr - periph4_base);
         (*periph4_socket)->b_transport(trans, delay);
         return;
     }
-    if (addr >= periph5_base && addr < periph5_limit) {
+    if (addr_base >= periph5_base && addr_base < periph5_limit) {
         trans.set_address(addr - periph5_base);
         (*periph5_socket)->b_transport(trans, delay);
+        return;
+    }
+    if (addr_base >= periph6_base && addr_base < periph6_limit) {
+        trans.set_address(addr - periph6_base);
+        (*periph6_socket)->b_transport(trans, delay);
         return;
     }
 

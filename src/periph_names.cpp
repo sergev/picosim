@@ -18,6 +18,7 @@
 #include "rp2040/timer.h"
 #include "rp2040/uart.h"
 #include "rp2040/io_bank0.h"
+#include "rp2040/xip.h"
 
 static const std::map<unsigned, const std::string> periph_reg_name = {
     // clang-format off
@@ -567,6 +568,18 @@ static const std::map<unsigned, const std::string> periph_reg_name = {
     { IO_BANK0_BASE + IO_BANK0_DORMANT_WAKE_INTS1_OFFSET,   "DORMANT_WAKE_INTS1" },
     { IO_BANK0_BASE + IO_BANK0_DORMANT_WAKE_INTS2_OFFSET,   "DORMANT_WAKE_INTS2" },
     { IO_BANK0_BASE + IO_BANK0_DORMANT_WAKE_INTS3_OFFSET,   "DORMANT_WAKE_INTS3" },
+
+    //
+    // XIP registers at address 1400_0000...1400_001c
+    //
+    { XIP_CTRL_BASE + XIP_CTRL_OFFSET,                      "XIP_CTRL" },
+    { XIP_CTRL_BASE + XIP_FLUSH_OFFSET,                     "XIP_FLUSH" },
+    { XIP_CTRL_BASE + XIP_STAT_OFFSET,                      "XIP_STAT" },
+    { XIP_CTRL_BASE + XIP_CTR_HIT_OFFSET,                   "XIP_CTR_HIT" },
+    { XIP_CTRL_BASE + XIP_CTR_ACC_OFFSET,                   "XIP_CTR_ACC" },
+    { XIP_CTRL_BASE + XIP_STREAM_ADDR_OFFSET,               "XIP_STREAM_ADDR" },
+    { XIP_CTRL_BASE + XIP_STREAM_CTR_OFFSET,                "XIP_STREAM_CTR" },
+    { XIP_CTRL_BASE + XIP_STREAM_FIFO_OFFSET,               "XIP_STREAM_FIFO" },
 
     // clang-format on
 };
