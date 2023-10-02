@@ -10,6 +10,7 @@
 #include "rp2040/io_qspi.h"
 #include "rp2040/ssi.h"
 #include "rp2040/m0plus.h"
+#include "rp2040/uart.h"
 
 Peripherals::Peripherals(Simulator &s, sc_core::sc_module_name const &name, unsigned base_addr, unsigned last_addr)
     : sc_module(name),
@@ -308,6 +309,10 @@ void Peripherals::periph_write(unsigned addr, unsigned val)
         // TODO: send data to Flash interface
         return;
 
+    case UART0_BASE + UART_UARTDR_OFFSET:
+        // Print byte on stdout.
+        sim.put_char(val);
+        return;
     }
     *shadow = val;
 }

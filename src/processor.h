@@ -219,6 +219,7 @@ public:
 
     // Get captured output.
     std::string get_stdout() { return stdout_buf.str(); }
+    void put_char(char ch);
 
 private:
     /**
@@ -371,7 +372,6 @@ private:
     void write8_stdout(unsigned &addr, unsigned &nbytes);
     void write16_stdout(unsigned &addr, unsigned &nbytes);
     void write32_stdout(unsigned &addr, unsigned &nbytes);
-    void put_char(char ch);
     void print_nzcv(unsigned prev_xpsr);
 };
 

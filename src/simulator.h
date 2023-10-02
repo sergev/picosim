@@ -94,6 +94,9 @@ public:
     // Get captured output.
     std::string get_stdout() { return cpu.get_stdout(); }
 
+    // Send symbol to stdout, safely masked.
+    void put_char(char ch) { cpu.put_char(ch); }
+
     // Spinlocks.
     bool spinlock_is_locked(unsigned index) { return spinlock[index]; }
     void lock_spinlock(unsigned index) { spinlock[index] = true; }

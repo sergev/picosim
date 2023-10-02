@@ -3,16 +3,21 @@
 //
 // Check stdout.
 //
-TEST(sim, DISABLED_uart)
+TEST(sim, uart)
 {
     Simulator sim("pico");
-    enable_trace();
-    sim.capture_stdout();
     sim.read_elf_file(TEST_DIR "/hello-uart/hello_uart.elf");
+    sim.capture_stdout();
+    //enable_trace();
+#if 1
+    // TODO: remove this when Flash i/o is ready
+    sim.run(0x1000020c); // jump into Flash, skip .data copying
+#else
     sim.run();
-    show_trace();
+#endif
+    //show_trace();
 
-    EXPECT_EQ(sim.get_stdout(), "Hello!\n");
+    EXPECT_EQ(sim.get_stdout(), "Hello from UART!\r\n");
 }
 
 #include "sc_main.cpp"
