@@ -154,8 +154,9 @@ unsigned Peripherals::periph_read(unsigned addr)
         return 1; // pretend we have something to send
 
     case XIP_SSI_BASE + SSI_SR_OFFSET:
-        // SSI status: Transmit FIFO not full and Receive FIFO not empty.
-        return SSI_SR_TFNF_BITS | SSI_SR_RFNE_BITS;
+        // SSI status: Transmit FIFO not full, and Transmit FIFO empty,
+        // and Receive FIFO not empty.
+        return SSI_SR_TFNF_BITS | SSI_SR_TFE_BITS | SSI_SR_RFNE_BITS;
 
     case SIO_BASE + SIO_SPINLOCK0_OFFSET:
     case SIO_BASE + SIO_SPINLOCK1_OFFSET:
@@ -199,6 +200,10 @@ unsigned Peripherals::periph_read(unsigned addr)
 
     case PPB_BASE + M0PLUS_VTOR_OFFSET:
         return m0plus_vtor;
+
+    case XIP_SSI_BASE + SSI_DR0_OFFSET:
+        // TODO: receive data from Flash interface
+        return 0;
 
 #if 1
     case IO_QSPI_BASE + IO_QSPI_GPIO_QSPI_SD1_CTRL_OFFSET:
@@ -298,6 +303,11 @@ void Peripherals::periph_write(unsigned addr, unsigned val)
     case PPB_BASE + M0PLUS_VTOR_OFFSET:
         m0plus_vtor = val;
         return;
+
+    case XIP_SSI_BASE + SSI_DR0_OFFSET:
+        // TODO: send data to Flash interface
+        return;
+
     }
     *shadow = val;
 }
