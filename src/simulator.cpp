@@ -24,6 +24,9 @@
 #define RP2040_SIO_BASE 0xd0000000 // SIO_BASE
 #define RP2040_SIO_LAST 0xd00001ff // 512 bytes
 
+#define RP2040_PPB_BASE 0xe0000000 // PPB_BASE
+#define RP2040_PPB_LAST 0xe000ffff // 64 kbytes
+
 //
 // Address Map of binaries compiled for Linux with Newlib.
 //
@@ -88,6 +91,9 @@ Simulator::Simulator(const sc_core::sc_module_name &name, bool debug_enable)
 
         periph4 = std::make_unique<Peripherals>("Ssi", RP2040_SSI_BASE, RP2040_SSI_LAST);
         bus.periph4_bind(periph4->socket, RP2040_SSI_BASE, RP2040_SSI_LAST, "ssi");
+
+        periph5 = std::make_unique<Peripherals>("Ppb", RP2040_PPB_BASE, RP2040_PPB_LAST);
+        bus.periph5_bind(periph5->socket, RP2040_PPB_BASE, RP2040_PPB_LAST, "ppb");
 
         // TODO: move timer to peripherals
         timer = std::make_unique<Timer>("Timer");

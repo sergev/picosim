@@ -5,14 +5,14 @@
 // has 7 initiator ports to access ROM, SRAM, Flash memory and peripherals.
 //
 //                      -------------------
-//                      |                 |
-// cpu_instr_socket <---|fetch  fetch/read|<--- rom_socket
-//                      |        fetch/r/w|<--> sram_socket
+//                      |       fetch/read|<--- rom_socket
+// cpu_instr_socket <---|fetch   fetch/r/w|<--> sram_socket
 //                      |       fetch/read|<--- flash_socket
 //                      |              r/w|<--> periph1_socket
 //                      |              r/w|<--> periph2_socket
-//  cpu_data_socket <-->|r/w           r/w|<--> periph3_socket
-//                      |              r/w|<--> periph4_socket
+//                      |              r/w|<--> periph3_socket
+//  cpu_data_socket <-->|r/w           r/w|<--> periph4_socket
+//                      |              r/w|<--> periph5_socket
 //                      -------------------
 //
 #include "bus_controller.h"
@@ -82,6 +82,15 @@ void Bus_Controller::periph4_bind(tlm_utils::simple_target_socket<Peripherals> &
     periph4_limit = last_addr + 1;
     periph4_socket = std::make_unique<tlm_utils::simple_initiator_socket<Bus_Controller>>(name.c_str());
     periph4_socket->bind(socket);
+}
+
+void Bus_Controller::periph5_bind(tlm_utils::simple_target_socket<Peripherals> &socket,
+                                  unsigned base_addr, unsigned last_addr, const std::string &name)
+{
+    periph5_base = base_addr;
+    periph5_limit = last_addr + 1;
+    periph5_socket = std::make_unique<tlm_utils::simple_initiator_socket<Bus_Controller>>(name.c_str());
+    periph5_socket->bind(socket);
 }
 
 void Bus_Controller::timer_bind(tlm_utils::simple_target_socket<Timer> &socket)
@@ -180,6 +189,11 @@ void Bus_Controller::b_transport_data(tlm::tlm_generic_payload &trans, sc_core::
     if (addr >= periph4_base && addr < periph4_limit) {
         trans.set_address(addr - periph4_base);
         (*periph4_socket)->b_transport(trans, delay);
+        return;
+    }
+    if (addr >= periph5_base && addr < periph5_limit) {
+        trans.set_address(addr - periph5_base);
+        (*periph5_socket)->b_transport(trans, delay);
         return;
     }
 

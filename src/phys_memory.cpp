@@ -59,7 +59,7 @@ void Memory::b_transport(tlm::tlm_generic_payload &trans, sc_core::sc_time &dela
                 << " [" << (addr + base_address) << "] = ";
             switch (len) {
             case 1:
-                out << std::setw(2) << *(uint8_t *)ptr;
+                out << std::setw(2) << (unsigned)*(uint8_t *)ptr;
                 break;
             case 2:
                 out << std::setw(4) << *(uint16_t *)ptr;
@@ -83,7 +83,7 @@ void Memory::b_transport(tlm::tlm_generic_payload &trans, sc_core::sc_time &dela
                 << " [" << (addr + base_address) << "] = ";
             switch (len) {
             case 1:
-                out << std::setw(2) << *(uint8_t *)ptr;
+                out << std::setw(2) << (unsigned)*(uint8_t *)ptr;
                 break;
             case 2:
                 out << std::setw(4) << *(uint16_t *)ptr;

@@ -14,6 +14,7 @@
 #include "rp2040/io_qspi.h"
 #include "rp2040/ssi.h"
 #include "rp2040/pads_qspi.h"
+#include "rp2040/m0plus.h"
 
 static const std::map<unsigned, const std::string> periph_reg_name = {
     // clang-format off
@@ -137,6 +138,7 @@ static const std::map<unsigned, const std::string> periph_reg_name = {
     { CLOCKS_BASE + CLOCKS_CLK_SYS_DIV_OFFSET,              "CLK_SYS_DIV" },
     { CLOCKS_BASE + CLOCKS_CLK_SYS_SELECTED_OFFSET,         "CLK_SYS_SELECTED" },
     { CLOCKS_BASE + CLOCKS_CLK_PERI_CTRL_OFFSET,            "CLK_PERI_CTRL" },
+    { CLOCKS_BASE + CLOCKS_CLK_PERI_CTRL_OFFSET + 4,        "CLK_PERI_DIV:unimplemented" }, // accessed from clock_configure()
     { CLOCKS_BASE + CLOCKS_CLK_PERI_SELECTED_OFFSET,        "CLK_PERI_SELECTED" },
     { CLOCKS_BASE + CLOCKS_CLK_USB_CTRL_OFFSET,             "CLK_USB_CTRL" },
     { CLOCKS_BASE + CLOCKS_CLK_USB_DIV_OFFSET,              "CLK_USB_DIV" },
@@ -525,6 +527,18 @@ static const std::map<unsigned, const std::string> periph_reg_name = {
     { XOSC_BASE + XOSC_STARTUP_OFFSET,                      "XOSC_STARTUP" },
     { XOSC_BASE + XOSC_COUNT_OFFSET,                        "XOSC_COUNT" },
 
+    { XOSC_BASE + REG_ALIAS_SET_BITS + XOSC_CTRL_OFFSET,    "XOSC_CTRL:set" },
+    { XOSC_BASE + REG_ALIAS_SET_BITS + XOSC_STATUS_OFFSET,  "XOSC_STATUS:set" },
+    { XOSC_BASE + REG_ALIAS_SET_BITS + XOSC_DORMANT_OFFSET, "XOSC_DORMANT:set" },
+    { XOSC_BASE + REG_ALIAS_SET_BITS + XOSC_STARTUP_OFFSET, "XOSC_STARTUP:set" },
+    { XOSC_BASE + REG_ALIAS_SET_BITS + XOSC_COUNT_OFFSET,   "XOSC_COUNT:set" },
+
+    { XOSC_BASE + REG_ALIAS_CLR_BITS + XOSC_CTRL_OFFSET,    "XOSC_CTRL:clr" },
+    { XOSC_BASE + REG_ALIAS_CLR_BITS + XOSC_STATUS_OFFSET,  "XOSC_STATUS:clr" },
+    { XOSC_BASE + REG_ALIAS_CLR_BITS + XOSC_DORMANT_OFFSET, "XOSC_DORMANT:clr" },
+    { XOSC_BASE + REG_ALIAS_CLR_BITS + XOSC_STARTUP_OFFSET, "XOSC_STARTUP:clr" },
+    { XOSC_BASE + REG_ALIAS_CLR_BITS + XOSC_COUNT_OFFSET,   "XOSC_COUNT:clr" },
+
     //
     // PLL_SYS and PLL_USB registers at addresses 4002_8000 and 4002_c000 respectively
     //
@@ -626,6 +640,40 @@ static const std::map<unsigned, const std::string> periph_reg_name = {
     { PADS_QSPI_BASE + PADS_QSPI_GPIO_QSPI_SD2_OFFSET,      "GPIO_QSPI_SD2" },
     { PADS_QSPI_BASE + PADS_QSPI_GPIO_QSPI_SD3_OFFSET,      "GPIO_QSPI_SD3" },
     { PADS_QSPI_BASE + PADS_QSPI_GPIO_QSPI_SS_OFFSET,       "GPIO_QSPI_SS" },
+
+    //
+    // ARM Cortex-M0+ registers at address e000_0000...e000_ffff
+    //
+    { PPB_BASE + M0PLUS_SYST_CSR_OFFSET,                    "M0PLUS_SYST_CSR" },
+    { PPB_BASE + M0PLUS_SYST_RVR_OFFSET,                    "M0PLUS_SYST_RVR" },
+    { PPB_BASE + M0PLUS_SYST_CVR_OFFSET,                    "M0PLUS_SYST_CVR" },
+    { PPB_BASE + M0PLUS_SYST_CALIB_OFFSET,                  "M0PLUS_SYST_CALIB" },
+    { PPB_BASE + M0PLUS_NVIC_ISER_OFFSET,                   "M0PLUS_NVIC_ISER" },
+    { PPB_BASE + M0PLUS_NVIC_ICER_OFFSET,                   "M0PLUS_NVIC_ICER" },
+    { PPB_BASE + M0PLUS_NVIC_ISPR_OFFSET,                   "M0PLUS_NVIC_ISPR" },
+    { PPB_BASE + M0PLUS_NVIC_ICPR_OFFSET,                   "M0PLUS_NVIC_ICPR" },
+    { PPB_BASE + M0PLUS_NVIC_IPR0_OFFSET,                   "M0PLUS_NVIC_IPR0" },
+    { PPB_BASE + M0PLUS_NVIC_IPR1_OFFSET,                   "M0PLUS_NVIC_IPR1" },
+    { PPB_BASE + M0PLUS_NVIC_IPR2_OFFSET,                   "M0PLUS_NVIC_IPR2" },
+    { PPB_BASE + M0PLUS_NVIC_IPR3_OFFSET,                   "M0PLUS_NVIC_IPR3" },
+    { PPB_BASE + M0PLUS_NVIC_IPR4_OFFSET,                   "M0PLUS_NVIC_IPR4" },
+    { PPB_BASE + M0PLUS_NVIC_IPR5_OFFSET,                   "M0PLUS_NVIC_IPR5" },
+    { PPB_BASE + M0PLUS_NVIC_IPR6_OFFSET,                   "M0PLUS_NVIC_IPR6" },
+    { PPB_BASE + M0PLUS_NVIC_IPR7_OFFSET,                   "M0PLUS_NVIC_IPR7" },
+    { PPB_BASE + M0PLUS_CPUID_OFFSET,                       "M0PLUS_CPUID" },
+    { PPB_BASE + M0PLUS_ICSR_OFFSET,                        "M0PLUS_ICSR" },
+    { PPB_BASE + M0PLUS_VTOR_OFFSET,                        "M0PLUS_VTOR" },
+    { PPB_BASE + M0PLUS_AIRCR_OFFSET,                       "M0PLUS_AIRCR" },
+    { PPB_BASE + M0PLUS_SCR_OFFSET,                         "M0PLUS_SCR" },
+    { PPB_BASE + M0PLUS_CCR_OFFSET,                         "M0PLUS_CCR" },
+    { PPB_BASE + M0PLUS_SHPR2_OFFSET,                       "M0PLUS_SHPR2" },
+    { PPB_BASE + M0PLUS_SHPR3_OFFSET,                       "M0PLUS_SHPR3" },
+    { PPB_BASE + M0PLUS_SHCSR_OFFSET,                       "M0PLUS_SHCSR" },
+    { PPB_BASE + M0PLUS_MPU_TYPE_OFFSET,                    "M0PLUS_MPU_TYPE" },
+    { PPB_BASE + M0PLUS_MPU_CTRL_OFFSET,                    "M0PLUS_MPU_CTRL" },
+    { PPB_BASE + M0PLUS_MPU_RNR_OFFSET,                     "M0PLUS_MPU_RNR" },
+    { PPB_BASE + M0PLUS_MPU_RBAR_OFFSET,                    "M0PLUS_MPU_RBAR" },
+    { PPB_BASE + M0PLUS_MPU_RASR_OFFSET,                    "M0PLUS_MPU_RASR" },
 
     // clang-format on
 };

@@ -37,6 +37,7 @@ private:
     std::unique_ptr<Peripherals> periph2; // ahb
     std::unique_ptr<Peripherals> periph3; // sio
     std::unique_ptr<Peripherals> periph4; // ssi
+    std::unique_ptr<Peripherals> periph5; // ppb
     std::unique_ptr<Timer> timer;
     std::unique_ptr<Debug> debug;
 
