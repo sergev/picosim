@@ -103,6 +103,40 @@ void Peripherals::b_transport(tlm::tlm_generic_payload &trans, sc_core::sc_time 
 }
 
 //
+// Start integer divider operation.
+//
+void Peripherals::div_start(char op)
+{
+    switch (op) {
+    case 's':
+        if (div_dividend == 0x8000'0000 && div_divisor == 0xffff'ffff) {
+            // INT_MIN divided by -1 - overflow.
+            div_quotient = div_dividend;
+            div_remainder = 0;
+        } else if (div_divisor != 0) {
+            div_quotient = (int32_t)div_dividend / (int32_t)div_divisor;
+            div_remainder = (int32_t)div_dividend % (int32_t)div_divisor;
+        } else {
+            // Signed division by zero.
+            div_quotient = ((int32_t)div_dividend >= 0) ? -1 : 1;
+            div_remainder = div_dividend;
+        }
+        break;
+    case 'u':
+        if (div_divisor != 0) {
+            div_quotient = (uint32_t)div_dividend / (uint32_t)div_divisor;
+            div_remainder = (uint32_t)div_dividend % (uint32_t)div_divisor;
+        } else {
+            // Unsigned division by zero.
+            div_quotient = ~0;
+            div_remainder = div_dividend;
+        }
+        break;
+    }
+    div_csr |= SIO_DIV_CSR_DIRTY_BITS;
+}
+
+//
 // Read peripheral register.
 //
 unsigned Peripherals::periph_read(unsigned addr)
@@ -386,22 +420,4 @@ flash_select:
         return;
     }
     *shadow = val;
-}
-
-//
-// Start integer divider operation.
-//
-void Peripherals::div_start(char op)
-{
-    switch (op) {
-    case 's':
-        div_quotient = (int32_t)div_dividend / (int32_t)div_divisor;
-        div_remainder = (int32_t)div_dividend % (int32_t)div_divisor;
-        break;
-    case 'u':
-        div_quotient = (uint32_t)div_dividend / (uint32_t)div_divisor;
-        div_remainder = (uint32_t)div_dividend % (uint32_t)div_divisor;
-        break;
-    }
-    div_csr |= SIO_DIV_CSR_DIRTY_BITS;
 }
