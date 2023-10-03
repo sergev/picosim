@@ -175,6 +175,21 @@ void Simulator::read_elf_file(std::string const &filename)
                 SC_REPORT_ERROR("Simulator", "Cannot write to memory");
                 return;
             }
+            if (segm.p_paddr != segm.p_vaddr) {
+                // Virtual address is different from physical address.
+                // It means this is a .rodata section, which is mirrored
+                // in Flash memory as well.
+                if (debug_write((uint8_t *)buf, segm.p_paddr, segm.p_filesz) != segm.p_filesz) {
+                    Log::err() << filename << ": cannot write segment #" << i
+                               << " to Flash at address 0x" << std::hex << segm.p_paddr << std::dec
+                               << std::endl;
+                    SC_REPORT_ERROR("Simulator", "Cannot write to memory");
+                    return;
+                }
+                Log::out() << "Rodata 0x" << std::hex << segm.p_paddr << "-0x"
+                           << (segm.p_paddr + segm.p_filesz - 1) << " size " << std::dec
+                           << segm.p_filesz << " bytes" << std::endl;
+            }
         }
 
         // Clear BSS.
