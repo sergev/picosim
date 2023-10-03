@@ -14,11 +14,11 @@ TEST(sim, flash_id)
     sim.run(0x1000020c);
     //show_trace();
 
-    EXPECT_EQ(sim.get_stdout(), R"(Flash info:
-Manufacturer = 0xef
-Device = 0x4018
-Serial Number = 0x123456789abcdef0
-)");
+    EXPECT_EQ(sim.get_stdout(),
+        "Flash info:\r\n"
+        "Manufacturer = 0xef\r\n"
+        "Device = 0x4018\r\n"
+        "Serial Number = 0x123456789abcdef0\r\n");
 }
 
 #include "sc_main.cpp"

@@ -210,6 +210,24 @@ unsigned Peripherals::periph_read(unsigned addr)
         // Select Flash interface.
         return ss_ctrl;
 
+    //
+    // Integer Divider.
+    //
+    case SIO_BASE + SIO_DIV_UDIVIDEND_OFFSET:
+    case SIO_BASE + SIO_DIV_SDIVIDEND_OFFSET:
+        return div_dividend;
+    case SIO_BASE + SIO_DIV_UDIVISOR_OFFSET:
+    case SIO_BASE + SIO_DIV_SDIVISOR_OFFSET:
+        return div_divisor;
+    case SIO_BASE + SIO_DIV_QUOTIENT_OFFSET:
+        // Reading from QUOTIENT clears the CSR_DIRTY flag.
+        div_csr &= ~SIO_DIV_CSR_DIRTY_BITS;
+        return div_quotient;
+    case SIO_BASE + SIO_DIV_REMAINDER_OFFSET:
+        return div_remainder;
+    case SIO_BASE + SIO_DIV_CSR_OFFSET:
+        return div_csr;
+
 #if 1
     case IO_QSPI_BASE + IO_QSPI_GPIO_QSPI_SD1_CTRL_OFFSET:
         // Terminate for now.
@@ -337,6 +355,53 @@ flash_select:
         // Print byte on stdout.
         sim.put_char(val);
         return;
+
+    //
+    // Integer Divider.
+    //
+    case SIO_BASE + SIO_DIV_UDIVIDEND_OFFSET:
+        div_dividend = val;
+        div_start('u');
+        return;
+    case SIO_BASE + SIO_DIV_SDIVIDEND_OFFSET:
+        div_dividend = val;
+        div_start('s');
+        return;
+    case SIO_BASE + SIO_DIV_UDIVISOR_OFFSET:
+        div_divisor = val;
+        div_start('u');
+        return;
+    case SIO_BASE + SIO_DIV_SDIVISOR_OFFSET:
+        div_divisor = val;
+        div_start('s');
+        return;
+    case SIO_BASE + SIO_DIV_QUOTIENT_OFFSET:
+        div_quotient = val;
+        return;
+    case SIO_BASE + SIO_DIV_REMAINDER_OFFSET:
+        div_remainder = val;
+        return;
+    case SIO_BASE + SIO_DIV_CSR_OFFSET:
+        // Write to DIV_CSR is ignored.
+        return;
     }
     *shadow = val;
+}
+
+//
+// Start integer divider operation.
+//
+void Peripherals::div_start(char op)
+{
+    switch (op) {
+    case 's':
+        div_quotient = (int32_t)div_dividend / (int32_t)div_divisor;
+        div_remainder = (int32_t)div_dividend % (int32_t)div_divisor;
+        break;
+    case 'u':
+        div_quotient = (uint32_t)div_dividend / (uint32_t)div_divisor;
+        div_remainder = (uint32_t)div_dividend % (uint32_t)div_divisor;
+        break;
+    }
+    div_csr |= SIO_DIV_CSR_DIRTY_BITS;
 }

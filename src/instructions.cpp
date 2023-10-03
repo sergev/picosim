@@ -192,7 +192,13 @@ void Processor::thumb_svc()
         // Interpret Linux syscalls.
         linux_syscall(offset);
     } else {
-        terminate_simulation("Unsupported SVC instruction");
+        // RP2040 mode.
+        if (offset == 1) {
+            // Treat syscall #1 as a legal finish of simulation.
+            sc_core::sc_stop();
+        } else {
+            terminate_simulation("Unsupported SVC instruction");
+        }
     }
 }
 

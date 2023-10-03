@@ -66,5 +66,12 @@ private:
     unsigned clk_ref_ctrl{};
     unsigned ss_ctrl{};
     unsigned m0plus_vtor{0x10000100};
+
+    unsigned div_dividend{};
+    unsigned div_divisor{};
+    unsigned div_quotient{};
+    unsigned div_remainder{};
+    unsigned div_csr{ 1 };
+    void div_start(char op);
 };
 #endif /* __PERIPHERALS_H__ */
