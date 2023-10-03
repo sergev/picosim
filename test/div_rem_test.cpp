@@ -10,8 +10,8 @@ TEST(sim, div_rem)
     sim.capture_stdout();
     sim.read_elf_file(TEST_DIR "/div-rem/div_rem.elf");
 
-    // Jump into _reset_handler, skip .data copying.
-    sim.run(0x1000020c);
+    // Jump into _reset_handler, skip ROM.
+    sim.run(0x100001f6);
     //show_trace();
 
     EXPECT_EQ(sim.get_stdout(),

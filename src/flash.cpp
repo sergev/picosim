@@ -44,9 +44,9 @@ void Simulator::flash_select(bool enable)
     if (flash_enable == enable) {
         return;
     }
-    if (Log::is_verbose()) {
-        Log::out() << "--- " << __func__ << "() " << (enable ? "+++" : "---") << std::endl;
-    }
+    //if (Log::is_verbose()) {
+    //    Log::out() << "--- " << __func__ << "() " << (enable ? "+++" : "---") << std::endl;
+    //}
     flash_enable = enable;
     if (enable) {
         flash_tcount = 0;
@@ -76,16 +76,16 @@ void Simulator::flash_send(unsigned char val)
                 goto ignore;
             break;
         default:
-            // Ignore.
-ignore:     if (Log::is_verbose()) {
-                Log::out() << "--- " << __func__ << "() ignore 0x" << std::hex << (unsigned)val << std::endl;
-            }
+ignore:     // Ignore this byte.
+            //if (Log::is_verbose()) {
+            //    Log::out() << "--- " << __func__ << "() ignore 0x" << std::hex << (unsigned)val << std::endl;
+            //}
             return;
         }
     }
-    if (Log::is_verbose()) {
-        Log::out() << "--- " << __func__ << "() send 0x" << std::hex << (unsigned)val << std::endl;
-    }
+    //if (Log::is_verbose()) {
+    //    Log::out() << "--- " << __func__ << "() send 0x" << std::hex << (unsigned)val << std::endl;
+    //}
 
     // Append data to the transmit buffer.
     flash_buf[flash_tcount] = val;
@@ -139,11 +139,13 @@ unsigned char Simulator::flash_receive()
         }
         flash_rcount++;
         break;
-    default:                        /* Ignore */
+    default:
+        // Ignore unsupported operation.
         break;
     }
-    if (Log::is_verbose()) {
-        Log::out() << "--- " << __func__ << "() reply 0x" << std::hex << (unsigned)reply << std::endl;
-    }
+
+    //if (Log::is_verbose()) {
+    //    Log::out() << "--- " << __func__ << "() reply 0x" << std::hex << (unsigned)reply << std::endl;
+    //}
     return reply;
 }

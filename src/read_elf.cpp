@@ -139,20 +139,20 @@ void Simulator::read_elf_file(std::string const &filename)
         if (Log::is_verbose()) {
             if (segm.p_flags & PF_X) {
                 // Executable code.
-                Log::out() << "Code 0x" << std::hex << segm.p_vaddr << "-0x"
-                           << (segm.p_vaddr + segm.p_memsz - 1) << " size " << std::dec
+                Log::out() << "Code 0x" << std::hex << segm.p_paddr << "-0x"
+                           << (segm.p_paddr + segm.p_memsz - 1) << " size " << std::dec
                            << segm.p_memsz << " bytes" << std::endl;
 
             } else if (segm.p_filesz > 0) {
                 // Initialized data.
-                Log::out() << "Data 0x" << std::hex << segm.p_vaddr << "-0x"
-                           << (segm.p_vaddr + segm.p_filesz - 1) << " size " << std::dec
+                Log::out() << "Data 0x" << std::hex << segm.p_paddr << "-0x"
+                           << (segm.p_paddr + segm.p_filesz - 1) << " size " << std::dec
                            << segm.p_filesz << " bytes" << std::endl;
 
                 if (segm.p_memsz > segm.p_filesz) {
                     // Zeroed data.
-                    Log::out() << "BSS  0x" << (segm.p_vaddr + segm.p_filesz) << "-0x"
-                               << (segm.p_vaddr + segm.p_memsz - 1) << " size " << std::dec
+                    Log::out() << "BSS  0x" << (segm.p_paddr + segm.p_filesz) << "-0x"
+                               << (segm.p_paddr + segm.p_memsz - 1) << " size " << std::dec
                                << (segm.p_memsz - segm.p_filesz) << " bytes" << std::endl;
                 }
             }
@@ -168,34 +168,19 @@ void Simulator::read_elf_file(std::string const &filename)
                 SC_REPORT_ERROR("Simulator", "Cannot read segment");
                 return;
             }
-            if (debug_write((uint8_t *)buf, segm.p_vaddr, segm.p_filesz) != segm.p_filesz) {
+            if (debug_write((uint8_t *)buf, segm.p_paddr, segm.p_filesz) != segm.p_filesz) {
                 Log::err() << filename << ": cannot write segment #" << i
-                           << " to memory at address 0x" << std::hex << segm.p_vaddr << std::dec
+                           << " to memory at address 0x" << std::hex << segm.p_paddr << std::dec
                            << std::endl;
                 SC_REPORT_ERROR("Simulator", "Cannot write to memory");
                 return;
-            }
-            if (segm.p_paddr != segm.p_vaddr) {
-                // Virtual address is different from physical address.
-                // It means this is a .rodata section, which is mirrored
-                // in Flash memory as well.
-                if (debug_write((uint8_t *)buf, segm.p_paddr, segm.p_filesz) != segm.p_filesz) {
-                    Log::err() << filename << ": cannot write segment #" << i
-                               << " to Flash at address 0x" << std::hex << segm.p_paddr << std::dec
-                               << std::endl;
-                    SC_REPORT_ERROR("Simulator", "Cannot write to memory");
-                    return;
-                }
-                Log::out() << "Rodata 0x" << std::hex << segm.p_paddr << "-0x"
-                           << (segm.p_paddr + segm.p_filesz - 1) << " size " << std::dec
-                           << segm.p_filesz << " bytes" << std::endl;
             }
         }
 
         // Clear BSS.
         if (segm.p_memsz > segm.p_filesz) {
             unsigned nbytes = segm.p_memsz - segm.p_filesz;
-            unsigned addr   = segm.p_vaddr + segm.p_filesz;
+            unsigned addr   = segm.p_paddr + segm.p_filesz;
             char buf[nbytes];
             std::memset(buf, 0, nbytes);
             if (debug_write((uint8_t *)buf, addr, nbytes) != nbytes) {
