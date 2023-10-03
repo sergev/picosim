@@ -9,7 +9,7 @@ TEST(sim, uart)
     sim.read_elf_file(TEST_DIR "/hello-uart/hello_uart.elf");
     sim.capture_stdout();
     //enable_trace();
-#if 1
+#if 0
     // TODO: remove this when Flash i/o is ready
     sim.run(0x1000020c); // jump into Flash, skip .data copying
 #else

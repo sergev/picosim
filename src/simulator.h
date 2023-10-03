@@ -54,7 +54,9 @@ private:
     bool flash_enable{};
     unsigned flash_tcount{};
     unsigned flash_rcount{};
-    uint8_t flash_tbuf[4];
+    unsigned flash_read_addr{};
+    unsigned flash_word{};
+    uint8_t flash_buf[4]{};
 
 public:
     Simulator(const sc_core::sc_module_name &config = "linux", bool debug_enable = false);

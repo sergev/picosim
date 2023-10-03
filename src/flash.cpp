@@ -20,6 +20,7 @@
 //  Read Unique ID Number   0x4b    Dummy   Dummy   Dummy   Dummy   ID7-0   continuous
 //
 #include "simulator.h"
+#include "rp2040/addressmap.h"
 
 // Fake serial number of the Flash chip.
 static char flash_serial_number[9] = "\x12\x34\x56\x78\x9a\xbc\xde\xf0";
@@ -61,13 +62,17 @@ void Simulator::flash_send(unsigned char val)
 
     if (flash_tcount > 0) {
         // Check packet length.
-        switch (flash_tbuf[0]) {
+        switch (flash_buf[0]) {
         case FLASHCMD_READ_JEDEC_ID: // Read JEDEC ID
-            if (flash_tcount >= 3)
+            if (flash_tcount >= 1)
                 goto ignore;
             break;
         case FLASHCMD_READ_UNIQ_ID: // Read Unique ID Number
             if (flash_tcount >= 1)
+                goto ignore;
+            break;
+        case FLASHCMD_READ_DATA: // Read Data
+            if (flash_tcount >= 4)
                 goto ignore;
             break;
         default:
@@ -83,7 +88,7 @@ ignore:     if (Log::is_verbose()) {
     }
 
     // Append data to the transmit buffer.
-    flash_tbuf[flash_tcount] = val;
+    flash_buf[flash_tcount] = val;
     flash_tcount++;
 }
 
@@ -94,7 +99,7 @@ unsigned char Simulator::flash_receive()
     }
 
     unsigned char reply = 0;
-    switch (flash_tbuf[0]) {
+    switch (flash_buf[0]) {
     case FLASHCMD_READ_JEDEC_ID: // Read JEDEC ID
         switch (flash_rcount) {
         case 1:
@@ -112,6 +117,25 @@ unsigned char Simulator::flash_receive()
     case FLASHCMD_READ_UNIQ_ID: // Read Unique ID Number
         if (flash_rcount >= 5 && flash_rcount < 13) {
             reply = flash_serial_number[flash_rcount - 5];
+        }
+        flash_rcount++;
+        break;
+    case FLASHCMD_READ_DATA: // Read Data
+        if (flash_rcount == 4) {
+            flash_read_addr = (flash_buf[1] << 16) | (flash_buf[2] << 8) | flash_buf[3];
+            if (flash_read_addr & 3) {
+                flash_word = cpu.data_read32(flash_read_addr + XIP_BASE) >> ((flash_read_addr & 3) * 8);
+            }
+        }
+        if (flash_rcount >= 4) {
+            if (flash_read_addr % 4 == 0) {
+                // Read next word.
+                flash_word = cpu.data_read32(flash_read_addr + XIP_BASE);
+            }
+            reply = (uint8_t) flash_word;
+
+            flash_read_addr++;
+            flash_word >>= 8;
         }
         flash_rcount++;
         break;
