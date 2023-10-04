@@ -55,7 +55,6 @@
 
 class Memory;
 class Peripherals;
-class Timer;
 
 class Bus_Controller : public sc_core::sc_module {
 public:
@@ -73,7 +72,6 @@ public:
     void rom_bind(tlm_utils::simple_target_socket<Memory> &socket);
     void flash_bind(tlm_utils::simple_target_socket<Memory> &socket);
     void periph_bind(tlm_utils::simple_target_socket<Peripherals> &socket);
-    void timer_bind(tlm_utils::simple_target_socket<Timer> &socket); // TODO: remove
 
 private:
     // Outgoing requests to SoC memories and peripherals.
@@ -81,7 +79,6 @@ private:
     std::unique_ptr<tlm_utils::simple_initiator_socket<Bus_Controller>> rom_socket;
     std::unique_ptr<tlm_utils::simple_initiator_socket<Bus_Controller>> flash_socket;
     std::unique_ptr<tlm_utils::simple_initiator_socket<Bus_Controller>> periph_socket;
-    std::unique_ptr<tlm_utils::simple_initiator_socket<Bus_Controller>> timer_socket;
 
     // Only SRAM is enabled.
     bool linux_mode{};

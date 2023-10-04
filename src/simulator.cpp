@@ -48,10 +48,7 @@ Simulator::Simulator(const sc_core::sc_module_name &name, bool debug_enable)
         periph = std::make_unique<Peripherals>(*this, "Periph");
         bus.periph_bind(periph->socket);
 
-        // TODO: move timer to peripherals
-        timer = std::make_unique<Timer>("Timer");
-        bus.timer_bind(timer->socket);
-        cpu.irq_bind(timer->irq_line);
+        //TODO: cpu.irq_bind(timer->irq_line);
 
         // Load ROM.
         // Keep Flash memory writable, until binary is loaded.

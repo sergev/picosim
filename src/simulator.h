@@ -7,7 +7,6 @@
 #include "phys_memory.h"
 #include "processor.h"
 #include "systemc"
-#include "timer.h"
 
 /**
  * @class Simulator
@@ -27,7 +26,6 @@ private:
     std::unique_ptr<Memory> flash;
     std::unique_ptr<Memory> sram;
     std::unique_ptr<Peripherals> periph;
-    std::unique_ptr<Timer> timer;
     std::unique_ptr<Debug> debug;
 
     // Entry address (PC) read from ELF file.

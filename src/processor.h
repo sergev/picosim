@@ -11,8 +11,6 @@
 #include "tlm_utils/simple_initiator_socket.h"
 #include "tlm_utils/tlm_quantumkeeper.h"
 
-class Timer;
-
 /**
  * @brief ISC_V CPU model
  * @param name name of the module
@@ -35,7 +33,7 @@ public:
      * @brief IRQ line socket
      */
     std::unique_ptr<tlm_utils::simple_target_socket<Processor>> irq_line_socket;
-    void irq_bind(tlm_utils::simple_initiator_socket<Timer> &socket);
+    //TODO: void irq_bind(tlm_utils::simple_initiator_socket<Timer> &socket);
 
     /**
      * @brief Constructor

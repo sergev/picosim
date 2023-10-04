@@ -53,12 +53,6 @@ void Bus_Controller::periph_bind(tlm_utils::simple_target_socket<Peripherals> &s
     periph_socket->bind(socket);
 }
 
-void Bus_Controller::timer_bind(tlm_utils::simple_target_socket<Timer> &socket)
-{
-    timer_socket = std::make_unique<tlm_utils::simple_initiator_socket<Bus_Controller>>("timer");
-    timer_socket->bind(socket);
-}
-
 //
 // Fetch request.
 //
