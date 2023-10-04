@@ -1,11 +1,3 @@
-/*!
- \file log.cpp
- \brief Class to manage Log
- \author Màrius Montón
- \date Aug 2018
- */
-// SPDX-License-Identifier: GPL-3.0-or-later
-
 #include "log.h"
 
 //

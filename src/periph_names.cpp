@@ -589,8 +589,6 @@ static const std::map<unsigned, const std::string> periph_reg_name = {
 //
 std::string Peripherals::reg_name(unsigned addr)
 {
-    addr += base_address;
-
     if (periph_reg_name.count(addr) > 0) {
         return periph_reg_name.at(addr);
     }

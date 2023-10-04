@@ -12,27 +12,67 @@
 #include "rp2040/m0plus.h"
 #include "rp2040/uart.h"
 
-Peripherals::Peripherals(Simulator &s, sc_core::sc_module_name const &name, unsigned base_addr, unsigned last_addr)
-    : sc_module(name),
-      sim(s),
-      base_address(base_addr),
-      size_bytes((last_addr + 1 - base_addr) * 1024)
+Peripherals::Peripherals(Simulator &s, sc_core::sc_module_name const &name)
+    : sc_module(name), sim(s)
 {
     // Register callbacks for incoming interface method calls
     socket.register_b_transport(this, &Peripherals::b_transport);
 
     // Use calloc() to allocate zer-initialized memory efficiently,
     // using OS-specific mechanisms.
-    mem = (uint8_t *)calloc(size_bytes, 1);
-    if (mem == nullptr) {
-        SC_REPORT_ERROR(name, "Cannot allocate memory");
+    mem_sysinfo = (uint8_t *)calloc(RP2040_SYSINFO_LAST + 1 - RP2040_SYSINFO_BASE, 1);
+    mem_ahb = (uint8_t *)calloc(RP2040_AHB_LAST + 1 - RP2040_AHB_BASE, 1);
+    mem_sio = (uint8_t *)calloc(RP2040_SIO_LAST + 1 - RP2040_SIO_BASE, 1);
+    mem_ssi = (uint8_t *)calloc(RP2040_SSI_LAST + 1 - RP2040_SSI_BASE, 1);
+    mem_ppb = (uint8_t *)calloc(RP2040_PPB_LAST + 1 - RP2040_PPB_BASE, 1);
+    mem_xip = (uint8_t *)calloc(RP2040_XIP_LAST + 1 - RP2040_XIP_BASE, 1);
+
+    if (!mem_sysinfo || !mem_ahb || !mem_sio || !mem_ssi || !mem_ppb || !mem_xip) {
+        SC_REPORT_ERROR(name, "Cannot allocate memory for peripherals");
         return;
     }
 }
 
 Peripherals::~Peripherals()
 {
-    free(mem);
+    free(mem_sysinfo);
+    free(mem_ahb);
+    free(mem_sio);
+    free(mem_ssi);
+    free(mem_ppb);
+    free(mem_xip);
+}
+
+//
+// Get shadow memory location for given register address.
+//
+uint32_t &Peripherals::get_shadow(unsigned addr)
+{
+    // Is this correct?
+    addr &= ~(REG_ALIAS_SET_BITS | REG_ALIAS_CLR_BITS | REG_ALIAS_XOR_BITS);
+
+    if (addr >= RP2040_SYSINFO_BASE && addr <= RP2040_SYSINFO_LAST) {
+        return *(uint32_t *)&mem_sysinfo[addr - RP2040_SYSINFO_BASE];
+    }
+    if (addr >= RP2040_AHB_BASE && addr <= RP2040_AHB_LAST) {
+        return *(uint32_t *)&mem_ahb[addr - RP2040_AHB_BASE];
+    }
+    if (addr >= RP2040_SIO_BASE && addr <= RP2040_SIO_LAST) {
+        return *(uint32_t *)&mem_sio[addr - RP2040_SIO_BASE];
+    }
+    if (addr >= RP2040_SSI_BASE && addr <= RP2040_SSI_LAST) {
+        return *(uint32_t *)&mem_ssi[addr - RP2040_SSI_BASE];
+    }
+    if (addr >= RP2040_PPB_BASE && addr <= RP2040_PPB_LAST) {
+        return *(uint32_t *)&mem_ppb[addr - RP2040_PPB_BASE];
+    }
+    if (addr >= RP2040_XIP_BASE && addr <= RP2040_XIP_LAST) {
+        return *(uint32_t *)&mem_xip[addr - RP2040_XIP_BASE];
+    }
+    // Cannot happen.
+    std::stringstream msg;
+    msg << "Bad register address in get_shadow(): 0x" << std::hex << addr;
+    throw std::runtime_error(msg.str());
 }
 
 void Peripherals::b_transport(tlm::tlm_generic_payload &trans, sc_core::sc_time &delay)
@@ -141,9 +181,7 @@ void Peripherals::div_start(char op)
 //
 unsigned Peripherals::periph_read(unsigned addr)
 {
-    auto shadow = (uint32_t *)&mem[addr];
-
-    switch (addr + base_address) {
+    switch (addr) {
 
     case RESETS_BASE + RESETS_RESET_DONE_OFFSET:
         return resets_reset_done;
@@ -270,7 +308,10 @@ unsigned Peripherals::periph_read(unsigned addr)
         break;
 #endif
     }
-    return *shadow;
+
+    // Read from shadow memory.
+    auto &shadow = get_shadow(addr);
+    return shadow;
 }
 
 //
@@ -278,9 +319,7 @@ unsigned Peripherals::periph_read(unsigned addr)
 //
 void Peripherals::periph_write(unsigned addr, unsigned val)
 {
-    auto shadow = (uint32_t *)&mem[addr];
-
-    switch (addr + base_address) {
+    switch (addr) {
     case RESETS_BASE + RESETS_RESET_OFFSET:
         // Set RESET value - invert as RESET_DONE value.
         resets_reset_done = ~val;
@@ -419,5 +458,8 @@ flash_select:
         // Write to DIV_CSR is ignored.
         return;
     }
-    *shadow = val;
+
+    // Store to shadow memory.
+    auto &shadow = get_shadow(addr);
+    shadow = val;
 }

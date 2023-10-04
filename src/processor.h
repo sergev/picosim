@@ -1,11 +1,3 @@
-/*!
- \file processor.h
- \brief Main CPU class
- \author Màrius Montón
- \date August 2018
- */
-// SPDX-License-Identifier: GPL-3.0-or-later
-
 #ifndef CPU_BASE_H
 #define CPU_BASE_H
 
@@ -50,7 +42,7 @@ public:
      * @param name Module name
      * @param debug To start debugging
      */
-    Processor(sc_core::sc_module_name name, bool debug);
+    Processor(sc_core::sc_module_name name = "cpu", bool debug = false, const std::string &config = "linux");
 
     //
     // Fetch two-byte value at given address.
@@ -71,11 +63,6 @@ public:
 
     void raise_exception(uint32_t cause, uint32_t inst);
     void terminate_simulation(const std::string &reason) const;
-
-    //
-    // Allow Linux syscalls.
-    //
-    void set_linux_mode(bool on) { linux_mode = on; }
 
     /**
      * @brief Get statistics counters.

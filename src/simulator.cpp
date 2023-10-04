@@ -1,47 +1,11 @@
 #include "simulator.h"
 
 //
-// Address Map from RP2040 Datasheet, page 24.
-//
-#define RP2040_ROM_BASE 0x00000000 // ROM_BASE
-#define RP2040_ROM_LAST 0x00003fff // 16 kbytes
-
-#define RP2040_FLASH_BASE 0x10000000 // XIP_BASE
-#define RP2040_FLASH_LAST 0x101fffff // 2 Mbytes
-
-#define RP2040_XIP_BASE 0x14000000 // XIP_CTRL_BASE
-#define RP2040_XIP_LAST 0x1400001f // 32 bytes
-
-#define RP2040_SSI_BASE 0x18000000 // XIP_SSI_BASE
-#define RP2040_SSI_LAST 0x180000ff // 256 bytes
-
-#define RP2040_SRAM_BASE 0x20000000 // SRAM_BASE
-#define RP2040_SRAM_LAST 0x20041fff // 256 + 8 kbytes
-
-#define RP2040_SYSINFO_BASE 0x40000000 // SYSINFO_BASE
-#define RP2040_SYSINFO_LAST 0x4007ffff // 512 kbytes
-
-#define RP2040_AHB_BASE 0x50000000 // DMA_BASE
-#define RP2040_AHB_LAST 0x504fffff // 5 Mbytes
-
-#define RP2040_SIO_BASE 0xd0000000 // SIO_BASE
-#define RP2040_SIO_LAST 0xd00001ff // 512 bytes
-
-#define RP2040_PPB_BASE 0xe0000000 // PPB_BASE
-#define RP2040_PPB_LAST 0xe000ffff // 64 kbytes
-
-//
-// Address Map of binaries compiled for Linux with Newlib.
-//
-#define LINUX_SRAM_BASE 0x00008000 // skip 32 kbytes - newlib binary
-#define LINUX_SRAM_LAST  0x0007ffff // 480 kbytes
-
-//
 // Initialize the chip.
 //
 Simulator::Simulator(const sc_core::sc_module_name &name, bool debug_enable)
-    : sc_module(name), cpu("Processor", debug_enable), bus("BusCtrl"),
-      config((const char*)name)
+    : sc_module(name), config((const char*)name), cpu("Processor", debug_enable, config),
+      bus("BusCtrl", config)
 {
     // Connect CPU to the bus controller.
     cpu.instr_bus.bind(bus.cpu_instr_socket);
@@ -62,9 +26,7 @@ Simulator::Simulator(const sc_core::sc_module_name &name, bool debug_enable)
         //
         // Internal SRAM for Linux mode - 480 kbytes
         sram = std::make_unique<Memory>("SRAM", LINUX_SRAM_BASE, LINUX_SRAM_LAST);
-        bus.sram_bind(sram->socket, LINUX_SRAM_BASE, LINUX_SRAM_LAST);
-
-        cpu.set_linux_mode(true);
+        bus.sram_bind(sram->socket);
 
     } else if (config == "pico") {
         //
@@ -72,34 +34,19 @@ Simulator::Simulator(const sc_core::sc_module_name &name, bool debug_enable)
         //
         // Internal SRAM - 256+8 kbytes
         sram = std::make_unique<Memory>("SRAM", RP2040_SRAM_BASE, RP2040_SRAM_LAST);
-        bus.sram_bind(sram->socket, RP2040_SRAM_BASE, RP2040_SRAM_LAST);
+        bus.sram_bind(sram->socket);
 
         // Internal ROM - 16 kbytes
         rom = std::make_unique<Memory>("ROM", RP2040_ROM_BASE, RP2040_ROM_LAST);
-        bus.rom_bind(rom->socket, RP2040_ROM_BASE, RP2040_ROM_LAST);
+        bus.rom_bind(rom->socket);
 
         // Flash memory - 2048 kbytes
         flash = std::make_unique<Memory>("Flash", RP2040_FLASH_BASE, RP2040_FLASH_LAST);
-        bus.flash_bind(flash->socket, RP2040_FLASH_BASE, RP2040_FLASH_LAST);
+        bus.flash_bind(flash->socket);
 
         // Peripherals
-        periph1 = std::make_unique<Peripherals>(*this, "Sysinfo", RP2040_SYSINFO_BASE, RP2040_SYSINFO_LAST);
-        bus.periph1_bind(periph1->socket, RP2040_SYSINFO_BASE, RP2040_SYSINFO_LAST, "sysinfo");
-
-        periph2 = std::make_unique<Peripherals>(*this, "Ahb", RP2040_AHB_BASE, RP2040_AHB_LAST);
-        bus.periph2_bind(periph2->socket, RP2040_AHB_BASE, RP2040_AHB_LAST, "ahb");
-
-        periph3 = std::make_unique<Peripherals>(*this, "Sio", RP2040_SIO_BASE, RP2040_SIO_LAST);
-        bus.periph3_bind(periph3->socket, RP2040_SIO_BASE, RP2040_SIO_LAST, "sio");
-
-        periph4 = std::make_unique<Peripherals>(*this, "Ssi", RP2040_SSI_BASE, RP2040_SSI_LAST);
-        bus.periph4_bind(periph4->socket, RP2040_SSI_BASE, RP2040_SSI_LAST, "ssi");
-
-        periph5 = std::make_unique<Peripherals>(*this, "Ppb", RP2040_PPB_BASE, RP2040_PPB_LAST);
-        bus.periph5_bind(periph5->socket, RP2040_PPB_BASE, RP2040_PPB_LAST, "ppb");
-
-        periph6 = std::make_unique<Peripherals>(*this, "Xip", RP2040_XIP_BASE, RP2040_XIP_LAST);
-        bus.periph6_bind(periph6->socket, RP2040_XIP_BASE, RP2040_XIP_LAST, "xip");
+        periph = std::make_unique<Peripherals>(*this, "Periph");
+        bus.periph_bind(periph->socket);
 
         // TODO: move timer to peripherals
         timer = std::make_unique<Timer>("Timer");

@@ -1,11 +1,3 @@
-/*!
- \file processor.h
- \brief Main CPU class
- \author Màrius Montón
- \date August 2018
- */
-// SPDX-License-Identifier: GPL-3.0-or-later
-
 #ifndef SIMULATOR_H
 #define SIMULATOR_H
 
@@ -26,6 +18,7 @@
  */
 class Simulator : public sc_core::sc_module {
 private:
+    const std::string config;
     Processor cpu;
     Bus_Controller bus;
 
@@ -33,16 +26,9 @@ private:
     std::unique_ptr<Memory> rom;
     std::unique_ptr<Memory> flash;
     std::unique_ptr<Memory> sram;
-    std::unique_ptr<Peripherals> periph1; // sysinfo
-    std::unique_ptr<Peripherals> periph2; // ahb
-    std::unique_ptr<Peripherals> periph3; // sio
-    std::unique_ptr<Peripherals> periph4; // ssi
-    std::unique_ptr<Peripherals> periph5; // ppb
-    std::unique_ptr<Peripherals> periph6; // xip
+    std::unique_ptr<Peripherals> periph;
     std::unique_ptr<Timer> timer;
     std::unique_ptr<Debug> debug;
-
-    const std::string config;
 
     // Entry address (PC) read from ELF file.
     uint32_t entry_address{ 0 };

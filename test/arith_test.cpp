@@ -4,7 +4,7 @@
 
 TEST(arith, add_with_carry)
 {
-    Processor cpu("cpu", false);
+    Processor cpu;
 
     EXPECT_EQ(cpu.get_sysreg(Processor::SYSM_XPSR), 0);
 

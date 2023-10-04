@@ -1,11 +1,3 @@
-/*!
- \file PhysMemory.h
- \brief Basic TLM-2 memory model
- \author Màrius Montón
- \date August 2018
- */
-// SPDX-License-Identifier: GPL-3.0-or-later
-
 #ifndef __MEMORY_H__
 #define __MEMORY_H__
 

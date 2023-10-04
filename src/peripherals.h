@@ -21,26 +21,25 @@ public:
     tlm_utils::simple_target_socket<Peripherals> socket{ "socket" };
 
     // Allocate memory of given size.
-    explicit Peripherals(Simulator &s, sc_core::sc_module_name const &name, unsigned base_addr, unsigned last_addr);
+    explicit Peripherals(Simulator &s, sc_core::sc_module_name const &name);
 
     // Deallocate.
     ~Peripherals() override;
 
-    // Set base address.
-    void set_base(unsigned address) { base_address = address; }
-
 private:
     // Shadow storage, allocated via calloc().
-    uint8_t *mem;
+    uint8_t *mem_sysinfo;
+    uint8_t *mem_ahb;
+    uint8_t *mem_sio;
+    uint8_t *mem_ssi;
+    uint8_t *mem_ppb;
+    uint8_t *mem_xip;
 
     // Reference to simulator.
     Simulator &sim;
 
-    // Base address in memory map.
-    unsigned base_address;
-
-    // Size of the memory in bytes.
-    unsigned size_bytes;
+    // Get shadow memory.
+    uint32_t &get_shadow(unsigned addr);
 
     // Get register name by address.
     std::string reg_name(unsigned addr);
