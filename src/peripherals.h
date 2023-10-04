@@ -72,5 +72,8 @@ private:
     unsigned div_remainder{};
     unsigned div_csr{ 1 };
     void div_start(char op);
+
+    unsigned nvic_enable_mask{};
+    unsigned nvic_pending_mask{};
 };
 #endif /* __PERIPHERALS_H__ */

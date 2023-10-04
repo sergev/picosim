@@ -271,9 +271,6 @@ unsigned Peripherals::periph_read(unsigned addr)
         return 1 << index;
     }
 
-    case PPB_BASE + M0PLUS_VTOR_OFFSET:
-        return m0plus_vtor;
-
     case XIP_SSI_BASE + SSI_DR0_OFFSET:
         // TODO: receive data from Flash interface
         return sim.flash_receive();
@@ -299,6 +296,18 @@ unsigned Peripherals::periph_read(unsigned addr)
         return div_remainder;
     case SIO_BASE + SIO_DIV_CSR_OFFSET:
         return div_csr;
+
+    //
+    // Interrupt Controller.
+    //
+    case PPB_BASE + M0PLUS_VTOR_OFFSET:
+        return m0plus_vtor;
+    case PPB_BASE + M0PLUS_NVIC_ISER_OFFSET: // Interrupt Set-Enable Register
+    case PPB_BASE + M0PLUS_NVIC_ICER_OFFSET: // Interrupt Clear-Enable Register
+        return nvic_enable_mask;
+    case PPB_BASE + M0PLUS_NVIC_ISPR_OFFSET: // Interrupt Set-Pending Register
+    case PPB_BASE + M0PLUS_NVIC_ICPR_OFFSET: // Interrupt Clear-Pending Register
+        return nvic_pending_mask;
 
 #if 1
     case IO_QSPI_BASE + IO_QSPI_GPIO_QSPI_SD1_CTRL_OFFSET:
@@ -396,10 +405,6 @@ void Peripherals::periph_write(unsigned addr, unsigned val)
         return;
     }
 
-    case PPB_BASE + M0PLUS_VTOR_OFFSET:
-        m0plus_vtor = val;
-        return;
-
     case XIP_SSI_BASE + SSI_DR0_OFFSET:
         // Send data to Flash interface.
         sim.flash_send(val);
@@ -456,6 +461,25 @@ flash_select:
         return;
     case SIO_BASE + SIO_DIV_CSR_OFFSET:
         // Write to DIV_CSR is ignored.
+        return;
+
+    //
+    // Interrupt Controller.
+    //
+    case PPB_BASE + M0PLUS_VTOR_OFFSET:
+        m0plus_vtor = val;
+        return;
+    case PPB_BASE + M0PLUS_NVIC_ISER_OFFSET: // Interrupt Set-Enable Register
+        nvic_enable_mask |= val;
+        return;
+    case PPB_BASE + M0PLUS_NVIC_ICER_OFFSET: // Interrupt Clear-Enable Register
+        nvic_enable_mask &= ~val;
+        return;
+    case PPB_BASE + M0PLUS_NVIC_ISPR_OFFSET: // Interrupt Set-Pending Register
+        nvic_pending_mask |= val;
+        return;
+    case PPB_BASE + M0PLUS_NVIC_ICPR_OFFSET: // Interrupt Clear-Pending Register
+        nvic_pending_mask &= ~val;
         return;
     }
 
