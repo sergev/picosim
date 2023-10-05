@@ -13,9 +13,9 @@ TEST(opcode, branch_link)
 
     EXPECT_EQ(sim.get_instructions_executed(), 7);
     EXPECT_EQ(sim.get_pc(), 0x801a);
-    EXPECT_EQ(sim.get_reg(1), 0x8004);
-    EXPECT_EQ(sim.get_reg(2), 0x8014);
-    EXPECT_EQ(sim.get_reg(3), 0x800c);
+    EXPECT_EQ(sim.get_reg(1), 0x8004 | 1);
+    EXPECT_EQ(sim.get_reg(2), 0x8014 | 1);
+    EXPECT_EQ(sim.get_reg(3), 0x800c | 1);
 }
 
 #include "sc_main.cpp"

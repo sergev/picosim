@@ -510,7 +510,7 @@ void Processor::thumb_bx_blx()
 
     if (opcode & 0x80) {
         // BLX instruction.
-        set_reg(Registers::LR, next_pc);
+        set_reg(Registers::LR, next_pc | 1);
     } else {
         // BX instruction.
     }
@@ -980,7 +980,7 @@ void Processor::thumb_branch_link()
     offset |= b21 | b22;
 
     // BL instruction.
-    set_reg(Registers::LR, next_pc);
+    set_reg(Registers::LR, next_pc | 1);
     next_pc = get_pc() + 4 + (offset << 1);
 }
 

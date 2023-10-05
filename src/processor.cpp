@@ -229,7 +229,8 @@ void Processor::cpu_enter_exception(int irq)
 
     // Jump to appropriate vector.
     unsigned vector = data_read32(m0plus_vtor + (irq + 16) * 4);
-    set_pc(vector);
+    set_pc(vector & ~1);
+    set_reg(Registers::SP, sp);
 }
 
 //

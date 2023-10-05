@@ -9,9 +9,7 @@ TEST(sim, force_irq_unaligned)
     //enable_trace();
     sim.capture_stdout();
     sim.read_elf_file(TEST_DIR "/force-irq-unaligned/force_irq_unaligned.elf");
-
-    // Jump into _reset_handler, skip ROM.
-    sim.run(0x100001f6);
+    sim.run();
     //show_trace();
 
     EXPECT_EQ(sim.get_stdout(),
