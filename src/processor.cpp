@@ -209,11 +209,11 @@ void Processor::cpu_enter_exception(int irq)
     if (sp & 4) {
         // Unaligned stack.
         sp -= 8;
-        data_write32(sp, xpsr.u32 | 0x200); // Set bit 9 of xSPR
+        data_write32(sp, xpsr.u32 | 0x0100'0200); // Set bit 9 and Thumb bit
     } else {
         // Stack is aligned.
         sp -= 4;
-        data_write32(sp, xpsr.u32);
+        data_write32(sp, xpsr.u32 | 0x0100'0000); // Set Thumb bit
     }
     sp -= 4;
     data_write32(sp, get_pc());
