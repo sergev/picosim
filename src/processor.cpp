@@ -180,8 +180,56 @@ void Processor::cpu_process_interrupt()
 //
 void Processor::cpu_enter_exception(int irq)
 {
-    //TODO
-    terminate_simulation("Exceptions not supported yet");
+    if (Log::is_verbose()) {
+        auto &out = Log::out();
+        switch (irq) {
+        case NMI_EXCEPTION:
+            out << "----- NMI Exception -----" << std::endl;
+            break;
+        case HARDFAULT_EXCEPTION:
+            out << "----- HardFault Exception -----" << std::endl;
+            break;
+        case SVCALL_EXCEPTION:
+            out << "----- SVCall Exception -----" << std::endl;
+            break;
+        case PENDSV_EXCEPTION:
+            out << "----- PendSV Exception -----" << std::endl;
+            break;
+        case SYSTICK_EXCEPTION:
+            out << "----- SysTick Exception -----" << std::endl;
+            break;
+        default:
+            out << "----- Interrupt #" << irq << " -----" << std::endl;
+            break;
+        }
+    }
+
+    // Save registers on stack.
+    unsigned sp = get_reg(Registers::SP);
+    sp -= 4;
+    data_write32(sp, xpsr.u32);
+    sp -= 4;
+    data_write32(sp, get_pc());
+    sp -= 4;
+    data_write32(sp, get_reg(Registers::LR));
+    sp -= 4;
+    data_write32(sp, get_reg(12));
+    sp -= 4;
+    data_write32(sp, get_reg(3));
+    sp -= 4;
+    data_write32(sp, get_reg(2));
+    sp -= 4;
+    data_write32(sp, get_reg(1));
+    sp -= 4;
+    data_write32(sp, get_reg(0));
+
+    // Set EXC_RETURN value.
+    unsigned exc_return = 0xfffffff9; // TODO: select based on mode and stack
+    set_reg(Registers::LR, exc_return);
+
+    // Jump to appropriate vector.
+    unsigned vector = data_read32(m0plus_vtor + (irq + 16) * 4);
+    set_pc(vector);
 }
 
 //
