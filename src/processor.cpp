@@ -206,8 +206,15 @@ void Processor::cpu_enter_exception(int irq)
 
     // Save registers on stack.
     unsigned sp = get_reg(Registers::SP);
-    sp -= 4;
-    data_write32(sp, xpsr.u32);
+    if (sp & 4) {
+        // Unaligned stack.
+        sp -= 8;
+        data_write32(sp, xpsr.u32 | 0x200); // Set bit 9 of xSPR
+    } else {
+        // Stack is aligned.
+        sp -= 4;
+        data_write32(sp, xpsr.u32);
+    }
     sp -= 4;
     data_write32(sp, get_pc());
     sp -= 4;
