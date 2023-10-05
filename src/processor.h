@@ -11,10 +11,11 @@
 #include "tlm_utils/simple_initiator_socket.h"
 #include "tlm_utils/tlm_quantumkeeper.h"
 
-/**
- * @brief ISC_V CPU model
- * @param name name of the module
- */
+class Simulator;
+
+//
+// RP2040 CPU model
+//
 class Processor : public sc_core::sc_module {
     SC_HAS_PROCESS(Processor);
 
@@ -40,7 +41,10 @@ public:
      * @param name Module name
      * @param debug To start debugging
      */
-    Processor(sc_core::sc_module_name name = "cpu", bool debug = false, const std::string &config = "linux");
+    Processor(Simulator &s, sc_core::sc_module_name name = "cpu", bool debug = false, const std::string &config = "linux");
+
+    // Reference to simulator.
+    Simulator &sim;
 
     //
     // Fetch two-byte value at given address.
@@ -199,6 +203,15 @@ public:
     //
     int32_t add_with_carry(int32_t x, int32_t y, bool carry_in);
 
+    // Get name of a peripheral register by address.
+    std::string periph_name(unsigned addr);
+
+    // Read peripheral register.
+    unsigned periph_read(unsigned addr, uint32_t &shadow);
+
+    // Write to a peripheral register.
+    void periph_write(unsigned addr, unsigned val, uint32_t &shadow);
+
     // Enable stdout buffering.
     void capture_stdout() { capture_stdout_flag = true; stdout_buf.clear(); }
 
@@ -245,7 +258,7 @@ private:
     union {
         uint32_t u32;
         struct {
-            unsigned pm : 1;
+            unsigned pm : 1; // Prevents activation of all exceptions with configurable priority
         } field;
     } primask;
 
@@ -280,10 +293,37 @@ private:
     uint32_t opcode{};  // Current instruction, 16-bit or 32-bit
     uint32_t next_pc{}; // Set PC to this value after current instruction
 
-    bool interrupt{};
-    uint32_t int_cause{};
-    bool irq_already_down{};
+    //
+    // Interrupt requests.
+    //
+    bool nmi_request{};
+    bool hardfault_request{};
+    bool svcall_request{};
+    bool pendsv_request{};
+    bool systick_request{};
 
+    //
+    // Peripheral registers.
+    //
+    unsigned resets_reset_done{};
+    unsigned clk_sys_ctrl{};
+    unsigned clk_ref_ctrl{};
+    unsigned ss_ctrl{};
+    unsigned m0plus_vtor{0x10000100};
+
+    // Integer divider.
+    unsigned div_dividend{};
+    unsigned div_divisor{};
+    unsigned div_quotient{};
+    unsigned div_remainder{};
+    unsigned div_csr{ 1 };
+    void div_start(char op);
+
+    // Interrupt controller.
+    unsigned nvic_enable_mask{};
+    unsigned nvic_pending_mask{};
+
+    // Direct memory interface.
     bool dmi_ptr_valid{};
     unsigned char *dmi_ptr{};
     sc_core::sc_time dmi_read_latency;
@@ -298,12 +338,15 @@ private:
      */
     void cpu_thread();
 
-    /**
-     *
-     * @brief Process and triggers IRQ if all conditions met
-     * @return true if IRQ is triggered, false otherwise
-     */
-    bool cpu_process_interrupt();
+    //
+    // Process one of pending interrupts.
+    //
+    void cpu_process_interrupt();
+
+    //
+    // Enter exception with given number.
+    //
+    void cpu_enter_exception(int irq);
 
     /**
      * @brief callback for IRQ simple socket

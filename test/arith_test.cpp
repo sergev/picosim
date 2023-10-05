@@ -1,10 +1,11 @@
 #include <gtest/gtest.h>
 
-#include "processor.h"
+#include "simulator.h"
 
 TEST(arith, add_with_carry)
 {
-    Processor cpu;
+    Simulator sim;
+    Processor &cpu = sim.get_cpu();
 
     EXPECT_EQ(cpu.get_sysreg(Processor::SYSM_XPSR), 0);
 

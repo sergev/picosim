@@ -4,7 +4,7 @@
 // Initialize the chip.
 //
 Simulator::Simulator(const sc_core::sc_module_name &name, bool debug_enable)
-    : sc_module(name), config((const char*)name), cpu("Processor", debug_enable, config),
+    : sc_module(name), config((const char*)name), cpu(*this, "Processor", debug_enable, config),
       bus("BusCtrl", config)
 {
     // Connect CPU to the bus controller.
@@ -45,7 +45,7 @@ Simulator::Simulator(const sc_core::sc_module_name &name, bool debug_enable)
         bus.flash_bind(flash->socket);
 
         // Peripherals
-        periph = std::make_unique<Peripherals>(*this, "Periph");
+        periph = std::make_unique<Peripherals>(cpu, "Periph");
         bus.periph_bind(periph->socket);
 
         //TODO: cpu.irq_bind(timer->irq_line);

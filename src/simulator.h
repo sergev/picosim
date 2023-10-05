@@ -80,6 +80,9 @@ public:
     // Get PC value of core #0.
     uint32_t get_pc() { return cpu.get_pc(); }
 
+    // For unit tests.
+    Processor &get_cpu() { return cpu; }
+
     // Enable stdout buffering.
     void capture_stdout() { cpu.capture_stdout(); }
 

@@ -1,4 +1,4 @@
-#include "peripherals.h"
+#include "processor.h"
 #include "rp2040/addressmap.h"
 #include "rp2040/sio.h"
 #include "rp2040/clocks.h"
@@ -587,7 +587,7 @@ static const std::map<unsigned, const std::string> periph_reg_name = {
 //
 // Get name of peripheral register at given address.
 //
-std::string Peripherals::reg_name(unsigned addr)
+std::string Processor::periph_name(unsigned addr)
 {
     if (periph_reg_name.count(addr) > 0) {
         return periph_reg_name.at(addr);
