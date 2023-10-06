@@ -3,12 +3,12 @@
 //
 // Check stdout.
 //
-TEST(sim, force_irq_unaligned)
+TEST(sim, enter_irq_unaligned)
 {
     Simulator sim("pico");
     //enable_trace();
     sim.capture_stdout();
-    sim.read_elf_file(TEST_DIR "/force-irq-unaligned/force_irq_unaligned.elf");
+    sim.read_elf_file(TEST_DIR "/enter-irq-unaligned/enter_irq_unaligned.elf");
     sim.run();
     //show_trace();
 

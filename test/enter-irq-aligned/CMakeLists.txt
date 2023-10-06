@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.12)
 include($ENV{PICO_SDK_PATH}/external/pico_sdk_import.cmake)
 
 # Set name of project (as PROJECT_NAME) and C/C++ standards
-project(force_irq C CXX ASM)
+project(enter_irq_aligned C CXX ASM)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 add_compile_options(-Wall -Werror)
@@ -14,7 +14,7 @@ add_compile_options(-Wall -Werror)
 pico_sdk_init()
 
 add_executable(${PROJECT_NAME}
-    force-irq.c
+    main.c
 )
 
 # pull in common dependencies
