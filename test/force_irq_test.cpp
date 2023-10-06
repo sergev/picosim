@@ -27,7 +27,7 @@ TEST(sim, force_irq)
         "SP[4] = e000e200\r\n"
         "SP[5] = 00000080\r\n"
         "SP[6] = 20000149\r\n"
-        "SP[7] = 100003d1\r\n"
+        "SP[7] = 100003d5\r\n"
         "SP[8] = (unpredictable)\r\n"
         "SP[9] = 01000000\r\n"
         "SP[10] = 10000264\r\n"

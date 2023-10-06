@@ -8,14 +8,14 @@ static inline __attribute__((always_inline)) unsigned get_sp()
     return result;
 }
 
-void print_stack(unsigned sp, unsigned count, unsigned unpredictable)
+void print_stack(unsigned sp, unsigned count)
 {
     unsigned *stack = (unsigned*) sp;
     printf("SP    = %08x\n", sp);
     for (unsigned i = 0; i < count; i++) {
         printf("SP[%u] = ", i);
-        if (i == unpredictable) {
-            printf("(unpredictable)\n");
+        if (i == 8) {
+            printf("(unpredictable)\n"); // PC value
         } else {
             printf("%08x\n", stack[i]);
         }
@@ -25,7 +25,7 @@ void print_stack(unsigned sp, unsigned count, unsigned unpredictable)
 void cb_interrupt()
 {
     printf("Got interrupt.\n");
-    print_stack(get_sp(), 13, 8);
+    print_stack(get_sp(), 13);
 
     for (;;) {
         asm volatile("svc #1");
@@ -42,7 +42,7 @@ int main()
 
     // Push extra word on stack.
     asm volatile ("push {lr}");
-    print_stack(get_sp(), 2, ~0);
+    print_stack(get_sp(), 2);
 
     printf("Force interrupt.\n");
     irq_set_pending(PIO0_IRQ_0);

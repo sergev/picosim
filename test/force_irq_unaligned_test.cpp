@@ -15,7 +15,7 @@ TEST(sim, force_irq_unaligned)
     EXPECT_EQ(sim.get_stdout(),
         "Setup interrupt handler.\r\n"
         "SP    = 20041ff4\r\n"
-        "SP[0] = 100003b9\r\n"
+        "SP[0] = 100003c1\r\n"
         "SP[1] = 10000264\r\n"
         "Force interrupt.\r\n"
         "Got interrupt.\r\n"
@@ -27,11 +27,11 @@ TEST(sim, force_irq_unaligned)
         "SP[4] = e000e200\r\n"
         "SP[5] = 00000080\r\n"
         "SP[6] = 20000149\r\n"
-        "SP[7] = 100003d3\r\n"
+        "SP[7] = 100003d7\r\n"
         "SP[8] = (unpredictable)\r\n"
         "SP[9] = 01000200\r\n"
-        "SP[10] = 100003cd\r\n"
-        "SP[11] = 100003b9\r\n"
+        "SP[10] = 100003d1\r\n"
+        "SP[11] = 100003c1\r\n"
         "SP[12] = 10000264\r\n");
 }
 
