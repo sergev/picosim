@@ -78,10 +78,11 @@ public:
      */
     int32_t get_reg(int reg_num)
     {
-        if (reg_num == Registers::SP && control.field.spsel)
+        if (reg_num == Registers::SP && control.field.spsel) {
             return register_bank.getPSP();
-        else
+        } else {
             return register_bank.getValue(reg_num);
+        }
     }
 
     /**
@@ -120,22 +121,37 @@ public:
         set_nz_flags(value);
     }
 
-    /**
-     * Returns PC value
-     * @return register value
-     */
+    //
+    // Return PC value
+    //
     uint32_t get_pc() { return register_bank.getPC(); }
 
-    /**
-     * Set PC value
-     * @param value register value
-     */
+    //
+    // Set PC value
+    //
     void set_pc(uint32_t value) { register_bank.setPC(value); }
 
-    /**
-     * Increment PC value
-     */
-    void inc_pc(unsigned increment) { register_bank.incPC(increment); }
+    //
+    // Return SP value, based on mode
+    //
+    uint32_t get_sp()
+    {
+        if (control.field.spsel && mode == Mode::THREAD_MODE)
+            return register_bank.getPSP(); // use Process stack
+        else
+            return register_bank.getMSP(); // use Main stack
+    }
+
+    //
+    // Set SP value
+    //
+    void set_sp(uint32_t value)
+    {
+        if (control.field.spsel && mode == Mode::THREAD_MODE)
+            register_bank.setPSP(value); // use Process stack
+        else
+            register_bank.setMSP(value); // use Main stack
+    }
 
     //
     // Get system register.

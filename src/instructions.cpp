@@ -610,7 +610,7 @@ void Processor::thumb_load_store_stack()
     unsigned offset    = opcode & 0xff;
     unsigned rd        = (opcode >> 8) & 0x7;
     unsigned load_flag = opcode & (1 << 11);
-    uint32_t address   = get_reg(Registers::SP) + (offset << 2);
+    uint32_t address   = get_sp() + (offset << 2);
 
     if (load_flag) {
         // LDR instruction.
@@ -626,7 +626,7 @@ void Processor::thumb_add_sp_pc()
     unsigned imm         = opcode & 0xff;
     unsigned rd          = (opcode >> 8) & 0x7;
     unsigned sp_flag     = opcode & (1 << 11);
-    unsigned sp          = get_reg(Registers::SP);
+    unsigned sp          = get_sp();
     unsigned pc_aligned  = (register_bank.getPC() + 4) & ~3;
     unsigned value       = (sp_flag ? sp : pc_aligned) + (imm << 2);
 
@@ -637,7 +637,7 @@ void Processor::thumb_adjust_stack()
 {
     unsigned imm      = opcode & 0x7f;
     unsigned sub_flag = (opcode >> 7) & 1;
-    unsigned value    = get_reg(Registers::SP);
+    unsigned value    = get_sp();
 
     if (sub_flag) {
         // SUB instruction.
@@ -798,7 +798,7 @@ void Processor::thumb_pop()
 {
     unsigned reg_list = opcode & 0xff;
     unsigned sp_flag  = (opcode >> 8) & 1;
-    uint32_t address  = get_reg(Registers::SP);
+    uint32_t address  = get_sp();
 
     // POP instruction.
     for (unsigned rd = 0; rd < 8; rd++) {
@@ -824,7 +824,7 @@ void Processor::thumb_push()
 {
     unsigned reg_list = opcode & 0xff;
     unsigned lr_flag  = (opcode >> 8) & 1;
-    uint32_t address  = get_reg(Registers::SP);
+    uint32_t address  = get_sp();
 
     // PUSH instruction.
     if (lr_flag) {

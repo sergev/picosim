@@ -204,40 +204,50 @@ void Processor::cpu_enter_exception(int irq)
         }
     }
 
+    //
     // Save registers on stack.
-    unsigned sp = get_reg(Registers::SP);
+    //
+    unsigned sp     = get_sp() - 0x20;
+    unsigned status = xpsr.u32 | 0x0100'0000; // Set Thumb bit
     if (sp & 4) {
-        // Unaligned stack.
-        sp -= 8;
-        data_write32(sp, xpsr.u32 | 0x0100'0200); // Set bit 9 and Thumb bit
-    } else {
-        // Stack is aligned.
+        // Align stack.
         sp -= 4;
-        data_write32(sp, xpsr.u32 | 0x0100'0000); // Set Thumb bit
+        status |= 0x200; // Set xPSR bit 9
     }
-    sp -= 4;
-    data_write32(sp, get_pc());
-    sp -= 4;
-    data_write32(sp, get_reg(Registers::LR));
-    sp -= 4;
-    data_write32(sp, get_reg(12));
-    sp -= 4;
-    data_write32(sp, get_reg(3));
-    sp -= 4;
-    data_write32(sp, get_reg(2));
-    sp -= 4;
-    data_write32(sp, get_reg(1));
-    sp -= 4;
-    data_write32(sp, get_reg(0));
+    set_sp(sp);
+    data_write32(sp + 0x1c, status);
+    data_write32(sp + 0x18, get_pc());
+    data_write32(sp + 0x14, get_reg(Registers::LR));
+    data_write32(sp + 0x10, get_reg(12));
+    data_write32(sp + 0x0c, get_reg(3));
+    data_write32(sp + 0x08, get_reg(2));
+    data_write32(sp + 0x04, get_reg(1));
+    data_write32(sp + 0x00, get_reg(0));
 
-    // Set EXC_RETURN value.
-    unsigned exc_return = 0xfffffff9; // TODO: select based on mode and stack
-    set_reg(Registers::LR, exc_return);
+    //
+    // Set EXC_RETURN value, based on mode.
+    //
+    if (mode == Mode::HANDLER_MODE) {
+        set_reg(Registers::LR, 0xfffffff1);
+    } else if (control.field.spsel) {
+        set_reg(Registers::LR, 0xfffffffd);
+    } else {
+        set_reg(Registers::LR, 0xfffffff9);
+    }
+
+    // Enter Handler Mode, now Privileged.
+    mode = Mode::HANDLER_MODE;
+
+    // Set exception number.
+    xpsr.field.exception = irq + 16;
+    if (Log::is_verbose()) {
+        Log::out() << "          xpsr = " << std::hex << std::setw(8)
+                   << std::setfill('0') << xpsr.u32 << std::endl;
+    }
 
     // Jump to appropriate vector.
     unsigned vector = data_read32(m0plus_vtor + (irq + 16) * 4);
     set_pc(vector & ~1);
-    set_reg(Registers::SP, sp);
 }
 
 //

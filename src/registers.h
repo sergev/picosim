@@ -46,9 +46,6 @@ public:
     uint32_t getPC() const { return register_bank[PC]; }
     void setPC(uint32_t new_val) { register_bank[PC] = new_val; }
 
-    // Increment PC counter to next address.
-    void incPC(unsigned increment) { register_bank[PC] += increment; }
-
     // Get/set Main/Program Stack Pointer value.
     uint32_t getMSP() const { return register_bank[SP]; }
     uint32_t getPSP() const { return register_psp; }
