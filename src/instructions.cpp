@@ -516,7 +516,9 @@ void Processor::thumb_bx_blx()
     }
     next_pc = address;
 
-    //TODO: if (next_pc[31:28] == 0x0f) exc_return();
+    if ((next_pc >> 28) == 0x0f) {
+        cpu_exit_exception(next_pc);
+    }
 }
 
 void Processor::thumb_load_store_reg()
@@ -817,7 +819,9 @@ void Processor::thumb_pop()
     // Update SP.
     set_reg(Registers::SP, address);
 
-    //TODO: if (next_pc[31:28] == 0x0f) exc_return();
+    if ((next_pc >> 28) == 0x0f) {
+        cpu_exit_exception(next_pc);
+    }
 }
 
 void Processor::thumb_push()

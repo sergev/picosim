@@ -73,78 +73,6 @@ void Processor::irq_bind(tlm_utils::simple_initiator_socket<Timer> &socket)
 }
 #endif
 
-void Processor::raise_exception(uint32_t cause, uint32_t mtval)
-{
-    if (Log::is_verbose()) {
-        const char *name = "Unknown Exception";
-        // switch (cause & MCAUSE_EXCEPTION_CODE) {
-        // case EXCEPTION_CAUSE_INSTRUCTION_ACCESS:
-        //     name = "Instruction Access Fault";
-        //     break;
-        // case EXCEPTION_CAUSE_ILLEGAL_INSTRUCTION:
-        //     name = "Illegal Instruction";
-        //     break;
-        // case EXCEPTION_CAUSE_BREAKPOINT:
-        //     name = "Breakpoint";
-        //     break;
-        // case EXCEPTION_CAUSE_LOAD_MISALIGN:
-        //     name = "Load Misalign";
-        //     break;
-        // case EXCEPTION_CAUSE_LOAD_ACCESS_FAULT:
-        //     name = "Load Access Fault";
-        //     break;
-        // case EXCEPTION_CAUSE_STORE_MISALIGN:
-        //     name = "Store Misalign";
-        //     break;
-        // case EXCEPTION_CAUSE_STORE_ACCESS_FAULT:
-        //     name = "Store Access Fault";
-        //     break;
-        // case EXCEPTION_CAUSE_ECALL_U:
-        //     name = "Syscall";
-        //     break;
-        // case EXCEPTION_CAUSE_ECALL_M:
-        //     name = "Syscall from Machine mode";
-        //     break;
-        // }
-        Log::out() << "-------- " << name << std::endl;
-    }
-
-    // Save info about the trap.
-    // set_csr(CSR_MEPC, get_pc());
-    // set_csr(CSR_MTVAL, mtval);
-    // set_csr(CSR_MCAUSE, cause);
-
-    //
-    // Update mstatus: disable interrupts.
-    //
-    // uint32_t old_status = get_csr(CSR_MSTATUS);
-    // uint32_t new_status = old_status & MSTATUS_TW;
-
-    // Copy MIE to MPIE.
-    // if (old_status & MSTATUS_MIE)
-    //    new_status |= MSTATUS_MPIE;
-
-    // Set previous privilege mode.
-    // new_status |= get_priv() << MSTATUS_MPP_shift;
-
-    // set_csr(CSR_MSTATUS, new_status);
-
-    // Jump to the trap vector.
-    // uint32_t mtvec = get_csr(CSR_MTVEC);
-    uint32_t new_pc = 0 /*mtvec & ~1*/;
-    // if ((cause & MCAUSE_INTERRUPT_FLAG) && (mtvec & 1)) {
-    //     // Interrupt in vector mode.
-    //     new_pc += (cause & MCAUSE_EXCEPTION_CODE) * 4;
-    // }
-    // next_pc = new_pc;
-    if (Log::is_verbose()) {
-        Log::out() << "-------- Vector 0x" << std::hex << new_pc << std::endl;
-    }
-
-    // Switch to Machine mode.
-    // set_priv(MSTATUS_MPP_MACHINE);
-}
-
 void Processor::terminate_simulation(const std::string &reason) const
 {
     if (!reason.empty()) {
@@ -248,6 +176,62 @@ void Processor::cpu_enter_exception(int irq)
     // Jump to appropriate vector.
     unsigned vector = data_read32(m0plus_vtor + (irq + 16) * 4);
     set_pc(vector & ~1);
+}
+
+//
+// Return from exception with given return code.
+// Pop registers from stack.
+//
+void Processor::cpu_exit_exception(unsigned exc_return)
+{
+    if (Log::is_verbose()) {
+        Log::out() << "----- Return from exception -----" << std::endl;
+    }
+
+    //
+    // Switch mode.
+    //
+    if (exc_return & 8) {
+        mode = Mode::THREAD_MODE; // return to Thread mode
+    } else {
+        mode = Mode::HANDLER_MODE; // return to Handler mode
+    }
+    unsigned sp;
+    if (exc_return & 4) {
+        sp = register_bank.getPSP(); // return to Process stack
+    } else {
+        sp = register_bank.getMSP(); // return to Main stack
+    }
+
+    //
+    // Restore registers from stack.
+    // Stack accesses are performed as Unprivileged if we return to Thread mode
+    // and control.field.spsel=1, otherwise as Privileged accesses.
+    //
+    set_reg(0, data_read32(sp + 0x00));
+    set_reg(1, data_read32(sp + 0x04));
+    set_reg(2, data_read32(sp + 0x08));
+    set_reg(3, data_read32(sp + 0x0c));
+    set_reg(12, data_read32(sp + 0x10));
+    set_reg(Registers::LR, data_read32(sp + 0x14));
+    next_pc = data_read32(sp + 0x18);
+    unsigned status = data_read32(sp + 0x1c);
+
+    xpsr.u32 = status & 0xf000003f;
+    if (mode == Mode::THREAD_MODE && control.field.npriv) {
+        xpsr.field.exception = 0;
+    }
+
+    //
+    // Update stack pointer.
+    //
+    unsigned stack_align = ((status >> 9) & 1) << 2;
+    sp = (sp + 0x20) | stack_align;
+    if (exc_return & 4) {
+        register_bank.setPSP(sp); // return to Process stack
+    } else {
+        register_bank.setMSP(sp); // return to Main stack
+    }
 }
 
 //
@@ -594,7 +578,7 @@ void Processor::set_sysreg(unsigned sysm, uint32_t value)
 
     default:
         // Exception on write.
-        raise_exception(Exception::HardFault, opcode);
+        cpu_enter_exception(HARDFAULT_EXCEPTION);
         return;
     }
 }

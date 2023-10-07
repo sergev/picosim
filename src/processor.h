@@ -292,16 +292,6 @@ private:
         } field;
     } control;
 
-    enum Exception {
-        Reset             = 1,
-        NMI               = 2,
-        HardFault         = 3,
-        SVCall            = 11,
-        PendSV            = 14,
-        SysTick           = 15,
-        ExternalInterrupt = 16,
-    };
-
     bool linux_mode{};                // Interpret Linux syscalls
     bool app_finished{};              // Set by exit() syscall.
     uint64_t instructions_executed{}; // Count instructions
@@ -363,6 +353,7 @@ private:
     // Enter exception with given number.
     //
     void cpu_enter_exception(int irq);
+    void cpu_exit_exception(unsigned exc_return);
 
     /**
      * @brief callback for IRQ simple socket
