@@ -218,7 +218,7 @@ void Processor::cpu_exit_exception(unsigned exc_return)
     unsigned status = data_read32(sp + 0x1c);
 
     xpsr.u32 = status & 0xf000003f;
-    if (mode == Mode::THREAD_MODE && control.field.npriv) {
+    if (mode == Mode::THREAD_MODE) {
         xpsr.field.exception = 0;
     }
 
@@ -389,7 +389,8 @@ void Processor::cpu_thread()
         }
         else if ((nvic_pending_mask & nvic_enable_mask) != 0 && !primask.field.pm) {
             cpu_process_interrupt();
-        } else {
+        }
+        else {
             // Process one instruction.
             cpu_step();
         }
