@@ -92,13 +92,50 @@ void Processor::terminate_simulation(const std::string &reason) const
 void Processor::cpu_process_interrupt()
 {
     // Find the lowest bit set.
-    unsigned irq = __builtin_ctz(nvic_pending_mask);
+    unsigned irq = __builtin_ctz(nvic_pending_mask & nvic_enable_mask);
 
     // Clear pending bit for this IRQ.
     nvic_pending_mask &= ~(1 << irq);
 
     // Take exception with appropriate vector.
     cpu_enter_exception(irq);
+}
+
+//
+// Return true if the given priority exceeds priority of exception
+// currently being serviced.
+//
+bool Processor::check_priority(unsigned prio)
+{
+    switch (xpsr.field.exception) {
+    case 0:
+        // No current exception.
+        return true;
+    case SVCALL_EXCEPTION:
+        return prio > svcall_priority;
+    case PENDSV_EXCEPTION:
+        return prio > pendsv_priority;
+    case SYSTICK_EXCEPTION:
+        return prio > systick_priority;
+    default:
+        if (xpsr.field.exception >= 16 && xpsr.field.exception < 48) {
+            // External interrupt.
+            return prio > nvic_priority[xpsr.field.exception - 16];
+        }
+        return false;
+    }
+}
+
+//
+// Return true if priority of pending IRQ exceeds priority of exception
+// currently being serviced.
+//
+bool Processor::check_irq_priority()
+{
+    // Find the lowest bit set.
+    unsigned irq = __builtin_ctz(nvic_pending_mask & nvic_enable_mask);
+
+    return check_priority(nvic_priority[irq]);
 }
 
 //
@@ -375,19 +412,19 @@ void Processor::cpu_thread()
             hardfault_request = false;
             cpu_enter_exception(HARDFAULT_EXCEPTION);
         }
-        else if (svcall_request & ~primask.field.pm) {
+        else if (svcall_request && !primask.field.pm && check_priority(svcall_priority)) {
             svcall_request = false;
             cpu_enter_exception(SVCALL_EXCEPTION);
         }
-        else if (pendsv_request & ~primask.field.pm) {
+        else if (pendsv_request && !primask.field.pm && check_priority(pendsv_priority)) {
             pendsv_request = false;
             cpu_enter_exception(PENDSV_EXCEPTION);
         }
-        else if (systick_request & ~primask.field.pm) {
+        else if (systick_request && !primask.field.pm && check_priority(systick_priority)) {
             systick_request = false;
             cpu_enter_exception(SYSTICK_EXCEPTION);
         }
-        else if ((nvic_pending_mask & nvic_enable_mask) != 0 && !primask.field.pm) {
+        else if ((nvic_pending_mask & nvic_enable_mask) != 0 && !primask.field.pm && check_irq_priority()) {
             cpu_process_interrupt();
         }
         else {

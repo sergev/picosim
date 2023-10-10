@@ -352,6 +352,8 @@ private:
     // Process one of pending interrupts.
     //
     void cpu_process_interrupt();
+    bool check_priority(unsigned prio);
+    bool check_irq_priority();
 
     //
     // Enter exception with given number.
