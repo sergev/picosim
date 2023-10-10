@@ -328,6 +328,7 @@ private:
     // Interrupt controller.
     unsigned nvic_enable_mask{};
     unsigned nvic_pending_mask{};
+    uint8_t nvic_priority[32]{};
 
     // Direct memory interface.
     bool dmi_ptr_valid{};
@@ -354,6 +355,10 @@ private:
     //
     void cpu_enter_exception(int irq);
     void cpu_exit_exception(unsigned exc_return);
+
+    // Read/write IPRn registers.
+    unsigned get_nvic_ipr(unsigned n);
+    void set_nvic_ipr(unsigned n, unsigned value);
 
     /**
      * @brief callback for IRQ simple socket

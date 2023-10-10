@@ -619,6 +619,28 @@ void Processor::div_start(char op)
 }
 
 //
+// Read IPRn register.
+//
+unsigned Processor::get_nvic_ipr(unsigned n)
+{
+    return nvic_priority[n] |
+          (nvic_priority[n+1] << 8) |
+          (nvic_priority[n+2] << 16) |
+          (nvic_priority[n+3] << 24);
+}
+
+//
+// Write IPRn register.
+//
+void Processor::set_nvic_ipr(unsigned n, unsigned value)
+{
+    nvic_priority[n] = value & 0xc0;
+    nvic_priority[n+1] = (value >> 8) & 0xc0;
+    nvic_priority[n+2] = (value >> 16) & 0xc0;
+    nvic_priority[n+3] = (value >> 24) & 0xc0;
+}
+
+//
 // Read peripheral register.
 //
 unsigned Processor::periph_read(unsigned addr, uint32_t &shadow)
@@ -750,6 +772,15 @@ unsigned Processor::periph_read(unsigned addr, uint32_t &shadow)
     case PPB_BASE + M0PLUS_NVIC_ISPR_OFFSET: // Interrupt Set-Pending Register
     case PPB_BASE + M0PLUS_NVIC_ICPR_OFFSET: // Interrupt Clear-Pending Register
         return nvic_pending_mask;
+    case PPB_BASE + M0PLUS_NVIC_IPR0_OFFSET: // Priority level for interrupt N...N+3
+    case PPB_BASE + M0PLUS_NVIC_IPR1_OFFSET:
+    case PPB_BASE + M0PLUS_NVIC_IPR2_OFFSET:
+    case PPB_BASE + M0PLUS_NVIC_IPR3_OFFSET:
+    case PPB_BASE + M0PLUS_NVIC_IPR4_OFFSET:
+    case PPB_BASE + M0PLUS_NVIC_IPR5_OFFSET:
+    case PPB_BASE + M0PLUS_NVIC_IPR6_OFFSET:
+    case PPB_BASE + M0PLUS_NVIC_IPR7_OFFSET:
+        return get_nvic_ipr((addr >> 2) & 7);
 
 #if 1
     case IO_QSPI_BASE + IO_QSPI_GPIO_QSPI_SD1_CTRL_OFFSET:
@@ -921,6 +952,16 @@ flash_select:
         return;
     case PPB_BASE + M0PLUS_NVIC_ICPR_OFFSET: // Interrupt Clear-Pending Register
         nvic_pending_mask &= ~val;
+        return;
+    case PPB_BASE + M0PLUS_NVIC_IPR0_OFFSET: // Priority level for interrupt N...N+3
+    case PPB_BASE + M0PLUS_NVIC_IPR1_OFFSET:
+    case PPB_BASE + M0PLUS_NVIC_IPR2_OFFSET:
+    case PPB_BASE + M0PLUS_NVIC_IPR3_OFFSET:
+    case PPB_BASE + M0PLUS_NVIC_IPR4_OFFSET:
+    case PPB_BASE + M0PLUS_NVIC_IPR5_OFFSET:
+    case PPB_BASE + M0PLUS_NVIC_IPR6_OFFSET:
+    case PPB_BASE + M0PLUS_NVIC_IPR7_OFFSET:
+        set_nvic_ipr((addr >> 2) & 7, val);
         return;
     }
 
