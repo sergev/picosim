@@ -781,6 +781,10 @@ unsigned Processor::periph_read(unsigned addr, uint32_t &shadow)
     case PPB_BASE + M0PLUS_NVIC_IPR6_OFFSET:
     case PPB_BASE + M0PLUS_NVIC_IPR7_OFFSET:
         return get_nvic_ipr((addr >> 2) & 7);
+    case PPB_BASE + M0PLUS_SHPR2_OFFSET: // Priority level for SVCall exception
+        return svcall_priority << 24;
+    case PPB_BASE + M0PLUS_SHPR3_OFFSET: // Priority level for PendSV and SysTick
+        return (pendsv_priority << 16) | (systick_priority << 24);
 
 #if 1
     case IO_QSPI_BASE + IO_QSPI_GPIO_QSPI_SD1_CTRL_OFFSET:
@@ -962,6 +966,13 @@ flash_select:
     case PPB_BASE + M0PLUS_NVIC_IPR6_OFFSET:
     case PPB_BASE + M0PLUS_NVIC_IPR7_OFFSET:
         set_nvic_ipr((addr >> 2) & 7, val);
+        return;
+    case PPB_BASE + M0PLUS_SHPR2_OFFSET: // Priority level for SVCall exception
+        svcall_priority = (val >> 24) & 0xc0;
+        return;
+    case PPB_BASE + M0PLUS_SHPR3_OFFSET: // Priority level for PendSV and SysTick
+        pendsv_priority = (val >> 16) & 0xc0;
+        systick_priority = (val >> 24) & 0xc0;
         return;
     }
 

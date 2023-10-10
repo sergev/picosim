@@ -329,6 +329,9 @@ private:
     unsigned nvic_enable_mask{};
     unsigned nvic_pending_mask{};
     uint8_t nvic_priority[32]{};
+    uint8_t svcall_priority{};
+    uint8_t pendsv_priority{};
+    uint8_t systick_priority{};
 
     // Direct memory interface.
     bool dmi_ptr_valid{};
