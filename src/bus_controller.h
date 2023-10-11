@@ -10,6 +10,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <memory>
 
 #include "log.h"
 #include "systemc"

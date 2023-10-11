@@ -2,6 +2,7 @@
 #define CPU_BASE_H
 
 #include <unordered_map>
+#include <memory>
 
 #include "log.h"
 #include "memory.h"

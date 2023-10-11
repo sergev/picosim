@@ -16,6 +16,8 @@
 //
 #include "bus_controller.h"
 
+#include <iomanip>
+
 Bus_Controller::Bus_Controller(sc_core::sc_module_name const name, const std::string &config)
     : sc_module(name)
 {

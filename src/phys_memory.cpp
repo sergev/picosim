@@ -24,6 +24,7 @@
 #include "phys_memory.h"
 
 #include <algorithm>
+#include <iomanip>
 
 Memory::Memory(sc_core::sc_module_name const &name, unsigned base_addr, unsigned last_addr)
     : sc_module(name),

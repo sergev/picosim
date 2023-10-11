@@ -111,11 +111,11 @@ bool Processor::check_priority(unsigned prio)
     case 0:
         // No current exception.
         return true;
-    case SVCALL_EXCEPTION:
+    case SVCALL_EXCEPTION + 16:
         return prio > svcall_priority;
-    case PENDSV_EXCEPTION:
+    case PENDSV_EXCEPTION + 16:
         return prio > pendsv_priority;
-    case SYSTICK_EXCEPTION:
+    case SYSTICK_EXCEPTION + 16:
         return prio > systick_priority;
     default:
         if (xpsr.field.exception >= 16 && xpsr.field.exception < 48) {

@@ -913,7 +913,7 @@ void Processor::thumb_cond_branch()
         break;
     case 9:
         // BLS instruction.
-        take_jump = !xpsr.field.c | xpsr.field.z;
+        take_jump = (!xpsr.field.c) | xpsr.field.z;
         break;
     case 10:
         // BGE instruction.
