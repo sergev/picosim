@@ -104,23 +104,34 @@ void Processor::cpu_process_interrupt()
 //
 // Return true if the given priority exceeds priority of exception
 // currently being serviced.
+// Note that priority value can be negative (for Reset, NMI and HardFault).
+// Smaller value means higher priority.
+// Reset has priority -3.
+// NMI has priority -2.
+// HardFault has priority -1.
 //
-bool Processor::check_priority(unsigned prio)
+bool Processor::check_priority(int prio)
 {
-    switch (xpsr.field.exception) {
-    case 0:
+    int irq = (int) xpsr.field.exception - 16;
+
+    switch (irq) {
+    case -16:
         // No current exception.
         return true;
-    case SVCALL_EXCEPTION + 16:
-        return prio > svcall_priority;
-    case PENDSV_EXCEPTION + 16:
-        return prio > pendsv_priority;
-    case SYSTICK_EXCEPTION + 16:
-        return prio > systick_priority;
+    case NMI_EXCEPTION:
+        return prio < -2;
+    case HARDFAULT_EXCEPTION:
+        return prio < -1;
+    case SVCALL_EXCEPTION:
+        return prio < (int) svcall_priority;
+    case PENDSV_EXCEPTION:
+        return prio < (int) pendsv_priority;
+    case SYSTICK_EXCEPTION:
+        return prio < (int) systick_priority;
     default:
-        if (xpsr.field.exception >= 16 && xpsr.field.exception < 48) {
+        if (irq >= 0 && irq < 32) {
             // External interrupt.
-            return prio > nvic_priority[xpsr.field.exception - 16];
+            return prio < (int) nvic_priority[irq];
         }
         return false;
     }
@@ -133,7 +144,8 @@ bool Processor::check_priority(unsigned prio)
 bool Processor::check_irq_priority()
 {
     // Find the lowest bit set.
-    unsigned irq = __builtin_ctz(nvic_pending_mask & nvic_enable_mask);
+    unsigned mask = nvic_pending_mask & nvic_enable_mask;
+    unsigned irq  = __builtin_ctz(mask);
 
     return check_priority(nvic_priority[irq]);
 }
@@ -404,11 +416,11 @@ void Processor::cpu_thread()
         sc_core::wait(sc_core::SC_ZERO_TIME);
 
         // Check for exceptions.
-        if (nmi_request) {
+        if (nmi_request && check_priority(-2)) {
             nmi_request = false;
             cpu_enter_exception(NMI_EXCEPTION);
         }
-        else if (hardfault_request) {
+        else if (hardfault_request && check_priority(-1)) {
             hardfault_request = false;
             cpu_enter_exception(HARDFAULT_EXCEPTION);
         }
@@ -660,10 +672,10 @@ void Processor::div_start(char op)
 //
 unsigned Processor::get_nvic_ipr(unsigned n)
 {
-    return nvic_priority[n] |
-          (nvic_priority[n+1] << 8) |
-          (nvic_priority[n+2] << 16) |
-          (nvic_priority[n+3] << 24);
+    return nvic_priority[n*4] |
+          (nvic_priority[n*4+1] << 8) |
+          (nvic_priority[n*4+2] << 16) |
+          (nvic_priority[n*4+3] << 24);
 }
 
 //
@@ -671,10 +683,10 @@ unsigned Processor::get_nvic_ipr(unsigned n)
 //
 void Processor::set_nvic_ipr(unsigned n, unsigned value)
 {
-    nvic_priority[n] = value & 0xc0;
-    nvic_priority[n+1] = (value >> 8) & 0xc0;
-    nvic_priority[n+2] = (value >> 16) & 0xc0;
-    nvic_priority[n+3] = (value >> 24) & 0xc0;
+    nvic_priority[n*4] = value & 0xc0;
+    nvic_priority[n*4+1] = (value >> 8) & 0xc0;
+    nvic_priority[n*4+2] = (value >> 16) & 0xc0;
+    nvic_priority[n*4+3] = (value >> 24) & 0xc0;
 }
 
 //
