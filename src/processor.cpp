@@ -181,7 +181,7 @@ void Processor::cpu_enter_exception(int irq)
     }
     set_sp(sp);
     data_write32(sp + 0x1c, status);
-    data_write32(sp + 0x18, get_pc());
+    data_write32(sp + 0x18, get_pc() | 1);
     data_write32(sp + 0x14, get_reg(Registers::LR));
     data_write32(sp + 0x10, get_reg(12));
     data_write32(sp + 0x0c, get_reg(3));
