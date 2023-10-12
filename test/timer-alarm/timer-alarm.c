@@ -1,18 +1,23 @@
 #include <stdio.h>
 #include <pico/stdlib.h>
 
-bool alarm_flag[4] = { false };
+volatile bool alarm_flag[4] = { false };
 
-void cb_hardware_alarm(unsigned alarm_num)
+void interrupt_alarm(unsigned alarm_num)
 {
     alarm_flag[alarm_num] = true;
 }
 
-void fail()
+void wait_for_interrupt(unsigned alarm_num)
 {
-    printf("Failed.\n");
-    for (;;) {
-        asm volatile("bkpt");
+    for (unsigned count = 0; !alarm_flag[alarm_num]; count++) {
+        if (count >= 1000) {
+            printf("Failed.\n");
+            for (;;) {
+                asm volatile("bkpt");
+            }
+        }
+        asm volatile("wfe");
     }
 }
 
@@ -21,10 +26,10 @@ int main()
     stdio_init_all();
 
     // Setup all four alarms.
-    hardware_alarm_set_callback(0, cb_hardware_alarm);
-    hardware_alarm_set_callback(1, cb_hardware_alarm);
-    hardware_alarm_set_callback(2, cb_hardware_alarm);
-    hardware_alarm_set_callback(3, cb_hardware_alarm);
+    hardware_alarm_set_callback(0, interrupt_alarm);
+    hardware_alarm_set_callback(1, interrupt_alarm);
+    hardware_alarm_set_callback(2, interrupt_alarm);
+    hardware_alarm_set_callback(3, interrupt_alarm);
 
     // Activate alarms.
     uint64_t usec = time_us_64();
@@ -39,33 +44,13 @@ int main()
     hardware_alarm_set_target(3, t);
 
     printf("Waiting for alarms, usec = %llu\n", time_us_64());
-    for (unsigned count = 0; !alarm_flag[0]; count++) {
-        if (count >= 1000) {
-            fail();
-        }
-        asm volatile("wfi");
-    }
+    wait_for_interrupt(0);
     printf("Got alarm #0, usec = %llu\n", time_us_64());
-    for (unsigned count = 0; !alarm_flag[1]; count++) {
-        if (count >= 1000) {
-            fail();
-        }
-        asm volatile("wfi");
-    }
+    wait_for_interrupt(1);
     printf("Got alarm #1, usec = %llu\n", time_us_64());
-    for (unsigned count = 0; !alarm_flag[2]; count++) {
-        if (count >= 1000) {
-            fail();
-        }
-        asm volatile("wfi");
-    }
+    wait_for_interrupt(2);
     printf("Got alarm #2, usec = %llu\n", time_us_64());
-    for (unsigned count = 0; !alarm_flag[3]; count++) {
-        if (count >= 1000) {
-            fail();
-        }
-        asm volatile("wfi");
-    }
+    wait_for_interrupt(3);
     printf("Got alarm #3, usec = %llu\n", time_us_64());
 
     printf("Done.\n");
